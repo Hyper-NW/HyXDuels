@@ -1,0 +1,39 @@
+# Golden Head item, effects, UHC injection, consumption, and command defaults.
+Config-Version: 1
+Enabled: true
+
+UHC:
+  Give-On-Match-Start: true
+  Amount: 3
+
+Item:
+  # Golden Heads always remain PLAYER_HEAD items with the receiving player's skin.
+  Name: '&6Golden Head'
+  Lore:
+    - '&7Right-click to consume'
+    - '&dRegeneration <regen_level> &7(<regen_seconds>s)'
+    - '&9Absorption <absorption_level> &7(<absorption_seconds>s)'
+  Glow: false
+  # Set to 0 to disable custom model data.
+  Custom-Model-Data: 0
+
+Effects:
+  Regeneration:
+    Enabled: true
+    Level: 3
+    Duration-Seconds: 5
+  Absorption:
+    Enabled: true
+    Level: 1
+    Duration-Seconds: 120
+
+Consumption:
+  # Disable this to permit consumption outside active UHC duel matches.
+  Only-In-UHC: true
+  Sound: ENTITY_GENERIC_EAT
+  Sound-Volume: 1.0
+  Sound-Pitch: 1.0
+
+Command:
+  Default-Amount: 1
+  Maximum-Amount: 64

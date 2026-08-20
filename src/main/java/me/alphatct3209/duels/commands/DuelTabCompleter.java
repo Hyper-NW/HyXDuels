@@ -40,7 +40,7 @@ public class DuelTabCompleter implements TabCompleter
             else if (matches(args[0], "challenge"))
                 recommendations.addAll(List.of("help", "send", "accept", "deny"));
             else if (matches(args[0], "kits", "kit"))
-                recommendations.addAll(List.of("help", "list", "create", "delete", "select", "edit"));
+                recommendations.addAll(List.of("help", "list", "create", "delete", "select", "editor"));
             else if (matches(args[0], "modes")) recommendations.addAll(List.of("list", "select"));
             else if (matches(args[0], "arena") && canManageArenas(sender))
                 recommendations.addAll(List.of("help", "list", "create", "setlobby", "setspawn1",
@@ -73,7 +73,7 @@ public class DuelTabCompleter implements TabCompleter
             else if (args[0].equalsIgnoreCase("modes") && args[1].equalsIgnoreCase("select"))
                 addModes(recommendations);
             else if (matches(args[0], "kits", "kit")
-                    && matches(args[1], "delete", "select", "edit")) addKits(recommendations);
+                    && matches(args[1], "delete", "select", "editor", "edit")) addKits(recommendations);
             else if (matches(args[0], "stats") && matches(args[1], "view"))
             {
                 addVisiblePlayers(sender, recommendations);

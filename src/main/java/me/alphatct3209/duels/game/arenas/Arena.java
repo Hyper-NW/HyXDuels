@@ -403,6 +403,10 @@ public class Arena
     public me.alphatct3209.duels.game.modes.ModeManager getModeManager() { return plugin.getModeManager(); }
     public StatisticsDatabase getStatisticsDatabase() { return plugin.getStatisticsManager().getStatsDB(); }
     public DivisionManager getDivisionManager() { return plugin.getDivisionManager(); }
+    public me.alphatct3209.duels.game.kits.PlayerKitLayoutManager getPlayerKitLayoutManager()
+    { return plugin.getPlayerKitLayoutManager(); }
+    public me.alphatct3209.duels.game.items.GoldenHead getGoldenHead()
+    { return plugin.getGoldenHead(); }
     public void requestLeaderboardRefresh() { plugin.requestLeaderboardRefresh(); }
     public org.bukkit.scheduler.BukkitTask schedule(Runnable task, long ticks)
     {

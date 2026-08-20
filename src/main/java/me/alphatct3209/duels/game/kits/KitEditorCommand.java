@@ -9,7 +9,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,34 +25,25 @@ public final class KitEditorCommand implements CommandExecutor, TabCompleter
             sender.sendMessage("The kit editor requires a player.");
             return true;
         }
-        if (!player.hasPermission("duels.kits.edit"))
+        if (!player.hasPermission("duels.kits.layout"))
         {
             MessageService.send(player, plugin.getConfig(), "Messages.No-Permission", Map.of());
             return true;
         }
-        if (args.length != 1)
+        if (args.length != 0)
         {
-            MessageService.send(player, plugin.getConfig(), "Messages.Kit-Editor-Usage", Map.of(),
-                    "&cUsage: /" + label + " <kit>");
+            MessageService.send(player, plugin.getConfig(), "Messages.Personal-Kit-Editor-Usage", Map.of(),
+                    "&cUsage: /kiteditor");
             return true;
         }
-        Kit kit = plugin.getKitManager().getKitByNameOrKey(args[0]);
-        if (kit == null)
-        {
-            MessageService.send(player, plugin.getConfig(), "Messages.Kit-Editor-Not-Found",
-                    Map.of("<kit>", args[0]), "&cThat kit does not exist.");
-            return true;
-        }
-        plugin.getKitLayoutEditor().open(player, kit);
+        Kit kit = plugin.getKitManager().resolveKit(player);
+        plugin.getKitLayoutEditor().openPersonal(player, kit);
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
     {
-        if (args.length != 1 || !sender.hasPermission("duels.kits.edit")) return List.of();
-        String prefix = args[0].toLowerCase(Locale.ROOT);
-        return plugin.getKitManager().getKitList().stream().map(Kit::getKey).distinct().sorted()
-                .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(prefix)).toList();
+        return List.of();
     }
 }

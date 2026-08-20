@@ -41,7 +41,28 @@ public final class KitLayoutEditor implements Listener
         items = new MenuItemFactory(plugin, configuration);
     }
 
-    public boolean open(Player player, Kit kit)
+    public boolean openPersonal(Player player, Kit kit)
+    {
+        if (kit == null)
+        {
+            message(player, "Messages.Kit-Editor-Not-Found", "&cThat kit does not exist.");
+            return false;
+        }
+        PlayerKitLayoutManager.Layout layout = plugin.getPlayerKitLayoutManager()
+                .layout(player.getUniqueId(), kit);
+        return open(player, kit, KitEditorInventoryHolder.Scope.PERSONAL,
+                layout.storage(), layout.armor(), layout.offhand());
+    }
+
+    public boolean openShared(Player player, Kit kit)
+    {
+        return open(player, kit, KitEditorInventoryHolder.Scope.SHARED,
+                kit == null ? null : kit.getInventoryContents(),
+                kit == null ? null : kit.getArmorContents(), kit == null ? null : kit.getOffhand());
+    }
+
+    private boolean open(Player player, Kit kit, KitEditorInventoryHolder.Scope scope,
+                         ItemStack[] storage, ItemStack[] armor, ItemStack offhand)
     {
         ItemStack cursor = player.getItemOnCursor();
         if (cursor != null && !cursor.getType().isAir())
@@ -55,8 +76,13 @@ public final class KitLayoutEditor implements Listener
             return false;
         }
         UUID token = UUID.randomUUID();
-        KitEditorInventoryHolder holder = new KitEditorInventoryHolder(token, player.getUniqueId(), kit);
-        String title = configuration.text("Menus.Kit-Editor.Title", "&8Edit Kit: &f<kit>")
+        KitEditorInventoryHolder holder = new KitEditorInventoryHolder(token, player.getUniqueId(),
+                kit, scope, storage, armor, offhand);
+        String titlePath = scope == KitEditorInventoryHolder.Scope.PERSONAL
+                ? "Menus.Kit-Editor.Personal-Title" : "Menus.Kit-Editor.Title";
+        String fallbackTitle = scope == KitEditorInventoryHolder.Scope.PERSONAL
+                ? "&8Your Layout: &f<kit>" : "&8Shared Kit: &f<kit>";
+        String title = configuration.text(titlePath, fallbackTitle)
                 .replace("<kit>", kit.getName());
         Inventory inventory = Bukkit.createInventory(holder, SIZE, items.color(title));
         holder.attach(inventory);
@@ -114,7 +140,9 @@ public final class KitLayoutEditor implements Listener
             return;
         }
         boolean editableTop = raw >= 0 && raw <= 40;
-        boolean ordinaryClick = event.getClick() == ClickType.LEFT || event.getClick() == ClickType.RIGHT;
+        boolean ordinaryClick = event.getClick() == ClickType.LEFT
+                || (holder.scope() == KitEditorInventoryHolder.Scope.SHARED
+                && event.getClick() == ClickType.RIGHT);
         if (!editableTop || !ordinaryClick) event.setCancelled(true);
     }
 
@@ -123,6 +151,7 @@ public final class KitLayoutEditor implements Listener
     {
         if (!(event.getView().getTopInventory().getHolder() instanceof KitEditorInventoryHolder holder)) return;
         if (!(event.getWhoClicked() instanceof Player player) || !isActive(player, holder)
+                || holder.scope() == KitEditorInventoryHolder.Scope.PERSONAL
                 || event.getRawSlots().stream().anyMatch(slot -> slot < 0 || slot > 40))
             event.setCancelled(true);
     }
@@ -153,15 +182,27 @@ public final class KitLayoutEditor implements Listener
                 cloneItem(inventory.getItem(38)), cloneItem(inventory.getItem(39))};
         try
         {
-            Kit saved = plugin.getKitManager().saveLayout(holder.kit(), storage, armor,
-                    cloneItem(inventory.getItem(40)));
+            if (holder.scope() == KitEditorInventoryHolder.Scope.PERSONAL)
+            {
+                plugin.getPlayerKitLayoutManager().save(player.getUniqueId(), holder.kit(),
+                        storage, armor, cloneItem(inventory.getItem(40)));
+            }
+            else
+            {
+                plugin.getKitManager().saveLayout(holder.kit(), storage, armor,
+                        cloneItem(inventory.getItem(40)));
+            }
             player.closeInventory();
-            MessageService.send(player, plugin.getConfig(), "Messages.Kit-Editor-Saved",
-                    Map.of("<kit>", saved.getName()), "&aSaved the layout for &e<kit>&a.");
+            String messagePath = holder.scope() == KitEditorInventoryHolder.Scope.PERSONAL
+                    ? "Messages.Personal-Kit-Layout-Saved" : "Messages.Shared-Kit-Saved";
+            MessageService.send(player, plugin.getConfig(), messagePath,
+                    Map.of("<kit>", holder.kit().getName()), "&aSaved the layout for &e<kit>&a.");
         }
         catch (RuntimeException exception)
         {
-            plugin.getLogger().warning("Could not save edited kit '" + holder.kit().getName()
+            plugin.getLogger().warning("Could not save "
+                    + holder.scope().name().toLowerCase(java.util.Locale.ROOT) + " kit layout '"
+                    + holder.kit().getName()
                     + "': " + exception.getMessage());
             message(player, "Messages.Kit-Editor-Save-Failed", "&cCould not save that kit layout.");
         }

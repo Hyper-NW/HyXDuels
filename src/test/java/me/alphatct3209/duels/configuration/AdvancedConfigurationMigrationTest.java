@@ -91,4 +91,26 @@ class AdvancedConfigurationMigrationTest
                 configured.getStringList("Messages.Friend-Usage"));
         assertFalse(AdvancedConfiguration.migrate("messages.yml", configured, bundled));
     }
+
+    @Test
+    void migratesOnlyTheFormerDefaultKitEditorMenuText()
+    {
+        YamlConfiguration configured = new YamlConfiguration();
+        configured.set("Version", 1);
+        configured.set("Openers.kit-editor.Lore", List.of(
+                "&7Edit the hotbar layout for any duel kit.", "&eRight-click to open."));
+        configured.set("Menus.Kit-Editor-Selector.Title", "&8My custom selector");
+        configured.set("Menus.Kit-Editor-Selector.Item-Lore", List.of(
+                "&7Kit key: &f<kit_key>", "&eClick to edit this layout."));
+        YamlConfiguration bundled = YamlConfiguration.loadConfiguration(
+                new java.io.File("src/main/resources/advanced/menus.yml"));
+
+        assertTrue(AdvancedConfiguration.migrate("menus.yml", configured, bundled));
+        assertEquals(bundled.getStringList("Openers.kit-editor.Lore"),
+                configured.getStringList("Openers.kit-editor.Lore"));
+        assertEquals("&8My custom selector",
+                configured.getString("Menus.Kit-Editor-Selector.Title"));
+        assertEquals(bundled.getStringList("Menus.Kit-Editor-Selector.Item-Lore"),
+                configured.getStringList("Menus.Kit-Editor-Selector.Item-Lore"));
+    }
 }

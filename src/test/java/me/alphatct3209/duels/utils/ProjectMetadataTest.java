@@ -15,18 +15,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProjectMetadataTest
 {
     @Test
-    void usesTheAlphatctNamespaceAndOnePointThreeFeatureRelease() throws Exception
+    void usesTheAlphatctNamespaceAndOnePointFourFeatureRelease() throws Exception
     {
         String pom = Files.readString(Path.of("pom.xml"));
         assertTrue(pom.contains("<groupId>me.alphatct3209</groupId>"));
-        assertTrue(pom.contains("<version>1.3.0</version>"));
+        assertTrue(pom.contains("<version>1.4.0</version>"));
         YamlConfiguration plugin = YamlConfiguration.loadConfiguration(
                 new File("src/main/resources/plugin.yml"));
         assertEquals("me.alphatct3209.duels.Duels", plugin.getString("main"));
         assertEquals("alphatct3209", plugin.getString("author"));
-        assertEquals(Set.of("duel", "duels"),
+        assertEquals(Set.of("duel", "duels", "kiteditor", "goldenhead"),
                 plugin.getConfigurationSection("commands").getKeys(false));
         assertFalse(plugin.getStringList("commands.duel.aliases").contains("duels"));
         assertEquals("/<command> <player>", plugin.getString("commands.duel.usage"));
+        assertEquals("/<command>", plugin.getString("commands.kiteditor.usage"));
     }
 }

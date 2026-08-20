@@ -3,7 +3,6 @@ package me.alphatct3209.duels.commands.subcommands.duel;
 import me.alphatct3209.duels.Duels;
 import me.alphatct3209.duels.commands.subcommands.DuelsSubCommand;
 import me.alphatct3209.duels.game.kits.Kit;
-import me.alphatct3209.duels.game.kits.KitEditorCommand;
 import me.alphatct3209.duels.game.kits.KitManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -36,7 +35,8 @@ public class KitsDuelsSubCmd extends DuelsSubCommand
                 player.sendMessage(ChatColor.YELLOW + "/duels kits create <name>");
                 player.sendMessage(ChatColor.YELLOW + "/duels kits delete <name>");
                 player.sendMessage(ChatColor.YELLOW + "/duels kits select <name>");
-                player.sendMessage(ChatColor.YELLOW + "/duels kits edit <name>");
+                player.sendMessage(ChatColor.YELLOW + "/duels kits editor [name]"
+                        + ChatColor.GRAY + " - edit the shared kit (administrator)");
                 return true;
             }
             if(args.length == 1)
@@ -141,14 +141,36 @@ public class KitsDuelsSubCmd extends DuelsSubCommand
                     }
                     return true;
                 }
-                else if (args[0].equalsIgnoreCase("edit"))
+                else if (args[0].equalsIgnoreCase("editor") || args[0].equalsIgnoreCase("edit"))
                 {
-                    return new KitEditorCommand(plugin).onCommand(
-                            sender, null, "duels kits edit", new String[]{args[1]});
+                    if (!sender.hasPermission("duels.kits.edit"))
+                    {
+                        noPerm(sender);
+                        return true;
+                    }
+                    plugin.getDuelMenuManager().openSharedKitEditorSelection(player, 0);
+                    return true;
+                }
+                else if (args[0].equalsIgnoreCase("editor") || args[0].equalsIgnoreCase("edit"))
+                {
+                    if (!sender.hasPermission("duels.kits.edit"))
+                    {
+                        noPerm(sender);
+                        return true;
+                    }
+                    Kit kit = plugin.getKitManager().getKitByNameOrKey(args[1]);
+                    if (kit == null)
+                    {
+                        me.alphatct3209.duels.utils.MessageService.send(player, plugin.getConfig(),
+                                "Messages.Kit-Editor-Not-Found", java.util.Map.of("<kit>", args[1]),
+                                "&cThat kit does not exist.");
+                        return true;
+                    }
+                    return plugin.getKitLayoutEditor().openShared(player, kit);
                 }
                 else
                 {
-                    incorrectArgs(player, "/duels kits <create|delete|select|edit> <kit name>");
+                    incorrectArgs(player, "/duels kits <create|delete|select|editor> <kit name>");
                     return true;
                 }
             }

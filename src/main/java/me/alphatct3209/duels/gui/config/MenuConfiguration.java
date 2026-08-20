@@ -32,10 +32,11 @@ public final class MenuConfiguration
     MenuConfiguration(YamlConfiguration yaml)
     {
         this.yaml = Objects.requireNonNull(yaml, "yaml");
-        int version = yaml.getInt("Version", 0);
-        if (version != 1)
+        int version = yaml.contains("Config-Version")
+                ? yaml.getInt("Config-Version", 0) : yaml.getInt("Version", 0);
+        if (version < 1 || version > 2)
         {
-            throw new IllegalArgumentException("menus.yml Version must be 1");
+            throw new IllegalArgumentException("menus.yml Config-Version must be 1 or 2");
         }
         validateFiller();
         openers = parseOpeners();

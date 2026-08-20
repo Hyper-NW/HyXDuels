@@ -82,6 +82,21 @@ public final class AdvancedConfiguration
             "&6/settings&f: &eCustomize displays, effects, and social privacy",
             "&6/kiteditor <kit>&f: &eSafely edit a kit layout (administrator)",
             "&6/duels hologram status|list|create|move|delete|reload&f: &eManage leaderboard holograms");
+    private static final List<String> VERSION_1_3_HELP = List.of(
+            "&6/duels help [page]&f: &eShow this command index without flooding chat",
+            "&6/duel <player>&f: &eOpen a duel request for an online player",
+            "&6/duels queue open|join|leave&f: &eUse matchmaking and queue controls",
+            "&6/duels challenge send|accept|deny&f: &eManage duel challenges",
+            "&6/duels kits help&f: &eShow structured kit management commands",
+            "&6/duels modes list|select <mode> [kit]&f: &eList or select modes",
+            "&6/duels arena help&f: &eShow structured arena administration commands",
+            "&6/duels stats view|leaderboard ...&f: &eView statistics and rankings",
+            "&6/duels party <subcommand>&f: &eManage parties and invitations",
+            "&6/duels social friends <subcommand>&f: &eManage friends and best friends",
+            "&6/duels social message <player> <message>&f: &eSend a direct message",
+            "&6/duels social settings&f: &eCustomize privacy and display preferences",
+            "&6/duels hologram status|list|create|move|delete|reload&f: &eManage leaderboard holograms",
+            "&6/duels admin update|load-old-stats|file-to-sql&f: &eRun maintenance operations");
     private static final Map<String, Object> VERSION_1_2_MESSAGE_DEFAULTS = Map.ofEntries(
             Map.entry("Messages.Party-Usage", List.of(
                     "&e/p invite|kick|promote|demote|transfer <player>",
@@ -114,6 +129,7 @@ public final class AdvancedConfiguration
         synchronize("menus.yml");
         synchronize("divisions.yml");
         synchronize("holograms.yml");
+        synchronize("golden-heads.yml");
     }
 
     private void load(String fileName, String... sections)
@@ -240,7 +256,30 @@ public final class AdvancedConfiguration
                 }
             }
         }
+        if ("messages.yml".equals(fileName) && bundled != null && version < 4
+                && configured.getStringList(HELP_MENU).equals(VERSION_1_3_HELP))
+        {
+            configured.set(HELP_MENU, bundled.getStringList(HELP_MENU));
+            changed = true;
+        }
+        if ("menus.yml".equals(fileName) && bundled != null && version < 2)
+        {
+            changed |= replaceIfExact(configured, bundled, "Openers.kit-editor.Lore", List.of(
+                    "&7Edit the hotbar layout for any duel kit.", "&eRight-click to open."));
+            changed |= replaceIfExact(configured, bundled, "Menus.Kit-Editor-Selector.Title",
+                    "&8Kit Editor &7(<page>/<pages>)");
+            changed |= replaceIfExact(configured, bundled, "Menus.Kit-Editor-Selector.Item-Lore",
+                    List.of("&7Kit key: &f<kit_key>", "&eClick to edit this layout."));
+        }
         return changed;
+    }
+
+    private static boolean replaceIfExact(YamlConfiguration configured, YamlConfiguration bundled,
+                                          String path, Object formerDefault)
+    {
+        if (!Objects.equals(configured.get(path), formerDefault)) return false;
+        configured.set(path, bundled.get(path));
+        return true;
     }
 
     static boolean updateSchemaVersion(YamlConfiguration configured, YamlConfiguration bundled)
@@ -255,7 +294,7 @@ public final class AdvancedConfiguration
     /** Future migrations list only explicitly retired plugin paths here; unknown admin keys survive. */
     private static boolean removeRetiredPaths(String fileName, YamlConfiguration configured)
     {
-        Map<String, List<String>> retired = Map.of();
+        Map<String, List<String>> retired = Map.of("menus.yml", List.of("Version"));
         boolean changed = false;
         for (String path : retired.getOrDefault(fileName, List.of()))
         {

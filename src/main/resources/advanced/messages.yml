@@ -1,5 +1,5 @@
 # All player-facing messages. Scalars and YAML lists are both supported.
-Config-Version: 3
+Config-Version: 4
 
 Messages:
   # ---------- General match flow ----------
@@ -180,13 +180,27 @@ Messages:
   Friend-Joined: ['&aFriend &e<player> &ajoined the server.']
 
   # ---------- Kit layout editor ----------
-  Kit-Editor-Usage: ['&cUsage: /duels kits edit <kit>']
+  Personal-Kit-Editor-Usage: ['&cUsage: /kiteditor']
+  Kit-Editor-Usage: ['&cUsage: /duels kits editor [kit]']
   Kit-Editor-Cursor: ['&cEmpty your cursor before opening the kit editor.']
   Kit-Editor-Not-Found: ['&cKit &e<kit> &cdoes not exist.']
   Kit-Editor-Place-Cursor: ['&cPlace the cursor item into the layout before saving.']
-  Kit-Editor-Saved: ['&aSaved the layout for &e<kit>&a.']
+  Personal-Kit-Layout-Saved: ['&aSaved your personal layout for &e<kit>&a. The shared kit was not changed.']
+  Shared-Kit-Saved: ['&aSaved the shared kit &e<kit>&a. Existing personal layouts for it were reset.']
   Kit-Editor-Cancelled: ['&cKit layout changes discarded.']
   Kit-Editor-Save-Failed: ['&cCould not save that kit layout. Check the server log.']
+
+  # ---------- Golden Heads ----------
+  Golden-Head-Usage:
+    - '&e/goldenhead give [player] [amount]'
+    - '&e/goldenhead reload'
+  Golden-Head-Disabled: ['&cGolden Heads are disabled.']
+  Golden-Head-Player-Not-Found: ['&cPlayer &e<player> &cis not available.']
+  Golden-Head-Amount: ['&cAmount must be between 1 and &e<maximum>&c.']
+  Golden-Head-Given: ['&aGave &e<amount> Golden Head(s) &ato &e<player>&a.']
+  Golden-Head-Received: ['&aYou received &e<amount> Golden Head(s)&a.']
+  Golden-Head-Reloaded: ['&aReloaded advanced/golden-heads.yml.']
+  Golden-Head-Reload-Failed: ['&cGolden Head reload failed: &e<error>']
 
   # ---------- Managed holograms ----------
   Hologram-Created: '&aCreated managed hologram &e<id>&a.'
@@ -205,6 +219,8 @@ Messages:
   Help-Menu:
     - '&6/duels help [page]&f: &eShow this command index without flooding chat'
     - '&6/duel <player>&f: &eOpen a duel request for an online player'
+    - '&6/kiteditor&f: &eEdit only your selected kit layout'
+    - '&6/goldenhead give [player] [amount]&f: &eGive configurable Golden Heads (administrator)'
     - '&6/duels queue open|join|leave&f: &eUse matchmaking and queue controls'
     - '&6/duels challenge send|accept|deny&f: &eManage duel challenges'
     - '&6/duels kits help&f: &eShow structured kit management commands'

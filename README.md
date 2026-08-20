@@ -2,7 +2,7 @@
 
 HyXDuels is a multi-arena duel plugin with AdvancedSlimePaper-backed arena worlds, aggregate combat statistics, and configurable per-kit win divisions.
 
-The Maven release line starts at **1.0.0** under `me.alphatct3209`; the current release is **1.3.0**. Versioning follows the project policy: feature releases increment the middle number, fixes/minor updates increment the patch number, and exceptionally large compatibility generations increment the first number.
+The Maven release line starts at **1.0.0** under `me.alphatct3209`; the current release is **1.4.0**. Versioning follows the project policy: feature releases increment the middle number, fixes/minor updates increment the patch number, and exceptionally large compatibility generations increment the first number.
 
 ## Runtime requirements
 
@@ -18,12 +18,12 @@ AdvancedSlimePaper is a Paper server fork, not a plugin. Run the server on Advan
 Fresh installations use a purpose-based layout:
 
 - `config.yml` — concise world-loader and statistics-storage settings.
-- `advanced/` — administrator-authored mode, menu, division, hologram, display, social, and message definitions.
-- `data/` — runtime-owned `arenas.yml`, `kits.yml`, `statistics.yml`, and `player-data.yml` state.
+- `advanced/` — administrator-authored mode, menu, division, hologram, Golden Head, display, social, and message definitions.
+- `data/` — runtime-owned arena, kit, statistics, social, leaderboard-filter, and personal kit-layout state.
 
 When upgrading from the former flat layout, HyXDuels copies each legacy root file into its new folder and retains the original as a backup. Existing `Kits` and `Arenas` sections in `config.yml` are imported into `data/kits.yml` and `data/arenas.yml`. New writes target only the organized files.
 
-Updates do not require deleting the HyXDuels data folder. On startup, `config.yml` receives newly shipped defaults and every bundled `advanced/*.yml` file is synchronized against its versioned schema: missing files and keys are added, administrator values and unknown custom keys are preserved, and only paths explicitly retired by a named migration may be removed. Runtime-owned files under `data/` are never schema-pruned. Version 1.1.2 migrates the exact legacy reversed lobby-sidebar default into natural top-to-bottom order. Version 1.3.0 migrates only unchanged built-in command help and usage messages to the structured command paths; customized values remain untouched.
+Updates do not require deleting the HyXDuels data folder. On startup, `config.yml` receives newly shipped defaults and every bundled `advanced/*.yml` file is synchronized against its versioned schema: missing files and keys are added, administrator values and unknown custom keys are preserved, and only paths explicitly retired by a named migration may be removed. Runtime-owned files under `data/` are never schema-pruned. Version 1.1.2 migrates the exact legacy reversed lobby-sidebar default into natural top-to-bottom order. Version 1.3.0 migrates only unchanged built-in command help and usage messages to the structured command paths. Version 1.4.0 similarly updates only unchanged kit-editor menu text and adds the Golden Head schema; customized values remain untouched.
 
 ## Arena world lifecycle
 
@@ -39,7 +39,7 @@ On disable, retries and challenges are stopped, countdowns are cancelled, arena 
 
 Overall wins and kills are lifetime aggregate combat statistics. A completed win increments the winner's current win streak and updates their highest win streak when a new personal best is reached; the loser's current streak resets to zero. Losses and deaths remain tracked, while division progress is independent for each configured mode.
 
-The only public command roots are `/duel <player>` for the direct challenge shortcut and `/duels` for the organized command tree. `/duels help [page]` displays the configurable index in bounded pages. Functions are grouped under `/duels queue`, `/duels challenge`, `/duels kits`, `/duels modes`, `/duels arena`, `/duels stats`, `/duels party`, `/duels social`, `/duels hologram`, and `/duels admin`; tab completion follows the same hierarchy.
+The primary command roots are `/duel <player>` for the direct challenge shortcut and `/duels` for the organized command tree. `/duels help [page]` displays the configurable index in bounded pages. Functions are grouped under `/duels queue`, `/duels challenge`, `/duels kits`, `/duels modes`, `/duels arena`, `/duels stats`, `/duels party`, `/duels social`, `/duels hologram`, and `/duels admin`; tab completion follows the same hierarchy. The two intentional utility roots are `/kiteditor` for the player's selected-kit layout and `/goldenhead` for administrator give/reload operations.
 
 - `/duels stats view` — your aggregate statistics and selected kit; falls back to `Default`.
 - `/duels stats view <player>` — uses that online player's selected kit or `Default` for an offline player.
@@ -68,13 +68,13 @@ The shared `Filler` section in `advanced/menus.yml` controls empty GUI slots acr
 
 `advanced/modes.yml` is copied independently at startup and strictly defines the stable 17-mode roster: `bed_wars`, `blitz`, `bow`, `boxing`, `bridge`, `classic`, `combo`, `duel_arena`, `mega_walls`, `nodebuff`, `op`, `parkour`, `quakecraft`, `skywars`, `spleef`, `sumo`, and `uhc`. Each immutable profile configures its display/icon, objective handler, world/cell reset policy, combat flags, target score, maximum duration/timeout policy, reusable allowed/default kits, aliases, enabled state, and leaderboard eligibility. Mode keys are lowercase ASCII words separated by single underscores and are the unchanged values stored in existing YAML `Gamemodes.<key>.Wins` and SQL `duels_gamemode_stats.Gamemode` fields.
 
-Use `/duel modes list` or `/duel modes select <mode> [kit]` (`duels.modes.list` and `duels.modes.select`). Kits have their own unique canonical keys and may be reused by any number of modes; a kit referenced by a mode cannot be deleted. Fresh installations receive in-memory, 1.21-native loadouts for every stable mode (weapons, armor, healing, projectiles, blocks, and mode tools as appropriate). A configured kit with the same canonical key overrides its built-in loadout, so server owners can customize equipment without changing `advanced/modes.yml`. Duel Arena reuses the `classic`, `bow`, `nodebuff`, `op`, and `uhc` kits. The compatibility alias `default` resolves to `classic`. Legacy kit-derived modes are synthesized only in memory when their kit key is not otherwise claimed; no mode file or statistics bucket is merged, renamed, or dropped.
+Use `/duels modes list` or `/duels modes select <mode> [kit]` (`duels.modes.list` and `duels.modes.select`). Kits have their own unique canonical keys and may be reused by any number of modes; a kit referenced by a mode cannot be deleted. Fresh installations receive in-memory, 1.21-native loadouts for every stable mode (weapons, armor, healing, projectiles, blocks, and mode tools as appropriate). A configured kit with the same canonical key overrides its built-in loadout, so server owners can customize equipment without changing `advanced/modes.yml`. Duel Arena reuses the `classic`, `bow`, `nodebuff`, `op`, and `uhc` kits. The compatibility alias `default` resolves to `classic`. Legacy kit-derived modes are synthesized only in memory when their kit key is not otherwise claimed; no mode file or statistics bucket is merged, renamed, or dropped.
 
 Bed Wars and SkyWars are gameplay modes rather than fixed-kit aliases. A 1v1 Bed Wars arena requires `bed_1`, `bed_2`, `generator_1`, `generator_2`, `shop_1`, and `shop_2` points. Players begin with a wooden sword and team-colored leather leggings/boots, collect generated iron/gold, buy blocks, weapons, permanent armor, persistent shears, tiered tools, and utility from the runtime quick shop, build, respawn after the configured delay while their bed survives, and are finally eliminated after bed loss. Permanent armor and shears survive death; axes and pickaxes downgrade one tier. Optional `diamond_generator[_N]` and `emerald_generator[_N]` points add shared generators. Right-click a block or entity within three blocks of your own shop marker to open the shop.
 
 A 1v1 SkyWars arena requires `chest_1`, `chest_2`, and `mid_chest` points within two blocks of real containers. Players start empty, loot randomized island chests, bridge or fight across the void, contest stronger center loot, and receive upgraded recurring chest refills every `skywars-refill-seconds` (300 by default). Extra `chest_1_N`, `chest_2_N`, and `mid_chest_N` markers are supported. Both modes automatically enable required building and item pickup inside their arena objective region; all chest, drop, and terrain mutations are discarded by ASP regeneration after the match.
 
-UHC gives each participant three custom Golden Heads rendered with that participant's own player skin. Right-clicking a tagged head during an active UHC duel consumes exactly one and immediately grants Regeneration III for 5 seconds plus Absorption I for 2 minutes. The effects are removed when the duel restores the player's pre-match state.
+UHC gives each participant three custom Golden Heads rendered with that participant's own player skin by default. `advanced/golden-heads.yml` configures enablement, UHC injection and quantity, name, lore, glow, custom model data, both potion levels and durations, the consumption restriction, sound, and command limits. The shipped defaults grant Regeneration III for 5 seconds and Absorption I for 2 minutes. `/goldenhead give [player] [amount]` gives the configured item, while `/goldenhead reload` validates and reloads only this file. Both commands are operator-only by default.
 
 Arena routing writes `Arenas.<id>.Allowed-Modes` through `/duels arena modes <id> list|add|remove|clear [mode]` (`duels.arenamodes`). The global matrix is unchanged: a listed mode uses only arenas listing it, while modes not listed anywhere use empty-route arenas. Legacy `Allowed-Kits` is read only when `Allowed-Modes` is absent. A legacy entry resolves as a mode key/alias first; otherwise its kit must belong to exactly one mode or startup rejects the ambiguity. If both fields exist, `Allowed-Modes` is authoritative and the old field is left untouched. The first queue entrant claims the arena mode; entrant two must match it, while each participant's exact kit is captured independently.
 
@@ -96,7 +96,12 @@ The leader GUI in `advanced/menus.yml` contains Party FFA, Red vs Blue Team Batt
 
 ## Safe kit layout editor
 
-Operators use `/duels kits edit <kit>` (`duels.kits.edit`) to edit cloned kit items in a 54-slot inventory: storage slots 0-35, boots/leggings/chestplate/helmet in 36-39, and offhand in 40. Save, reset, and cancel controls are customizable in `advanced/menus.yml`. The editor requires an empty cursor, blocks bottom-inventory access, outside clicks, shift/number/offhand/drop/double/creative actions, and allows drags only wholly within editable top slots. Closing or cancelling clears any editor-derived cursor clone, so the editor never mutates the player's real inventory or lets cloned equipment escape.
+There are two deliberately separate kit editors:
+
+- `/kiteditor` (`duels.kits.layout`, granted by default) edits only that player's currently selected kit layout. It persists by UUID and kit key in `data/kit-layouts.yml`, is applied when that player receives the kit, and never changes the shared kit. Personal saves must contain exactly the shared kit's item stacks rearranged; splitting, adding, removing, or changing items is rejected.
+- `/duels kits editor [kit]` (`duels.kits.edit`, operator by default) opens the shared-kit selector or directly edits one shared kit. Saving changes the actual kit for everyone and invalidates that kit's former personal layouts so obsolete equipment cannot survive an administrator update.
+
+Both use a 54-slot inventory: storage slots 0-35, boots/leggings/chestplate/helmet in 36-39, and offhand in 40. Save, reset, and cancel controls and the distinct personal/shared titles are customizable in `advanced/menus.yml`. The editor requires an empty cursor and blocks bottom-inventory access, outside clicks, shift/number/offhand/drop/double/creative actions. Closing or cancelling clears any editor-derived cursor clone, so editor items cannot escape into the player's real inventory.
 
 Saving always writes positional `Format-Version: 2`. Existing configured kits retain their non-negative ID; editing a negative-ID built-in creates a positive-ID configured override with the same canonical key and immediately replaces that runtime kit. Legacy packed kits can therefore be safely converted through the editor.
 

@@ -12,6 +12,7 @@ final class KitEditorInventoryHolder implements InventoryHolder
     private final UUID token;
     private final UUID viewer;
     private final Kit kit;
+    private final Scope scope;
     private final ItemStack[] storage;
     private final ItemStack[] armor;
     private final ItemStack offhand;
@@ -19,12 +20,20 @@ final class KitEditorInventoryHolder implements InventoryHolder
 
     KitEditorInventoryHolder(UUID token, UUID viewer, Kit kit)
     {
+        this(token, viewer, kit, Scope.SHARED, normalizeStorage(kit.getInventoryContents()),
+                kit.getArmorContents(), kit.getOffhand());
+    }
+
+    KitEditorInventoryHolder(UUID token, UUID viewer, Kit kit, Scope scope,
+                             ItemStack[] storage, ItemStack[] armor, ItemStack offhand)
+    {
         this.token = Objects.requireNonNull(token);
         this.viewer = Objects.requireNonNull(viewer);
         this.kit = Objects.requireNonNull(kit);
-        storage = normalizeStorage(kit.getInventoryContents());
-        armor = kit.getArmorContents();
-        offhand = kit.getOffhand();
+        this.scope = Objects.requireNonNull(scope);
+        this.storage = normalizeStorage(storage);
+        this.armor = cloneItems(armor);
+        this.offhand = offhand == null ? null : offhand.clone();
     }
 
     void attach(Inventory inventory) { this.inventory = inventory; }
@@ -32,9 +41,12 @@ final class KitEditorInventoryHolder implements InventoryHolder
     UUID token() { return token; }
     UUID viewer() { return viewer; }
     Kit kit() { return kit; }
+    Scope scope() { return scope; }
     ItemStack[] originalStorage() { return cloneItems(storage); }
     ItemStack[] originalArmor() { return cloneItems(armor); }
     ItemStack originalOffhand() { return offhand == null ? null : offhand.clone(); }
+
+    enum Scope { PERSONAL, SHARED }
 
     private static ItemStack[] normalizeStorage(ItemStack[] source)
     {

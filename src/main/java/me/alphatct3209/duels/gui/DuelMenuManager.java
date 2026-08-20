@@ -98,7 +98,7 @@ public final class DuelMenuManager implements Listener
             }
             case MAP_SELECTOR -> openMaps(player, 0);
             case SETTINGS -> plugin.getSettingsGui().open(player);
-            case KIT_EDITOR -> openKitEditorSelection(player, 0);
+            case KIT_EDITOR -> openPersonalKitEditor(player);
             case PARTY -> {
                 if (!player.hasPermission("duels.party"))
                 {
@@ -529,7 +529,7 @@ public final class DuelMenuManager implements Listener
         sessions.remove(event.getPlayer().getUniqueId());
     }
 
-    private void openKitEditorSelection(Player player, int requestedPage)
+    public void openSharedKitEditorSelection(Player player, int requestedPage)
     {
         if (!player.hasPermission("duels.kits.edit"))
         {
@@ -580,7 +580,7 @@ public final class DuelMenuManager implements Listener
             case OPPONENT -> challenge(player, choice);
             case EDIT_KIT -> {
                 Kit kit = plugin.getKitManager().getKitByCanonicalKey(choice);
-                if (kit != null) plugin.getKitLayoutEditor().open(player, kit);
+                if (kit != null) plugin.getKitLayoutEditor().openShared(player, kit);
             }
         }
     }
@@ -819,7 +819,7 @@ public final class DuelMenuManager implements Listener
             }
             case MAP -> openMaps(player, page);
             case OPPONENT -> openOpponents(player, page);
-            case EDIT_KIT -> openKitEditorSelection(player, page);
+            case EDIT_KIT -> openSharedKitEditorSelection(player, page);
             case MAIN -> openMain(player);
         }
     }
@@ -829,6 +829,17 @@ public final class DuelMenuManager implements Listener
         items.fillEmpty(inventory);
         activeInventories.put(player.getUniqueId(), holder.sessionToken());
         player.openInventory(inventory);
+    }
+
+    private void openPersonalKitEditor(Player player)
+    {
+        if (!player.hasPermission("duels.kits.layout"))
+        {
+            message(player, "Messages.No-Permission",
+                    "&cYou do not have permission to edit your kit layout.");
+            return;
+        }
+        plugin.getKitLayoutEditor().openPersonal(player, plugin.getKitManager().resolveKit(player));
     }
 
     private boolean active(Player player, MenuInventoryHolder holder)

@@ -1,6 +1,6 @@
 # HyXDuels lobby hotbar and inventory menus.
 # Names and lore support '&' color codes. Slots are zero-based.
-Version: 1
+Config-Version: 2
 Enabled: true
 Give-On-Join: true
 Give-Delay-Ticks: 2
@@ -54,7 +54,8 @@ Openers:
     Glow: false
     Name: '&a&lKit Editor'
     Lore:
-      - '&7Edit the hotbar layout for any duel kit.'
+      - '&7Edit only your selected kit layout.'
+      - '&7The shared kit items never change.'
       - '&eRight-click to open.'
     Action: KIT_EDITOR
   settings:
@@ -246,6 +247,7 @@ Menus:
         Lore: ['&7Allow or block new friend requests.', '&eClick to toggle.']
   Kit-Editor:
     Title: '&8Edit Kit: &f<kit>'
+    Personal-Title: '&8Your Layout: &f<kit>'
     Controls:
       Save:
         Material: LIME_DYE
@@ -263,9 +265,9 @@ Menus:
         Name: '&cCancel'
         Lore: ['&7Discard all layout changes.']
   Kit-Editor-Selector:
-    Title: '&8Kit Editor &7(<page>/<pages>)'
+    Title: '&8Shared Kit Editor &7(<page>/<pages>)'
     Item-Name: '&a<kit>'
-    Item-Lore: ['&7Kit key: &f<kit_key>', '&eClick to edit this layout.']
+    Item-Lore: ['&7Kit key: &f<kit_key>', '&cChanges the shared kit for everyone.', '&eClick to edit.']
   Common:
     Previous: '&ePrevious page'
     Next: '&eNext page'

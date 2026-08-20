@@ -16,7 +16,7 @@ class PluginResourceLayoutTest
         File resources = new File("src/main/resources");
         assertTrue(new File(resources, "config.yml").isFile());
         for (String name : new String[]{"modes.yml", "menus.yml", "divisions.yml", "holograms.yml",
-                "display.yml", "social.yml", "messages.yml"})
+                "display.yml", "social.yml", "messages.yml", "golden-heads.yml"})
         {
             assertTrue(new File(resources, "advanced/" + name).isFile(), name);
             assertFalse(new File(resources, name).exists(), name);
@@ -54,6 +54,7 @@ class PluginResourceLayoutTest
                 new File(resources, "advanced/display.yml"),
                 new File(resources, "advanced/divisions.yml"),
                 new File(resources, "advanced/holograms.yml"),
+                new File(resources, "advanced/golden-heads.yml"),
                 new File(resources, "advanced/menus.yml"),
                 new File(resources, "advanced/messages.yml"),
                 new File(resources, "advanced/modes.yml"),

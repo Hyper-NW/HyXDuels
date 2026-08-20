@@ -268,7 +268,7 @@ public class Game
         player.setFallDistance(0F);
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
-        getKit(player.getUniqueId()).apply(player);
+        arena.getPlayerKitLayoutManager().apply(player, getKit(player.getUniqueId()));
         if (mode.handlerType() == ModeHandlerType.BED_WARS)
             bedWarsLoadouts.get(player.getUniqueId()).apply(player, teamColor(player.getUniqueId()));
         player.setGameMode(GameMode.SURVIVAL);
@@ -288,12 +288,13 @@ public class Game
 
     private void injectModeConsumables(Player player)
     {
-        if (!mode.key().value().equals("uhc")) return;
+        me.alphatct3209.duels.game.items.GoldenHead goldenHead = arena.getGoldenHead();
+        if (!mode.key().value().equals("uhc") || !goldenHead.enabled()
+                || !goldenHead.giveOnUhcStart()) return;
         boolean present = java.util.Arrays.stream(player.getInventory().getStorageContents())
                 .anyMatch(me.alphatct3209.duels.game.items.GoldenHead::isGoldenHead);
         if (!present)
-            player.getInventory().addItem(me.alphatct3209.duels.game.items.GoldenHead.create(player,
-                    me.alphatct3209.duels.game.items.GoldenHead.DEFAULT_UHC_AMOUNT));
+            player.getInventory().addItem(goldenHead.create(player, goldenHead.uhcAmount()));
     }
 
     private void injectEssentials(Player player)

@@ -5,7 +5,6 @@ import me.alphatct3209.duels.game.GameState;
 import me.alphatct3209.duels.game.arenas.Arena;
 import me.alphatct3209.duels.game.items.GoldenHead;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,13 +28,15 @@ public final class GoldenHeadListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event)
     {
-        if (!event.getAction().isRightClick() || !GoldenHead.isGoldenHead(event.getItem())) return;
+        GoldenHead goldenHead = plugin.getGoldenHead();
+        if (!goldenHead.enabled() || !event.getAction().isRightClick()
+                || !GoldenHead.isGoldenHead(event.getItem())) return;
         event.setCancelled(true);
         Player player = event.getPlayer();
         Arena arena = plugin.getArenaManager().getArena(player);
         boolean uhc = arena != null && arena.getGameState() == GameState.PLAYING
                 && arena.getGame().getMode().map(mode -> mode.key().value().equals("uhc")).orElse(false);
-        if (!uhc) return;
+        if (goldenHead.restrictConsumptionToUhc() && !uhc) return;
 
         long now = System.currentTimeMillis();
         long previous = lastUse.getOrDefault(player.getUniqueId(), Long.MIN_VALUE / 2);
@@ -53,7 +54,7 @@ public final class GoldenHeadListener implements Listener
         if (hand == EquipmentSlot.HAND) player.getInventory().setItemInMainHand(held);
         else player.getInventory().setItemInOffHand(held);
 
-        GoldenHead.applyEffects(player);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1F, 1F);
+        goldenHead.applyEffects(player);
+        goldenHead.playConsumptionSound(player);
     }
 }

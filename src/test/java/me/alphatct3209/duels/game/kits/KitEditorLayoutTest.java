@@ -4,11 +4,13 @@ import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class KitEditorLayoutTest
 {
@@ -36,5 +38,16 @@ class KitEditorLayoutTest
         assertEquals(12, KitManager.layoutPersistenceId(builtIn, 12));
         assertThrows(IllegalArgumentException.class,
                 () -> KitManager.layoutPersistenceId(builtIn, 0));
+    }
+
+    @Test
+    void personalLayoutsAcceptOnlyRearrangementsOfTheSharedKit()
+    {
+        assertTrue(PlayerKitLayoutManager.sameSerializedItems(
+                List.of("sword", "golden-apple:3", "bow"),
+                List.of("bow", "sword", "golden-apple:3")));
+        assertFalse(PlayerKitLayoutManager.sameSerializedItems(
+                List.of("sword", "golden-apple:3", "bow"),
+                List.of("bow", "sword", "golden-apple:4")));
     }
 }

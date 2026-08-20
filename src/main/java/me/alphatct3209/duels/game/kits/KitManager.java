@@ -170,6 +170,7 @@ public class KitManager
             plugin.getConfig().set("Kits." + kit.getId(), null);
             plugin.saveKitData();
             kitList.remove(kit);
+            invalidatePersonalLayouts(kit.getKey());
             plugin.requestLeaderboardRefresh();
         }
     }
@@ -243,6 +244,7 @@ public class KitManager
         int index = kitList.indexOf(current);
         if (index < 0) throw new IllegalStateException("That kit no longer exists");
         kitList.set(index, replacement);
+        invalidatePersonalLayouts(replacement.getKey());
         plugin.requestLeaderboardRefresh();
         return replacement;
     }
@@ -261,6 +263,18 @@ public class KitManager
             }
         }
         return null;
+    }
+
+    private void invalidatePersonalLayouts(String kitKey)
+    {
+        if (plugin.getPlayerKitLayoutManager() == null) return;
+        try { plugin.getPlayerKitLayoutManager().invalidateKit(kitKey); }
+        catch (RuntimeException exception)
+        {
+            plugin.getLogger().warning("The shared kit was saved, but its personal layout file could not "
+                    + "be rewritten. Signature checks will still reject stale layouts: "
+                    + exception.getMessage());
+        }
     }
 
     public Kit getKitByCanonicalKey(String key)

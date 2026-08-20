@@ -5,6 +5,7 @@ import me.alphatct3209.duels.challenge.ChallengeManager;
 import me.alphatct3209.duels.commands.DuelCmd;
 import me.alphatct3209.duels.commands.DuelTabCompleter;
 import me.alphatct3209.duels.commands.DirectDuelCommand;
+import me.alphatct3209.duels.commands.GoldenHeadCommand;
 import me.alphatct3209.duels.configuration.GameDataConfiguration;
 import me.alphatct3209.duels.configuration.AdvancedConfiguration;
 import me.alphatct3209.duels.divisions.DivisionManager;
@@ -14,6 +15,9 @@ import me.alphatct3209.duels.game.modes.DuelSelectionService;
 import me.alphatct3209.duels.game.modes.ModeManager;
 import me.alphatct3209.duels.game.kits.KitManager;
 import me.alphatct3209.duels.game.kits.KitLayoutEditor;
+import me.alphatct3209.duels.game.kits.KitEditorCommand;
+import me.alphatct3209.duels.game.kits.PlayerKitLayoutManager;
+import me.alphatct3209.duels.game.items.GoldenHead;
 import me.alphatct3209.duels.gui.DuelMenuManager;
 import me.alphatct3209.duels.hologram.HologramManager;
 import me.alphatct3209.duels.listeners.ArenaGameplayListener;
@@ -69,6 +73,8 @@ public class Duels extends JavaPlugin
     private SocialManager socialManager;
     private SettingsGui settingsGui;
     private KitLayoutEditor kitLayoutEditor;
+    private PlayerKitLayoutManager playerKitLayoutManager;
+    private GoldenHead goldenHead;
     private DisplayManager displayManager;
     private HologramManager hologramManager;
     private LeaderboardService leaderboardService;
@@ -126,6 +132,8 @@ public class Duels extends JavaPlugin
             this.kitManager = new KitManager(this);
             this.modeManager = new ModeManager(this);
             this.selectionService = new DuelSelectionService(modeManager, kitManager);
+            this.playerKitLayoutManager = new PlayerKitLayoutManager(this);
+            this.goldenHead = new GoldenHead(this);
             this.arenaManager = new ArenaManager(this);
             setupStatisticsManager();
             setupLeaderboardService();
@@ -173,6 +181,12 @@ public class Duels extends JavaPlugin
         DuelCmd duelsCommand = new DuelCmd(this);
         getCommand("duels").setExecutor(duelsCommand);
         getCommand("duels").setTabCompleter(new DuelTabCompleter(this));
+        KitEditorCommand kitEditorCommand = new KitEditorCommand(this);
+        getCommand("kiteditor").setExecutor(kitEditorCommand);
+        getCommand("kiteditor").setTabCompleter(kitEditorCommand);
+        GoldenHeadCommand goldenHeadCommand = new GoldenHeadCommand(this);
+        getCommand("goldenhead").setExecutor(goldenHeadCommand);
+        getCommand("goldenhead").setTabCompleter(goldenHeadCommand);
 
         getServer().getPluginManager().registerEvents(slimeWorldManager, this);
         getServer().getPluginManager().registerEvents(new ArenaListener(this), this);
@@ -401,6 +415,16 @@ public class Duels extends JavaPlugin
     public KitLayoutEditor getKitLayoutEditor()
     {
         return kitLayoutEditor;
+    }
+
+    public PlayerKitLayoutManager getPlayerKitLayoutManager()
+    {
+        return playerKitLayoutManager;
+    }
+
+    public GoldenHead getGoldenHead()
+    {
+        return goldenHead;
     }
 
     public void saveArenaData()
