@@ -1,5 +1,6 @@
 # Managed DecentHolograms leaderboards.
 # HyXDuels owns these definitions; generated DecentHolograms objects are transient.
+Config-Version: 1
 Enabled: false
 
 # Applied by DecentHolograms; valid range is 20-72000 ticks.

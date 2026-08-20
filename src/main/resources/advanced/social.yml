@@ -1,4 +1,5 @@
 # Party, challenge, and social-provider configuration.
+Config-Version: 1
 
 # ---------- Parties ----------
 Party:

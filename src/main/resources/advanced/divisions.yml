@@ -3,6 +3,8 @@
 # Tiers and their levels are evaluated from top to bottom. Each level adds the
 # tier's wins-per-step to the cumulative requirement. Reward commands run as
 # console and support {player}, {uuid}, {gamemode}, {division}, {level}, and {wins}.
+Config-Version: 1
+
 tiers:
   Rookie:
     wins-per-step: 50

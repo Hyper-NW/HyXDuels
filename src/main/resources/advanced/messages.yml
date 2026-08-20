@@ -1,4 +1,6 @@
 # All player-facing messages. Scalars and YAML lists are both supported.
+Config-Version: 1
+
 Messages:
   # ---------- General match flow ----------
   No-Permission: '&cInsufficient permissions.'

@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  */
 public final class DivisionManager
 {
-    private static final Set<String> ROOT_KEYS = Set.of("tiers");
+    private static final Set<String> ROOT_KEYS = Set.of("Config-Version", "tiers");
     private static final Set<String> TIER_KEYS = Set.of("wins-per-step", "levels");
     private static final Set<String> LEVEL_KEYS = Set.of("rewards");
 

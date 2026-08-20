@@ -2,7 +2,7 @@
 
 HyXDuels is a multi-arena duel plugin with AdvancedSlimePaper-backed arena worlds, aggregate combat statistics, and configurable per-kit win divisions.
 
-The Maven release line starts at **1.0.0** under `me.alphatct3209`; the current release is **1.1.1**. Versioning follows the project policy: feature releases increment the middle number, fixes/minor updates increment the patch number, and exceptionally large compatibility generations increment the first number.
+The Maven release line starts at **1.0.0** under `me.alphatct3209`; the current release is **1.1.2**. Versioning follows the project policy: feature releases increment the middle number, fixes/minor updates increment the patch number, and exceptionally large compatibility generations increment the first number.
 
 ## Runtime requirements
 
@@ -22,6 +22,9 @@ Fresh installations use a purpose-based layout:
 - `data/` — runtime-owned `arenas.yml`, `kits.yml`, `statistics.yml`, and `player-data.yml` state.
 
 When upgrading from the former flat layout, HyXDuels copies each legacy root file into its new folder and retains the original as a backup. Existing `Kits` and `Arenas` sections in `config.yml` are imported into `data/kits.yml` and `data/arenas.yml`. New writes target only the organized files.
+
+Updates do not require deleting the HyXDuels data folder. On startup, `config.yml` receives newly shipped defaults and every bundled `advanced/*.yml` file is synchronized against its versioned schema: missing files and keys are added, administrator values and unknown custom keys are preserved, and only paths explicitly retired by a named migration may be removed. Runtime-owned files under `data/` are never schema-pruned. Version 1.1.2 also migrates the exact legacy reversed lobby-sidebar default into natural top-to-bottom order while leaving customized line lists untouched.
+
 ## Arena world lifecycle
 
 Every nonblank world referenced by a saved arena's `Spawn-One`, `Spawn-Two`, or `Lobby` is validated and preloaded from the configured AdvancedSlimePaper file loader before arenas are enabled. Both gameplay spawns of an arena must use the same world; that world is the arena's map template, while the lobby may use a different ASP world. Runtime-created arenas are accepted only when every referenced world is a currently loaded ASP world with a matching immutable `.slime` template.

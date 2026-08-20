@@ -17,7 +17,7 @@ class ProjectMetadataTest
     {
         String pom = Files.readString(Path.of("pom.xml"));
         assertTrue(pom.contains("<groupId>me.alphatct3209</groupId>"));
-        assertTrue(pom.contains("<version>1.1.1</version>"));
+        assertTrue(pom.contains("<version>1.1.2</version>"));
         YamlConfiguration plugin = YamlConfiguration.loadConfiguration(
                 new File("src/main/resources/plugin.yml"));
         assertEquals("me.alphatct3209.duels.Duels", plugin.getString("main"));

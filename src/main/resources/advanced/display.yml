@@ -1,4 +1,5 @@
 # HyXDuels sidebar, player-list, and leaderboard configuration.
+Config-Version: 2
 
 # ---------- Leaderboard cache ----------
 Leaderboard-Cache:

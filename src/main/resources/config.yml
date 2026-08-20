@@ -2,6 +2,7 @@
 #
 # Administrator-tuned definitions: plugins/HyXDuels/advanced/
 # Runtime-owned state:             plugins/HyXDuels/data/
+Config-Version: 1
 
 # ---------- AdvancedSlimePaper worlds ----------
 World-Loader:

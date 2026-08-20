@@ -2,6 +2,8 @@
 #
 # Mode keys are permanent routing/statistics identifiers and must not be renamed after use.
 # Kit keys are reusable and may be assigned to more than one mode.
+Config-Version: 1
+
 Modes:
   bed_wars:
     display-name: 'Bed Wars'

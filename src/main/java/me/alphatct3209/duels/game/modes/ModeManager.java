@@ -30,8 +30,11 @@ public final class ModeManager
         this.plugin = plugin;
         File file = PluginFiles.advanced(plugin, FILE_NAME);
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        if (!yaml.getKeys(false).equals(Set.of("Modes")))
-            throw new IllegalStateException("modes.yml must contain only the top-level Modes section");
+        Set<String> rootKeys = yaml.getKeys(false);
+        if (!rootKeys.equals(Set.of("Modes"))
+                && !rootKeys.equals(Set.of("Config-Version", "Modes")))
+            throw new IllegalStateException(
+                    "modes.yml must contain only Config-Version and the top-level Modes section");
         ConfigurationSection section = yaml.getConfigurationSection("Modes");
         if (section == null) throw new IllegalStateException("modes.yml must contain a Modes section");
         Map<String, Object> raw = toMap(section);
