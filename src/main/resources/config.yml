@@ -1,17 +1,23 @@
-# Duels by alphatct3209
-# Core world and storage settings. Advanced definitions live in advanced/; mutable state lives in data/.
+# HyXDuels core configuration
+#
+# Administrator-tuned definitions: plugins/HyXDuels/advanced/
+# Runtime-owned state:             plugins/HyXDuels/data/
+
+# ---------- AdvancedSlimePaper worlds ----------
 World-Loader:
-  # Directory containing immutable AdvancedSlimePaper .slime arena templates.
-  # Every Spawn-One, Spawn-Two, and Lobby world is preloaded and must be ASP-managed.
-  # An arena's two gameplay spawns must use the same map world; its lobby may differ.
-  # Completed duel maps unload without saving and reload from the same template before reuse.
-  # Relative paths are resolved from the server working directory.
+  # Relative paths start at the Minecraft server's working directory.
+  # This folder contains the immutable .slime templates used for arena resets.
   Slime-World-Directory: 'slime_worlds'
+
+# ---------- Statistics storage ----------
 Statistics:
+  # Supported values: YAML, MYSQL, SQL.
   Storage-Type: 'YAML'
+
+  # Used only when Storage-Type is MYSQL or SQL.
   SQL-Info:
     Address: 'localhost'
     Port: '3306'
-    Database: 'schema'
-    Username: 'admin'
-    Password: 'password'
+    Database: 'hyxduels'
+    Username: 'hyxduels'
+    Password: ''

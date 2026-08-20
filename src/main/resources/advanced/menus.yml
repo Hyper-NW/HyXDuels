@@ -1,10 +1,12 @@
-# HyXDuels inventory items and GUI layouts. Names/lore support '&' color codes.
+# HyXDuels lobby hotbar and inventory menus.
+# Names and lore support '&' color codes. Slots are zero-based.
 Version: 1
 Enabled: true
 Give-On-Join: true
 Give-Delay-Ticks: 2
 
-# Tagged opener items never overwrite an occupied slot unless Force-Slot is true.
+# ---------- Lobby hotbar ----------
+# Tagged items never overwrite an occupied slot unless Force-Slot is true.
 # With Force-Slot false, an occupied preferred slot falls back to the first empty inventory slot.
 Openers:
   duel-menu:
@@ -45,16 +47,6 @@ Openers:
       - '&7Edit the hotbar layout for any duel kit.'
       - '&eRight-click to open.'
     Action: KIT_EDITOR
-  mode-selector:
-    Enabled: false
-    Material: NETHER_STAR
-    Slot: 1
-    Force-Slot: false
-    Locked: true
-    Glow: false
-    Name: '&eMode Selector'
-    Lore: ['&7Choose your duel mode.']
-    Action: MODE_SELECTOR
   settings:
     Enabled: true
     Material: LEVER
@@ -65,10 +57,22 @@ Openers:
     Name: '&ePlayer Settings'
     Lore: ['&7Customize privacy, displays, and effects.', '&eRight-click to open.']
     Action: SETTINGS
+
+  # Optional standalone selectors. Choose unused slots before enabling them.
+  mode-selector:
+    Enabled: false
+    Material: NETHER_STAR
+    Slot: 2
+    Force-Slot: false
+    Locked: true
+    Glow: false
+    Name: '&eMode Selector'
+    Lore: ['&7Choose your duel mode.']
+    Action: MODE_SELECTOR
   map-selector:
     Enabled: false
     Material: MAP
-    Slot: 2
+    Slot: 3
     Force-Slot: false
     Locked: true
     Glow: false
@@ -76,6 +80,7 @@ Openers:
     Lore: ['&7Choose your preferred arena.']
     Action: MAP_SELECTOR
 
+# ---------- Inventory menus ----------
 Menus:
   # Retained for /duel menu navigation and optional map/opponent selection.
   Main:
@@ -260,7 +265,8 @@ Menus:
     Available: '&aAvailable'
     Unavailable: '&cUnavailable'
 
-# Every entry below accepts either one string or a YAML list of lines.
+# ---------- Menu feedback ----------
+# Every entry accepts either one string or a YAML list of lines.
 Messages:
   No-Permission: ['&cYou do not have permission to use the duel menu.']
   Unavailable: ['&cThe duel menu is unavailable while you are in an arena.']

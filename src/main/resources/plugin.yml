@@ -15,7 +15,7 @@ commands:
     usage: /<command> [invite|kick|promote|demote|transfer|disband|menu]
     aliases: [p]
   friend:
-    description: Manage persistent duel friends
+    description: Manage persistent friends and best friends
     usage: /<command> [add|accept|deny|remove|best|list] [player]
     aliases: [friends]
   message:
@@ -40,7 +40,7 @@ permissions:
     description: Create, join, manage, and use duel parties
     default: true
   duels.friend:
-    description: Send, answer, remove, and list persistent friend relationships
+    description: Send, answer, remove, list, and mark persistent friend relationships
     default: true
   duels.message:
     description: Send direct messages allowed by recipient privacy
@@ -69,8 +69,6 @@ permissions:
   duels.top:
     description: View aggregate and per-gamemode division leaderboards
     default: true
-
-
   duels.modes.list:
     description: List enabled first-class duel modes
     default: true
@@ -86,7 +84,6 @@ permissions:
   duels.arenaobjective:
     description: Configure arena objective radii, cooldowns, mercy, and death-y
     default: op
-
   duels.arenakits:
     description: Configure canonical kit routes for duel arenas
     default: op

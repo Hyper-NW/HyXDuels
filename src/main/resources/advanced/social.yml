@@ -1,7 +1,11 @@
-# Party and direct challenge configuration.
+# Party, challenge, and social-provider configuration.
+
+# ---------- Parties ----------
 Party:
   Max-Size: 16
   Invite-Timeout-Seconds: 60
+
+# ---------- Direct duel challenges ----------
 Challenges:
   # Pending challenges are token-expired after this many seconds.
   Timeout-Seconds: 60
@@ -15,7 +19,8 @@ Challenges:
     Next: '&eNext page'
     Info: '&bChallenge <player> &7(<page>/<pages>)'
 
-# Guild filtering is deliberately plugin-neutral. Set this to a PlaceholderAPI
-# placeholder which returns a stable guild identifier (the same value for members).
+# ---------- Leaderboard social scopes ----------
+# Set Guild-Placeholder to a PlaceholderAPI value that returns one stable guild
+# identifier. Players with the same non-empty value are treated as guild members.
 Leaderboard-Filters:
   Guild-Placeholder: ''

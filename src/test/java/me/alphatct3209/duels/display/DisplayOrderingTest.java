@@ -9,10 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DisplayOrderingTest
 {
     @Test
-    void sidebarUsesTheRequestedInvertedLineOrder()
+    void sidebarPreservesNaturalTopToBottomConfigOrder()
     {
-        assertEquals(1, SidebarDisplay.scoreForLine(0));
-        assertEquals(15, SidebarDisplay.scoreForLine(14));
+        assertEquals(15, SidebarDisplay.scoreForLine(0));
+        assertEquals(14, SidebarDisplay.scoreForLine(1));
+        assertEquals(1, SidebarDisplay.scoreForLine(14));
         assertThrows(IllegalArgumentException.class, () -> SidebarDisplay.scoreForLine(-1));
         assertThrows(IllegalArgumentException.class, () -> SidebarDisplay.scoreForLine(15));
     }

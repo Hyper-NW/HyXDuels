@@ -1,12 +1,23 @@
-# First-class mode identities. Keys are stable statistics/routing keys and must not be renamed.
-# Kits are reusable: the same canonical kit key may appear in any number of modes.
+# Duel mode definitions.
+#
+# Mode keys are permanent routing/statistics identifiers and must not be renamed after use.
+# Kit keys are reusable and may be assigned to more than one mode.
 Modes:
   bed_wars:
     display-name: 'Bed Wars'
     icon: RED_BED
     handler: BED_WARS
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: true
+      fall-damage: true
+      block-damage: true
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 1200
     timeout-policy: LAST_STANDING
@@ -20,7 +31,16 @@ Modes:
     icon: STONE_SWORD
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: true
+      fall-damage: true
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 900
     timeout-policy: DRAW
@@ -34,7 +54,16 @@ Modes:
     icon: BOW
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: false, health-damage: true, natural-regeneration: false, hunger: false, fall-damage: true, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: false
+      health-damage: true
+      natural-regeneration: false
+      hunger: false
+      fall-damage: true
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 600
     timeout-policy: DRAW
@@ -48,7 +77,16 @@ Modes:
     icon: LEATHER_CHESTPLATE
     handler: BOXING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: false, melee: true, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: true }
+    combat:
+      pvp: true
+      projectiles: false
+      melee: true
+      health-damage: false
+      natural-regeneration: true
+      hunger: false
+      fall-damage: false
+      block-damage: false
+      no-hit-delay: true
     target-score: 100
     duration-seconds: 900
     timeout-policy: HIGHEST_SCORE
@@ -62,7 +100,16 @@ Modes:
     icon: BLUE_TERRACOTTA
     handler: BRIDGE
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: false, fall-damage: true, block-damage: true, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: false
+      fall-damage: true
+      block-damage: true
+      no-hit-delay: false
     target-score: 5
     duration-seconds: 1200
     timeout-policy: HIGHEST_SCORE
@@ -76,7 +123,16 @@ Modes:
     icon: IRON_SWORD
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: true
+      fall-damage: true
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 900
     timeout-policy: DRAW
@@ -90,7 +146,16 @@ Modes:
     icon: DIAMOND_SWORD
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: false, melee: true, health-damage: true, natural-regeneration: true, hunger: false, fall-damage: true, block-damage: false, no-hit-delay: true }
+    combat:
+      pvp: true
+      projectiles: false
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: false
+      fall-damage: true
+      block-damage: false
+      no-hit-delay: true
     target-score: 1
     duration-seconds: 900
     timeout-policy: DRAW
@@ -104,7 +169,16 @@ Modes:
     icon: SHIELD
     handler: LAST_STANDING
     reset-policy: CELL
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: true
+      fall-damage: true
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 60
     timeout-policy: DRAW
@@ -118,7 +192,16 @@ Modes:
     icon: WITHER_SKELETON_SKULL
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: true
+      fall-damage: true
+      block-damage: true
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 1200
     timeout-policy: LAST_STANDING
@@ -132,7 +215,16 @@ Modes:
     icon: SPLASH_POTION
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: false, melee: true, health-damage: true, natural-regeneration: true, hunger: false, fall-damage: true, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: false
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: false
+      fall-damage: true
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 1200
     timeout-policy: DRAW
@@ -146,7 +238,16 @@ Modes:
     icon: NETHERITE_SWORD
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: true
+      fall-damage: true
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 1200
     timeout-policy: DRAW
@@ -160,7 +261,16 @@ Modes:
     icon: LEATHER_BOOTS
     handler: PARKOUR
     reset-policy: WORLD
-    combat: { pvp: false, projectiles: false, melee: false, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: false
+      projectiles: false
+      melee: false
+      health-damage: false
+      natural-regeneration: true
+      hunger: false
+      fall-damage: false
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 600
     timeout-policy: HIGHEST_SCORE
@@ -174,7 +284,16 @@ Modes:
     icon: FIREWORK_STAR
     handler: QUAKECRAFT
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: false, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: false
+      health-damage: false
+      natural-regeneration: true
+      hunger: false
+      fall-damage: false
+      block-damage: false
+      no-hit-delay: false
     target-score: 6
     duration-seconds: 600
     timeout-policy: HIGHEST_SCORE
@@ -188,7 +307,16 @@ Modes:
     icon: ENDER_EYE
     handler: SKY_WARS
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: true
+      hunger: true
+      fall-damage: true
+      block-damage: true
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 900
     timeout-policy: LAST_STANDING
@@ -202,7 +330,16 @@ Modes:
     icon: DIAMOND_SHOVEL
     handler: SPLEEF
     reset-policy: WORLD
-    combat: { pvp: false, projectiles: true, melee: false, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: true, no-hit-delay: false }
+    combat:
+      pvp: false
+      projectiles: true
+      melee: false
+      health-damage: false
+      natural-regeneration: true
+      hunger: false
+      fall-damage: false
+      block-damage: true
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 600
     timeout-policy: DRAW
@@ -216,7 +353,16 @@ Modes:
     icon: SLIME_BALL
     handler: SUMO
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: false, melee: true, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: false
+      melee: true
+      health-damage: false
+      natural-regeneration: true
+      hunger: false
+      fall-damage: false
+      block-damage: false
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 300
     timeout-policy: DRAW
@@ -230,7 +376,16 @@ Modes:
     icon: GOLDEN_APPLE
     handler: LAST_STANDING
     reset-policy: WORLD
-    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: false, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    combat:
+      pvp: true
+      projectiles: true
+      melee: true
+      health-damage: true
+      natural-regeneration: false
+      hunger: true
+      fall-damage: true
+      block-damage: true
+      no-hit-delay: false
     target-score: 1
     duration-seconds: 1200
     timeout-policy: LAST_STANDING

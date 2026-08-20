@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,5 +42,34 @@ class PluginResourceLayoutTest
         assertEquals("data/statistics.yml", PluginFiles.dataResource("statistics.yml"));
         assertThrows(IllegalArgumentException.class,
                 () -> PluginFiles.advancedResource("../config.yml"));
+    }
+
+    @Test
+    void everyShippedYamlFileParsesAndLobbyLinesUseNaturalOrder() throws Exception
+    {
+        File resources = new File("src/main/resources");
+        for (File file : List.of(
+                new File(resources, "config.yml"),
+                new File(resources, "plugin.yml"),
+                new File(resources, "advanced/display.yml"),
+                new File(resources, "advanced/divisions.yml"),
+                new File(resources, "advanced/holograms.yml"),
+                new File(resources, "advanced/menus.yml"),
+                new File(resources, "advanced/messages.yml"),
+                new File(resources, "advanced/modes.yml"),
+                new File(resources, "advanced/social.yml"),
+                new File(resources, "data/arenas.yml"),
+                new File(resources, "data/kits.yml"),
+                new File(resources, "data/statistics.yml")))
+        {
+            YamlConfiguration yaml = new YamlConfiguration();
+            yaml.load(file);
+        }
+
+        YamlConfiguration display = YamlConfiguration.loadConfiguration(
+                new File(resources, "advanced/display.yml"));
+        List<String> lobby = display.getStringList("Display.Scoreboards.Lobby.Lines");
+        assertEquals("&7<date>", lobby.getFirst());
+        assertEquals("&ewww.hyxduels.net", lobby.getLast());
     }
 }

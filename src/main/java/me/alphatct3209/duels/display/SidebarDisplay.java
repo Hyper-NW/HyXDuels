@@ -64,14 +64,14 @@ final class SidebarDisplay
         }
     }
 
-    /** Minecraft renders larger scores first, so increasing values invert the configured list. */
+    /** Minecraft renders larger scores first; descending values preserve config order. */
     static int scoreForLine(int index)
     {
         if (index < 0 || index >= ENTRIES.length)
         {
             throw new IllegalArgumentException("Sidebar line index must be from 0 through 14");
         }
-        return index + 1;
+        return ENTRIES.length - index;
     }
 
     boolean isCurrent(Player player)

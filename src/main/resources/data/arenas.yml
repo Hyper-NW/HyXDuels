@@ -1,22 +1,9 @@
-# Runtime-owned arena definitions. Use /duel arena administration commands.
-# Per-arena schema:
-# Allowed-Modes contains canonical stable mode keys. A missing/empty list accepts only modes not
-# listed by any arena; listed modes can use only arenas listing their key. Legacy Allowed-Kits is
-# read only when Allowed-Modes is absent: mode keys/aliases win, otherwise a kit must map to exactly
-# one mode. When both fields exist Allowed-Modes is authoritative; legacy data is not rewritten.
-# Settings defaults when missing: block-break false, block-place false, entity-placement false,
-# explosions true, explosion-block-damage false, fire-spread false, item-drop false,
-# item-pickup false. Block break/place are administrator arena settings and also require the
-# selected mode's Combat.block-damage capability; Bed Wars and SkyWars retain specialized rules.
-# Legacy 1.8 PvP is selected by players in the mode menu. Matchmaking and challenges capture that
-# preference and never combine opponents using different combat profiles.
-# Bed Wars requires points bed_1, bed_2, generator_1, generator_2, shop_1 and shop_2. Optional
-# diamond_generator[_N] and emerald_generator[_N] points create shared generators. Its objective
-# timing keys are bedwars-respawn-seconds (5), bedwars-iron-generator-ticks (20),
-# bedwars-gold-generator-ticks (80), bedwars-diamond-generator-ticks (600), and
-# bedwars-emerald-generator-ticks (1200).
-# SkyWars requires chest_1, chest_2 and mid_chest points on/within two blocks of containers.
-# Additional chest_1_N, chest_2_N and mid_chest_N markers are populated too. Configure the recurring
-# refill interval with Objective.skywars-refill-seconds (300). Bed Wars/SkyWars automatically allow the
-# building and resource pickup their gameplay requires inside the arena objective region.
+# Runtime-owned arena definitions. Prefer /duel arena administration commands.
+#
+# Allowed-Modes contains permanent keys from advanced/modes.yml. Protection and
+# objective values belong to each arena, while Legacy 1.8 PvP remains a player preference.
+#
+# Required Bed Wars points: bed_1, bed_2, generator_1, generator_2, shop_1, shop_2.
+# Optional shared generators: diamond_generator[_N], emerald_generator[_N].
+# Required SkyWars points: chest_1, chest_2, mid_chest, with optional numbered variants.
 Arenas: {}

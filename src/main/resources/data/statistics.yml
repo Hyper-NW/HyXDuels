@@ -1,2 +1,2 @@
-# Duels Statistics
-Statistics:
+# Runtime-owned player statistics. Do not edit while the server is running.
+Statistics: {}

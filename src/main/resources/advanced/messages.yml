@@ -1,5 +1,6 @@
 # All player-facing messages. Scalars and YAML lists are both supported.
 Messages:
+  # ---------- General match flow ----------
   No-Permission: '&cInsufficient permissions.'
   Countdown: '&aThe Duel begins in <seconds> second(s)!'
   # Participant-only. Placeholders: <round>, <player>, <opponent>, <mode>, <mode_key>,
@@ -26,6 +27,8 @@ Messages:
   Shop-Insufficient: ['&cYou need <cost> <currency> for <item>!']
   Shop-Maxed: ['&cYou already own this upgrade or a better one.']
   Shop-Purchased: ['&aPurchased <amount>x <item>.']
+
+  # ---------- Direct arena administration ----------
   Not-In-Duel: ['&cYou are not currently in a duel or queue!']
   Unknown-Command: '&cUnknown command. Try &e/duels help&c!'
   Incorrect-Args: '&cIncorrect args. Try &e<suggestion>&c!'
@@ -48,6 +51,8 @@ Messages:
   Arena-Kits-Updated: '&aUpdated allowed kits for arena &e<arena_id>&a.'
   Arena-Modes-Updated: '&aUpdated allowed modes for arena &e<arena_id>&a.'
   Arena-Setting-Updated: '&aSet &e<flag> &ato &e<value> &afor arena &e<arena_id>&a.'
+
+  # ---------- Divisions and leaderboards ----------
   # Set either division message to an empty string to disable it.
   # Available placeholders: <player>, <gamemode>, <gamemode_key>, <wins>, <old_division>,
   # <division>, <next_division>, <progress>, <required>, <wins_to_next>, <progress_percent>.
@@ -60,6 +65,8 @@ Messages:
   # Available placeholders: <place>, <player>, <gamemode>, <gamemode_key>, <division>, <wins>.
   Division-Leaderboard-Format: '<place>. &e<player>&f: &6<division> &7(<wins> wins)'
   Already-Joined: '&cYou already joined an arena! You can''t join another until you leave the one you''re already in!'
+
+  # ---------- Matchmaking queues ----------
   Queue-No-Permission: ['&cYou cannot join duel queues.']
   Queue-In-Arena: ['&cYou are already in an arena.']
   Queue-Joined:
@@ -73,6 +80,8 @@ Messages:
   Queue-Matched:
     - '&aMatch found against &e<opponent>&a!'
     - '&7Arena: &f<arena> &8| &7Mode: &f<mode> &8| &7Kit: &f<kit>'
+
+  # ---------- Parties ----------
   Party-Usage:
     - '&e/p invite|kick|promote|demote|transfer <player>'
     - '&e/p accept|deny|leave|disband|list|menu'
@@ -110,6 +119,8 @@ Messages:
     - '&7Configured commands are being run for &f<party_size> &7members.'
   Party-List-Header: ['&6Party &7(<party_size>) &8- &e<visibility> &8- &7Leader: &f<leader>']
   Party-List-Member: ['&7- &f<player> &8[&e<role>&8]']
+
+  # ---------- Direct duel challenges ----------
   Challenge-Self: '&cYou cannot challenge yourself.'
   Challenge-Player-Offline: '&cThat exact player is not online.'
   Challenge-Player-Not-Visible: '&cThat player is not visible to you.'
@@ -135,13 +146,17 @@ Messages:
   Challenge-Cancelled-Quit: '&cThe challenge was cancelled because &e<player> &cleft.'
   Challenge-Friends-Only: ['&c<player> only accepts duel requests from friends.']
   Party-Invites-Friends-Only: ['&cThat player only accepts party invites from friends.']
+
+  # ---------- Direct messages ----------
   Message-Usage: ['&cUsage: /msg <player> <message>']
   Message-Player-Unavailable: ['&cThat player is unavailable.']
   Message-Private: ['&c<player> only accepts messages from friends.']
   Message-Sent: ['&7[You -> <player>] &f<message>']
   Message-Received: ['&7[<player> -> You] &f<message>']
+
+  # ---------- Friends ----------
   Friend-Usage:
-    - '&e/friend add|accept|deny|remove <player>'
+    - '&e/friend add|accept|deny|remove|best <player>'
     - '&e/friend list'
   Friend-Player-Unavailable: ['&cThat player is unavailable.']
   Friend-Requests-Disabled: ['&cThat player has friend requests disabled.']
@@ -156,10 +171,13 @@ Messages:
   Friend-Request-Denied: ['&cFriend request from &e<player> &cdenied.']
   Friend-Not-Friend: ['&cThat player is not your friend.']
   Friend-Removed: ['&cRemoved &e<player> &cfrom your friends.']
+  Best-Friend-Changed: ['&aBest-friend status for &e<player> &ais now &e<status>&a.']
   Friend-List-Header: ['&6Friends &7(<count>)']
   Friend-List-Empty: ['&7You have no friends yet.']
   Friend-List-Entry: ['&7- &f<player> &8[&e<status>&8]']
   Friend-Joined: ['&aFriend &e<player> &ajoined the server.']
+
+  # ---------- Kit layout editor ----------
   Kit-Editor-Usage: ['&cUsage: /kiteditor <kit>']
   Kit-Editor-Cursor: ['&cEmpty your cursor before opening the kit editor.']
   Kit-Editor-Not-Found: ['&cKit &e<kit> &cdoes not exist.']
@@ -167,6 +185,8 @@ Messages:
   Kit-Editor-Saved: ['&aSaved the layout for &e<kit>&a.']
   Kit-Editor-Cancelled: ['&cKit layout changes discarded.']
   Kit-Editor-Save-Failed: ['&cCould not save that kit layout. Check the server log.']
+
+  # ---------- Managed holograms ----------
   Hologram-Created: '&aCreated managed hologram &e<id>&a.'
   Hologram-Moved: '&aMoved managed hologram &e<id>&a.'
   Hologram-Deleted: '&aDeleted managed hologram &e<id>&a.'
@@ -174,6 +194,8 @@ Messages:
   Hologram-List-Empty: '&7No managed holograms are configured.'
   Hologram-Player-Only: '&cHologram <action> must be run by a player.'
   Hologram-Error: '&c<error>'
+
+  # ---------- Commands and statistics ----------
   Help-Menu:
     - '&9Duels Help Menu&f:'
     - '&6/duels help&f: &eDisplay this help menu'
@@ -192,7 +214,7 @@ Messages:
     - '&6/duels arenasettings <id> [list|<flag> <true|false>]&f: &eView or update administrator arena rules'
     - '&6/p invite|kick|promote|demote|transfer <player>&f: &eManage party members and roles'
     - '&6/p accept|deny|leave|disband|list|menu&f: &eAnswer invites or use the leader party GUI'
-    - '&6/friend add|accept|deny|remove|list [player]&f: &eManage persistent friends'
+    - '&6/friend add|accept|deny|remove|best|list [player]&f: &eManage persistent friends'
     - '&6/msg <player> <message>&f: &eSend a privacy-aware direct message'
     - '&6/settings&f: &eCustomize displays, effects, and social privacy'
     - '&6/kiteditor <kit>&f: &eSafely edit a kit layout (administrator)'
