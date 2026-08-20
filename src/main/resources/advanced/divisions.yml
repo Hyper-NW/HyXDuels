@@ -1,0 +1,103 @@
+# Tiers are evaluated in this file's order. Every level adds that tier's
+# wins-per-step to the cumulative threshold. Commands run as console and support
+# {player}, {uuid}, {gamemode}, {division}, {level}, and {wins}.
+tiers:
+  Rookie:
+    wins-per-step: 50
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Iron:
+    wins-per-step: 100
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Gold:
+    wins-per-step: 250
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Diamond:
+    wins-per-step: 500
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Master:
+    wins-per-step: 1000
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Legend:
+    wins-per-step: 2000
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Grandmaster:
+    wins-per-step: 5000
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Godlike:
+    wins-per-step: 10000
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Celestial:
+    wins-per-step: 25000
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Divine:
+    wins-per-step: 50000
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []
+  Ascended:
+    wins-per-step: 100000
+    levels:
+      1:
+        rewards: []
+      2:
+        rewards: []
+      3:
+        rewards: []

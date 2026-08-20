@@ -1,0 +1,72 @@
+# Sidebar, tab-list, and leaderboard cache configuration.
+Leaderboard-Cache:
+  # Full immutable snapshots refresh every 100-72000 ticks; out-of-range values are clamped.
+  Refresh-Ticks: 600
+  # Game score mutations within this 1-200 tick window share one refresh.
+  Score-Refresh-Debounce-Ticks: 20
+  # Backend failures retain the last snapshot and warn no more often than this (10-3600 seconds).
+  Warning-Interval-Seconds: 60
+Display:
+  # One synchronous refresh task drives every display. Values below 20 are clamped to 20 ticks.
+  Refresh-Ticks: 20
+  # Native placeholders: <player>, <uuid>, <online>, <world>, <arena>, <arena_id>,
+  # <state>, <opponent>, <mode>, <mode_key>, <kit>, <countdown>, <score>,
+  # <opponent_score>, <time>, <bed>, <checkpoint>, and <date>. PlaceholderAPI runs afterwards.
+  Scoreboards:
+    Lobby:
+      Enabled: true
+      Title: '&e&lDUELS'
+      # Up to 15 ordered lines. Duplicate and blank lines are supported.
+      Lines:
+        - '&ewww.hyxduels.net'
+        - ''
+        - '&fOverall Kills: &a%duels_your_overall_kills%'
+        - '&fOverall Wins: &a%duels_your_overall_wins%'
+        - ''
+        - '&fBest Winstreak: &a%duels_your_highest_winstreak%'
+        - '&fOverall Winstreak: &a%duels_your_winstreak%'
+        - ''
+        - '&fTokens: &a0'
+        - ''
+        - '&e/duel <player>'
+        - '&bDuel other players with:'
+        - ''
+        - '&7<date>'
+    Arena:
+      Enabled: true
+      Title: '&c&l<arena>'
+      Lines:
+        - '&7State: &f<state>'
+        - '&7Opponent: &f<opponent>'
+        - '&7Mode: &f<mode>'
+        - '&7Score: &f<score> &8- &f<opponent_score>'
+        - '&7Time: &f<time>'
+        - '&7Bed: &f<bed> &8| &7Checkpoint: &f<checkpoint>'
+        - '&7Kit: &f<kit>'
+        - ''
+        - '&eStarts in: &f<countdown>'
+  Tab:
+    Enabled: true
+    Header:
+      - '&bYou are playing on &e&lHYXDUELS'
+    Footer:
+      - '&aRanks, Boosters & MORE! &cSTORE.HYXDUELS.NET'
+    Columns:
+      # Each entry is column 1..4, then the first '|', then text. Additional '|' are preserved.
+      # Entries in the same column advance one row, to a maximum of 20 rows per column.
+      # HyXDuels creates 80 client-only fake player entries so all four columns remain aligned.
+      # The fake profiles never join the server and never spawn entities in a world.
+      # Leave empty for a normal player list with only the custom header/footer.
+      Entries: []
+  Leaderboards:
+    # Values come from the shared immutable cache and are addressed as
+    # <leaderboard_key_1_player> and <leaderboard_key_1_score>; ranks 1 through 10 are
+    # supported and vacant ranks return N/A.
+    Definitions:
+      wins:
+        Type: WINS
+      kills:
+        Type: KILLS
+      default:
+        Type: GAMEMODE_WINS
+        Gamemode: default

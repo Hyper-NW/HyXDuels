@@ -1,0 +1,241 @@
+# First-class mode identities. Keys are stable statistics/routing keys and must not be renamed.
+# Kits are reusable: the same canonical kit key may appear in any number of modes.
+Modes:
+  bed_wars:
+    display-name: 'Bed Wars'
+    icon: RED_BED
+    handler: BED_WARS
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 1200
+    timeout-policy: LAST_STANDING
+    default-kit: bed_wars
+    allowed-kits: [bed_wars]
+    aliases: [bedwars]
+    enabled: true
+    leaderboard-enabled: true
+  blitz:
+    display-name: 'Blitz'
+    icon: STONE_SWORD
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 900
+    timeout-policy: DRAW
+    default-kit: blitz
+    allowed-kits: [blitz]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true
+  bow:
+    display-name: 'Bow'
+    icon: BOW
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: false, health-damage: true, natural-regeneration: false, hunger: false, fall-damage: true, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 600
+    timeout-policy: DRAW
+    default-kit: bow
+    allowed-kits: [bow]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true
+  boxing:
+    display-name: 'Boxing'
+    icon: LEATHER_CHESTPLATE
+    handler: BOXING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: false, melee: true, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: true }
+    target-score: 100
+    duration-seconds: 900
+    timeout-policy: HIGHEST_SCORE
+    default-kit: boxing
+    allowed-kits: [boxing]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true
+  bridge:
+    display-name: 'The Bridge'
+    icon: BLUE_TERRACOTTA
+    handler: BRIDGE
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: false, fall-damage: true, block-damage: true, no-hit-delay: false }
+    target-score: 5
+    duration-seconds: 1200
+    timeout-policy: HIGHEST_SCORE
+    default-kit: bridge
+    allowed-kits: [bridge]
+    aliases: [the_bridge]
+    enabled: true
+    leaderboard-enabled: true
+  classic:
+    display-name: 'Classic'
+    icon: IRON_SWORD
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 900
+    timeout-policy: DRAW
+    default-kit: classic
+    allowed-kits: [classic, bow, nodebuff, op, uhc]
+    aliases: [] # 'default' is always synthesized as a compatibility alias.
+    enabled: true
+    leaderboard-enabled: true
+  combo:
+    display-name: 'Combo'
+    icon: DIAMOND_SWORD
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: false, melee: true, health-damage: true, natural-regeneration: true, hunger: false, fall-damage: true, block-damage: false, no-hit-delay: true }
+    target-score: 1
+    duration-seconds: 900
+    timeout-policy: DRAW
+    default-kit: combo
+    allowed-kits: [combo]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true
+  duel_arena:
+    display-name: 'Duel Arena'
+    icon: SHIELD
+    handler: LAST_STANDING
+    reset-policy: CELL
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 60
+    timeout-policy: DRAW
+    default-kit: classic
+    allowed-kits: [classic, bow, nodebuff, op, uhc]
+    aliases: [arena]
+    enabled: true
+    leaderboard-enabled: true
+  mega_walls:
+    display-name: 'Mega Walls'
+    icon: WITHER_SKELETON_SKULL
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 1200
+    timeout-policy: LAST_STANDING
+    default-kit: mega_walls
+    allowed-kits: [mega_walls]
+    aliases: [megawalls]
+    enabled: true
+    leaderboard-enabled: true
+  nodebuff:
+    display-name: 'NoDebuff'
+    icon: SPLASH_POTION
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: false, melee: true, health-damage: true, natural-regeneration: true, hunger: false, fall-damage: true, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 1200
+    timeout-policy: DRAW
+    default-kit: nodebuff
+    allowed-kits: [nodebuff]
+    aliases: [no_debuff]
+    enabled: true
+    leaderboard-enabled: true
+  op:
+    display-name: 'OP'
+    icon: NETHERITE_SWORD
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 1200
+    timeout-policy: DRAW
+    default-kit: op
+    allowed-kits: [op]
+    aliases: [overpowered]
+    enabled: true
+    leaderboard-enabled: true
+  parkour:
+    display-name: 'Parkour'
+    icon: LEATHER_BOOTS
+    handler: PARKOUR
+    reset-policy: WORLD
+    combat: { pvp: false, projectiles: false, melee: false, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 600
+    timeout-policy: HIGHEST_SCORE
+    default-kit: parkour
+    allowed-kits: [parkour]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true
+  quakecraft:
+    display-name: 'Quakecraft'
+    icon: FIREWORK_STAR
+    handler: QUAKECRAFT
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: false, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: false }
+    target-score: 6
+    duration-seconds: 600
+    timeout-policy: HIGHEST_SCORE
+    default-kit: quakecraft
+    allowed-kits: [quakecraft]
+    aliases: [quake]
+    enabled: true
+    leaderboard-enabled: true
+  skywars:
+    display-name: 'SkyWars'
+    icon: ENDER_EYE
+    handler: SKY_WARS
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: true, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 900
+    timeout-policy: LAST_STANDING
+    default-kit: skywars
+    allowed-kits: [skywars]
+    aliases: [sky_wars]
+    enabled: true
+    leaderboard-enabled: true
+  spleef:
+    display-name: 'Spleef'
+    icon: DIAMOND_SHOVEL
+    handler: SPLEEF
+    reset-policy: WORLD
+    combat: { pvp: false, projectiles: true, melee: false, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: true, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 600
+    timeout-policy: DRAW
+    default-kit: spleef
+    allowed-kits: [spleef]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true
+  sumo:
+    display-name: 'Sumo'
+    icon: SLIME_BALL
+    handler: SUMO
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: false, melee: true, health-damage: false, natural-regeneration: true, hunger: false, fall-damage: false, block-damage: false, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 300
+    timeout-policy: DRAW
+    default-kit: sumo
+    allowed-kits: [sumo]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true
+  uhc:
+    display-name: 'UHC'
+    icon: GOLDEN_APPLE
+    handler: LAST_STANDING
+    reset-policy: WORLD
+    combat: { pvp: true, projectiles: true, melee: true, health-damage: true, natural-regeneration: false, hunger: true, fall-damage: true, block-damage: true, no-hit-delay: false }
+    target-score: 1
+    duration-seconds: 1200
+    timeout-policy: LAST_STANDING
+    default-kit: uhc
+    allowed-kits: [uhc]
+    aliases: []
+    enabled: true
+    leaderboard-enabled: true

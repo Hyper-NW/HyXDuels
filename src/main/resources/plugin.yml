@@ -1,11 +1,98 @@
-name: Duels
-author: Dartanman
-main: me.dartanman.duels.Duels
-softdepend: [PlaceholderAPI, Multiverse-Core]
+name: HyXDuels
+author: alphatct3209
+main: me.alphatct3209.duels.Duels
+softdepend: [PlaceholderAPI, DecentHolograms]
 version: ${project.version}
-api-version: 1.20
+api-version: '1.21.11'
+description: A duel system with AdvancedSlimePaper-backed arena worlds and configurable per-kit win divisions.
 commands:
   duel:
-    description: Duels base command
-    usage: /<command>
+    description: Duels, aggregate statistics, and per-gamemode divisions
+    usage: /<command> help
     aliases: [duels, 1v1, 1v1duel, duel1v1]
+  party:
+    description: Create and manage duel parties
+    usage: /<command> [invite|kick|promote|demote|transfer|disband|menu]
+    aliases: [p]
+  friend:
+    description: Manage persistent duel friends
+    usage: /<command> [add|accept|deny|remove|best|list] [player]
+    aliases: [friends]
+  message:
+    description: Send a privacy-aware direct message
+    usage: /<command> <player> <message>
+    aliases: [msg, tell, w]
+  settings:
+    description: Open persistent player settings
+    usage: /<command>
+    aliases: [preferences, prefs]
+  kiteditor:
+    description: Safely edit a kit inventory layout
+    usage: /<command> <kit>
+permissions:
+  duels.queue:
+    description: Join random duel matchmaking queues
+    default: true
+  duels.leave:
+    description: Leave a duel queue or arena
+    default: true
+  duels.party:
+    description: Create, join, manage, and use duel parties
+    default: true
+  duels.friend:
+    description: Send, answer, remove, and list persistent friend relationships
+    default: true
+  duels.message:
+    description: Send direct messages allowed by recipient privacy
+    default: true
+  duels.settings:
+    description: Open and change persistent player settings
+    default: true
+  duels.kits.edit:
+    description: Edit kit storage, armor, and offhand layouts safely
+    default: op
+  duels.gui:
+    description: Open and use the player duel, mode, map, and opponent menus
+    default: true
+  duels.challenge:
+    description: Challenge an exact visible online player and choose a kit
+    default: true
+  duels.accept:
+    description: Accept a pending duel challenge
+    default: true
+  duels.deny:
+    description: Deny a pending duel challenge
+    default: true
+  duels.stats:
+    description: View aggregate and per-gamemode player statistics
+    default: true
+  duels.top:
+    description: View aggregate and per-gamemode division leaderboards
+    default: true
+
+
+  duels.modes.list:
+    description: List enabled first-class duel modes
+    default: true
+  duels.modes.select:
+    description: Select a duel mode and one of its reusable kits
+    default: true
+  duels.arenamodes:
+    description: Configure stable mode routes for duel arenas
+    default: op
+  duels.arenapoint:
+    description: Configure generic objective point markers
+    default: op
+  duels.arenaobjective:
+    description: Configure arena objective radii, cooldowns, mercy, and death-y
+    default: op
+
+  duels.arenakits:
+    description: Configure canonical kit routes for duel arenas
+    default: op
+  duels.arenasettings:
+    description: Configure arena gameplay mutation settings
+    default: op
+  duels.holograms.admin:
+    description: Manage transient DecentHolograms leaderboard displays
+    default: op

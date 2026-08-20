@@ -1,0 +1,224 @@
+# All player-facing messages. Scalars and YAML lists are both supported.
+Messages:
+  No-Permission: '&cInsufficient permissions.'
+  Countdown: '&aThe Duel begins in <seconds> second(s)!'
+  # Participant-only. Placeholders: <round>, <player>, <opponent>, <mode>, <mode_key>,
+  # <kit>, <score>, <opponent_score>, and <legacy_pvp>.
+  Round:
+    - '&8&m--------------------------------'
+    - '&eRound <round>: &f<player> &7vs &f<opponent>'
+    - '&7Mode: &f<mode> &8| &7Kit: &f<kit>'
+  # Participant-only. Health values are formatted to one decimal place.
+  # Placeholders: <killer>, <victim>, <killer_health>, <killer_max_health>,
+  # <victim_health>, <victim_max_health>, <health>, <round>, <mode>, <mode_key>,
+  # <kit>, <killer_score>, and <victim_score>.
+  Kill:
+    - '&c<victim> &7was killed by &a<killer>&7.'
+    - '&7Killer health: &c<killer_health>❤&7/&c<killer_max_health>❤'
+  Win:
+    - '&6&l<winner> wins!'
+    - '&7Remaining health: &c<health>❤'
+  Draw: ['&eThe duel ended in a draw.']
+  Bed-Destroyed: ['&cBED DESTROYED! &f<player> can no longer respawn.']
+  Respawn-Wait: ['&eYou will respawn in <seconds> seconds...']
+  Respawned: ['&aRespawned!']
+  SkyWars-Refill: ['&eSkyWars chests have refilled with upgraded loot!']
+  Shop-Insufficient: ['&cYou need <cost> <currency> for <item>!']
+  Shop-Maxed: ['&cYou already own this upgrade or a better one.']
+  Shop-Purchased: ['&aPurchased <amount>x <item>.']
+  Not-In-Duel: ['&cYou are not currently in a duel or queue!']
+  Unknown-Command: '&cUnknown command. Try &e/duels help&c!'
+  Incorrect-Args: '&cIncorrect args. Try &e<suggestion>&c!'
+  No-Available-Arena: '&cUnfortunately, no Duel Arenas are available right now. Try again later!'
+  Arena-Not-Available: '&cUnfortunately, that particular arena is not available right now. Pick another or try again later!'
+  Joined-Arena: '&aYou have joined the Duel Arena called &e<arena_name>'
+  Player-Left-Cancelled: '&cA player has left the duel and the countdown has been cancelled.'
+  Invalid-Arena-Id: '&c<arg> is not a valid arena id (either it does not exist or is a name, not an id)'
+  Arena-List-Format: '&9<id> &f- &e<arena_name> &f- &6<state>'
+  Arena-Created:
+    - '&aArena &e<arena_name> &acreated!'
+    - '&7Block break: &f<block_break> &8| &7Block place: &f<block_place>'
+    - '&eRemember to set its lobby and both spawn locations!'
+  Arena-Creation-Boolean: '&cBlock-break and block-place must be true or false.'
+  Arena-Not-Finished: '&cArena is not finished! Ensure it has both spawnpoints and a lobby location set!'
+  Arena-Finished: '&aArena has been finished and is now joinable!'
+  Kit-Created: '&aKit &e<kit_name> &2&lcreated&a!'
+  Kit-Deleted: '&aKit &e<kit_name> &4&ldeleted&a!'
+  Kit-Selected: '&aSelected Kit &e<kit_name>&a!'
+  Arena-Kits-Updated: '&aUpdated allowed kits for arena &e<arena_id>&a.'
+  Arena-Modes-Updated: '&aUpdated allowed modes for arena &e<arena_id>&a.'
+  Arena-Setting-Updated: '&aSet &e<flag> &ato &e<value> &afor arena &e<arena_id>&a.'
+  # Set either division message to an empty string to disable it.
+  # Available placeholders: <player>, <gamemode>, <gamemode_key>, <wins>, <old_division>,
+  # <division>, <next_division>, <progress>, <required>, <wins_to_next>, <progress_percent>.
+  Division-Progress: '&a<gamemode>: &e<division> &7(<progress>/<required>, <progress_percent>%)'
+  Division-Promotion: '&6Promoted in <gamemode>: &e<old_division> &7-> &e<division>&6!'
+  Invalid-Gamemode: '&cUnknown gamemode: &e<gamemode>'
+  No-Default-Gamemode: '&cNo default gamemode is configured.'
+  Leaderboard-Header: '&9Duels <type> Leaderboard&f:'
+  Leaderboard-Format: '<place>. &e<player>&f: &6<stat>'
+  # Available placeholders: <place>, <player>, <gamemode>, <gamemode_key>, <division>, <wins>.
+  Division-Leaderboard-Format: '<place>. &e<player>&f: &6<division> &7(<wins> wins)'
+  Already-Joined: '&cYou already joined an arena! You can''t join another until you leave the one you''re already in!'
+  Queue-No-Permission: ['&cYou cannot join duel queues.']
+  Queue-In-Arena: ['&cYou are already in an arena.']
+  Queue-Joined:
+    - '&aYou joined the &e<mode> &aqueue.'
+    - '&7Kit: &f<kit> &8| &7Combat: &f<combat>'
+  Queue-Left: ['&cYou left the duel queue.']
+  Queue-Not-Queued: ['&cYou are not currently queued.']
+  Queue-Waiting-Arena:
+    - '&eAn opponent was found, but no compatible arena is ready.'
+    - '&7You remain in the queue.'
+  Queue-Matched:
+    - '&aMatch found against &e<opponent>&a!'
+    - '&7Arena: &f<arena> &8| &7Mode: &f<mode> &8| &7Kit: &f<kit>'
+  Party-Usage:
+    - '&e/p invite|kick|promote|demote|transfer <player>'
+    - '&e/p accept|deny|leave|disband|list|menu'
+  Party-Player-Unavailable: ['&cThat player is unavailable.']
+  Party-No-Authority: ['&cYou cannot manage that party member.']
+  Party-Already-In-Party: ['&cThat player is already in a party.']
+  Party-Full: ['&cThe party is full.']
+  Party-Invite-Sent: ['&aInvited &e<player> &ato your party.']
+  Party-Invite-Received:
+    - '&e<player> &ainvited you to &e<leader>''s &aparty.'
+    - '&7Use &e/p accept &7or &e/p deny&7.'
+  Party-No-Invite: ['&cYou have no pending party invite.']
+  Party-Invite-Invalid: ['&cThat party invite is no longer valid.']
+  Party-Invite-Denied: ['&cParty invite denied.']
+  Party-Invite-Denied-Other: ['&c<player> denied your party invite.']
+  Party-Joined: ['&a<player> joined the party.']
+  Party-Player-Not-Member: ['&cThat player is not a removable party member.']
+  Party-Kicked: ['&cYou were kicked from the party by <player>.']
+  Party-Kick-Broadcast: ['&c<player> was removed from the party.']
+  Party-Cannot-Promote: ['&cOnly members can be promoted.']
+  Party-Cannot-Demote: ['&cOnly moderators can be demoted.']
+  Party-Cannot-Transfer: ['&cLeadership cannot be transferred to that player.']
+  Party-Promoted: ['&a<player> was promoted to moderator.']
+  Party-Demoted: ['&e<player> was demoted to member.']
+  Party-Transferred: ['&e<player> is now the party leader.']
+  Party-Not-In-Party: ['&cYou are not in a party.']
+  Party-Leader-Only: ['&cOnly the party leader can do that.']
+  Party-Leader-Cannot-Leave: ['&cTransfer leadership or disband the party first.']
+  Party-Left: ['&e<player> left the party.']
+  Party-You-Left: ['&cYou left the party.']
+  Party-Disbanded: ['&cThe party was disbanded by <player>.']
+  Party-Visibility: ['&eParty visibility is now <visibility>.']
+  Party-Action:
+    - '&aParty action started: &e<action>&a.'
+    - '&7Configured commands are being run for &f<party_size> &7members.'
+  Party-List-Header: ['&6Party &7(<party_size>) &8- &e<visibility> &8- &7Leader: &f<leader>']
+  Party-List-Member: ['&7- &f<player> &8[&e<role>&8]']
+  Challenge-Self: '&cYou cannot challenge yourself.'
+  Challenge-Player-Offline: '&cThat exact player is not online.'
+  Challenge-Player-Not-Visible: '&cThat player is not visible to you.'
+  Challenge-Player-In-Arena: '&cOne of those players is already in an arena.'
+  Challenge-Player-In-Queue: '&cOne of those players is already in matchmaking.'
+  Challenge-Duplicate: '&cA challenge between those players is already pending.'
+  Challenge-Busy: '&cOne of those players already has a pending challenge.'
+  Challenge-Kit-Unavailable: '&cThe kit &e<kit> &cis no longer available.'
+  Challenge-Sent:
+    - '&aChallenge sent to &e<player>&a.'
+    - '&7Mode: &f<mode> &8| &7Kit: &f<kit>'
+    - '&7Combat: &f<combat> &8| &7Map: &f<arena>'
+  Challenge-Received:
+    - '&e<player> &ahas challenged you!'
+    - '&7Mode: &f<mode> &8| &7Kit: &f<kit>'
+    - '&7Combat: &f<combat> &8| &7Map: &f<arena>'
+    - '&7Use &e/duel accept &7or &e/duel deny&7.'
+  Challenge-None: '&cYou have no incoming duel challenge.'
+  Challenge-No-Arena: '&cNo completely empty compatible arena is available. Your challenge remains pending; try again.'
+  Challenge-Accepted: '&aChallenge with &e<player> &aaccepted using &e<kit> &ain arena &e<arena>&a.'
+  Challenge-Denied: '&cThe challenge with &e<player> &cwas denied.'
+  Challenge-Expired: '&cThe pending duel challenge expired.'
+  Challenge-Cancelled-Quit: '&cThe challenge was cancelled because &e<player> &cleft.'
+  Challenge-Friends-Only: ['&c<player> only accepts duel requests from friends.']
+  Party-Invites-Friends-Only: ['&cThat player only accepts party invites from friends.']
+  Message-Usage: ['&cUsage: /msg <player> <message>']
+  Message-Player-Unavailable: ['&cThat player is unavailable.']
+  Message-Private: ['&c<player> only accepts messages from friends.']
+  Message-Sent: ['&7[You -> <player>] &f<message>']
+  Message-Received: ['&7[<player> -> You] &f<message>']
+  Friend-Usage:
+    - '&e/friend add|accept|deny|remove <player>'
+    - '&e/friend list'
+  Friend-Player-Unavailable: ['&cThat player is unavailable.']
+  Friend-Requests-Disabled: ['&cThat player has friend requests disabled.']
+  Friend-Already: ['&cYou are already friends.']
+  Friend-Request-Duplicate: ['&cThat friend request is already pending.']
+  Friend-Request-Sent: ['&aFriend request sent to &e<player>&a.']
+  Friend-Request-Received:
+    - '&e<player> &asent you a friend request.'
+    - '&7Use &e/friend accept <player> &7or &e/friend deny <player>&7.'
+  Friend-Request-None: ['&cNo friend request from that player.']
+  Friend-Accepted: ['&aYou are now friends with &e<player>&a.']
+  Friend-Request-Denied: ['&cFriend request from &e<player> &cdenied.']
+  Friend-Not-Friend: ['&cThat player is not your friend.']
+  Friend-Removed: ['&cRemoved &e<player> &cfrom your friends.']
+  Friend-List-Header: ['&6Friends &7(<count>)']
+  Friend-List-Empty: ['&7You have no friends yet.']
+  Friend-List-Entry: ['&7- &f<player> &8[&e<status>&8]']
+  Friend-Joined: ['&aFriend &e<player> &ajoined the server.']
+  Kit-Editor-Usage: ['&cUsage: /kiteditor <kit>']
+  Kit-Editor-Cursor: ['&cEmpty your cursor before opening the kit editor.']
+  Kit-Editor-Not-Found: ['&cKit &e<kit> &cdoes not exist.']
+  Kit-Editor-Place-Cursor: ['&cPlace the cursor item into the layout before saving.']
+  Kit-Editor-Saved: ['&aSaved the layout for &e<kit>&a.']
+  Kit-Editor-Cancelled: ['&cKit layout changes discarded.']
+  Kit-Editor-Save-Failed: ['&cCould not save that kit layout. Check the server log.']
+  Hologram-Created: '&aCreated managed hologram &e<id>&a.'
+  Hologram-Moved: '&aMoved managed hologram &e<id>&a.'
+  Hologram-Deleted: '&aDeleted managed hologram &e<id>&a.'
+  Hologram-Reloaded: '&aReloaded and reconciled advanced/holograms.yml.'
+  Hologram-List-Empty: '&7No managed holograms are configured.'
+  Hologram-Player-Only: '&cHologram <action> must be run by a player.'
+  Hologram-Error: '&c<error>'
+  Help-Menu:
+    - '&9Duels Help Menu&f:'
+    - '&6/duels help&f: &eDisplay this help menu'
+    - '&6/duels menu&f: &eOpen the mode and kit queue GUI'
+    - '&6/duels join [id]&f: &eJoin an available arena directly (administrative/legacy flow)'
+    - '&6/duel <player> &7or &6/duel challenge <player>&f: &eUse the same mode/kit menu to send a request'
+    - '&6/duel accept &7or &6/duel deny&f: &eAnswer your incoming challenge'
+    - '&6/duels listarenas&f: &eList all arenas'
+    - '&6/duels createarena <name> [block-break] [block-place]&f: &eBegin an arena with its protection rules'
+    - '&6/duels setlobby &7or &6setspawn1 &7or &6setspawn2&f: &eSet the respective location of the arena you are currently making'
+    - '&6/duels finisharena&f: &eSave and finish the arena you are currently making'
+    - '&6/duels kits list&f: &eList all kits'
+    - '&6/duels kits <create/delete/select> <kit name>&f: &eManage reusable kits; select changes the kit within your selected mode'
+    - '&6/duels modes list &7or &6/duels modes select <mode> [kit]&f: &eList or select a first-class mode and allowed kit'
+    - '&6/duels arenamodes <id> list|add|remove|clear [mode]&f: &eConfigure canonical mode routes for an arena (&7arenakits&e is deprecated)'
+    - '&6/duels arenasettings <id> [list|<flag> <true|false>]&f: &eView or update administrator arena rules'
+    - '&6/p invite|kick|promote|demote|transfer <player>&f: &eManage party members and roles'
+    - '&6/p accept|deny|leave|disband|list|menu&f: &eAnswer invites or use the leader party GUI'
+    - '&6/friend add|accept|deny|remove|list [player]&f: &eManage persistent friends'
+    - '&6/msg <player> <message>&f: &eSend a privacy-aware direct message'
+    - '&6/settings&f: &eCustomize displays, effects, and social privacy'
+    - '&6/kiteditor <kit>&f: &eSafely edit a kit layout (administrator)'
+    - '&6/duels stats [player] [gamemode]&f: &eView aggregate stats and gamemode division progress'
+    - '&6/duels top [wins|kills|divisions <gamemode>]&f: &eView aggregate or gamemode division top 10 players'
+    - '&6/duel hologram status|list|reload&f: &eInspect or reconcile managed holograms'
+    - '&6/duel hologram create <id> <wins|kills|divisions> [gamemode]&f: &eCreate at your stable-world location'
+    - '&6/duel hologram move|delete <id>&f: &eMove to your location or delete a managed definition'
+  # Available placeholders: <name>, <wins>, <overall_wins>, <winstreak>, <win_streak>,
+  # <highest_winstreak>, <highest_win_streak>, <losses>, <kills>, <overall_kills>, <deaths>, <gamemode>,
+  # <gamemode_key>, <kit>, <gamemode_wins>, <division>, <next_division>, <wins_to_next>.
+  Stats-Card:
+    - '&e============='
+    - '&8<name>''s Stats'
+    - '&eOverall Wins&f: &6<overall_wins>'
+    - '&eWin Streak&f: &6<winstreak>'
+    - '&eHighest Win Streak&f: &6<highest_winstreak>'
+    - '&eLosses&f: &6<losses>'
+    - '&eOverall Kills&f: &6<overall_kills>'
+    - '&eDeaths&f: &6<deaths>'
+    - '&eGamemode&f: &6<gamemode>'
+    - '&eGamemode Wins&f: &6<gamemode_wins>'
+    - '&eDivision&f: &6<division>'
+    - '&eNext Division&f: &6<next_division>'
+    - '&eWins To Next&f: &6<wins_to_next>'
+    - '&e============='
+  Update-Check-Good: '&aYou are using Duels Version &e<version>&a. This is the latest version!'
+  Update-Check-Bad: '&cYou are using Duels Version &e<version>&c, but there is an update available! Download it at &ehttps://www.spigotmc.org/resources/duels.44820/'
+  Update-Check-Failed: '&cVersion Check failed; is your server offline?'

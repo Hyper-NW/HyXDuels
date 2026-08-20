@@ -1,0 +1,21 @@
+# Party and direct challenge configuration.
+Party:
+  Max-Size: 16
+  Invite-Timeout-Seconds: 60
+Challenges:
+  # Pending challenges are token-expired after this many seconds.
+  Timeout-Seconds: 60
+  Gui:
+    Title: '&8Challenge <player> &7(<page>/<pages>)'
+    Kit-Name: '&a<kit>'
+    Kit-Lore:
+      - '&7Challenge &f<player>'
+      - '&eClick to send'
+    Previous: '&ePrevious page'
+    Next: '&eNext page'
+    Info: '&bChallenge <player> &7(<page>/<pages>)'
+
+# Guild filtering is deliberately plugin-neutral. Set this to a PlaceholderAPI
+# placeholder which returns a stable guild identifier (the same value for members).
+Leaderboard-Filters:
+  Guild-Placeholder: ''

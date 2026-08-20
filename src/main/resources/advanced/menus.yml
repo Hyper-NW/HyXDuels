@@ -1,0 +1,271 @@
+# HyXDuels inventory items and GUI layouts. Names/lore support '&' color codes.
+Version: 1
+Enabled: true
+Give-On-Join: true
+Give-Delay-Ticks: 2
+
+# Tagged opener items never overwrite an occupied slot unless Force-Slot is true.
+# With Force-Slot false, an occupied preferred slot falls back to the first empty inventory slot.
+Openers:
+  duel-menu:
+    Enabled: true
+    Material: DIAMOND_SWORD
+    Slot: 0
+    Force-Slot: true
+    Locked: true
+    Glow: true
+    Name: '&b&lQueue Duels'
+    Lore:
+      - '&7Choose a duel mode and queue.'
+      - '&eRight-click to open.'
+    Action: DUEL_MENU
+  party:
+    Enabled: true
+    Material: LECTERN
+    Slot: 1
+    Force-Slot: true
+    Locked: true
+    Glow: false
+    Name: '&6&lCreate / Manage Party'
+    Lore:
+      - '&7Create a party or open party management.'
+      - '&7/p invite, kick, promote, demote'
+      - '&7/p transfer, disband'
+      - '&eRight-click to open.'
+    Action: PARTY
+  kit-editor:
+    Enabled: true
+    Material: WRITABLE_BOOK
+    Slot: 6
+    Force-Slot: true
+    Locked: true
+    Glow: false
+    Name: '&a&lKit Editor'
+    Lore:
+      - '&7Edit the hotbar layout for any duel kit.'
+      - '&eRight-click to open.'
+    Action: KIT_EDITOR
+  mode-selector:
+    Enabled: false
+    Material: NETHER_STAR
+    Slot: 1
+    Force-Slot: false
+    Locked: true
+    Glow: false
+    Name: '&eMode Selector'
+    Lore: ['&7Choose your duel mode.']
+    Action: MODE_SELECTOR
+  settings:
+    Enabled: true
+    Material: LEVER
+    Slot: 7
+    Force-Slot: true
+    Locked: true
+    Glow: false
+    Name: '&ePlayer Settings'
+    Lore: ['&7Customize privacy, displays, and effects.', '&eRight-click to open.']
+    Action: SETTINGS
+  map-selector:
+    Enabled: false
+    Material: MAP
+    Slot: 2
+    Force-Slot: false
+    Locked: true
+    Glow: false
+    Name: '&aMap Selector'
+    Lore: ['&7Choose your preferred arena.']
+    Action: MAP_SELECTOR
+
+Menus:
+  # Retained for /duel menu navigation and optional map/opponent selection.
+  Main:
+    Title: '&8Duels'
+    Mode-Slot: 11
+    Mode-Name: '&eSelect Mode'
+    Mode-Lore: ['&7Current: &f<mode>', '&eClick to change.']
+    Map-Slot: 13
+    Map-Name: '&aSelect Map'
+    Map-Lore:
+      - '&7Current: &f<map>'
+      - '&7Block break: <block_break>'
+      - '&7Block place: <block_place>'
+      - '&eClick to change.'
+    Opponent-Slot: 15
+    Opponent-Name: '&cChallenge Player'
+    Opponent-Lore: ['&7Choose an online opponent.']
+    Quick-Join-Slot: 22
+    Quick-Join-Name: '&bQuick Queue'
+    Quick-Join-Lore: ['&7Mode: &f<mode>', '&7Map: &f<map>', '&eClick to enter matchmaking.']
+  Mode:
+    Title: '&9⚔ Queue Duels &7(<page>/<pages>)'
+    Item-Name: '&e<mode>'
+    Item-Lore:
+      - '&7Key: &f<mode_key>'
+      - '&7Default kit: &f<kit>'
+      - '&eClick to queue or choose a kit.'
+    # Legacy 1.8 PvP is the only gameplay rule selectable by players.
+    Legacy-PvP-Slot: 47
+    Legacy-PvP-Name: '&bLegacy 1.8 PvP: <legacy_pvp>'
+    Legacy-PvP-Lore:
+      - '&7Toggles old attack speed and sweep behavior.'
+      - '&7Matchmaking pairs the same combat choice.'
+  Kit:
+    Title: '&8Select Kit &7(<page>/<pages>)'
+    Item-Name: '&a<kit>'
+    Item-Lore:
+      - '&7Mode: &f<mode>'
+      - '&7Kit key: &f<kit_key>'
+      - '&eClick to queue or send the request.'
+  Map:
+    Title: '&8Select Map &7(<page>/<pages>)'
+    Item-Name: '&a<map>'
+    Item-Lore:
+      - '&7Status: <status>'
+      - '&7Block break: <block_break>'
+      - '&7Block place: <block_place>'
+      - '&eClick to prefer this map.'
+    Automatic-Name: '&bAutomatic Map'
+    Automatic-Lore: ['&7Use the first compatible available arena.']
+  Opponent:
+    Title: '&8Select Opponent &7(<page>/<pages>)'
+    Item-Name: '&c<player>'
+    Item-Lore: ['&7Mode: &f<mode>', '&7Map: &f<map>', '&eClick to send a challenge.']
+  Party:
+    Title: '&d★ Manage Party'
+    Actions:
+      Party-FFA:
+        Slot: 11
+        Material: IRON_CHESTPLATE
+        Glow: false
+        Name: '&cParty FFA'
+        Lore: ['&7Start the configured free-for-all action.']
+        # Console commands; placeholders: <leader>, <party_size>, <action>.
+        Commands: []
+      Team-Battle:
+        Slot: 15
+        Material: DIAMOND_CHESTPLATE
+        Glow: false
+        Name: '&cRed &7vs &9Blue'
+        Lore: ['&7Start the configured team battle action.']
+        Commands: []
+      Visibility:
+        Slot: 18
+        Material: ENDER_PEARL
+        Glow: false
+        Name: '&eParty Visibility: <visibility>'
+        Lore: ['&7Click to toggle party visibility.']
+      Host-Duel:
+        Slot: 26
+        Material: BLAZE_ROD
+        Glow: true
+        Name: '&bHost Duel'
+        Lore: ['&7Open the standard mode and kit menu.']
+      Invite-Friends:
+        Slot: 22
+        Material: PLAYER_HEAD
+        Glow: false
+        Name: '&aInvite Friends'
+        Lore: ['&7Browse online players to invite.']
+    Invite:
+      Title: '&8Invite Friends &7(<page>/<pages>)'
+      Player:
+        Material: PLAYER_HEAD
+        Name: '&a<player>'
+        Lore: ['&eClick to invite.']
+  Settings:
+    Title: '&8Player Settings'
+    Items:
+      show-own-tier:
+        Slot: 9
+        Material: NETHER_STAR
+        Glow: false
+        Name: '&eShow Own Tier: &f<value>'
+        Lore: ['&7Controls whether others can see your tier.', '&eClick to toggle.']
+      scoreboard:
+        Slot: 10
+        Material: PAPER
+        Glow: false
+        Name: '&eScoreboard: &f<value>'
+        Lore: ['&7Show HyXDuels sidebars.', '&eClick to toggle.']
+      profile-kits:
+        Slot: 11
+        Material: CHEST
+        Glow: false
+        Name: '&eProfile Kits: &f<value>'
+        Lore: ['&7Controls whether others see your selected kit.', '&eClick to toggle.']
+      friend-join-notifier:
+        Slot: 12
+        Material: BELL
+        Glow: false
+        Name: '&eFriend Join Notifier: &f<value>'
+        Lore: ['&7Notify you when a friend joins.', '&eClick to toggle.']
+      blast-particles:
+        Slot: 13
+        Material: FIREWORK_ROCKET
+        Glow: false
+        Name: '&eBlast Particles: &f<value>'
+        Lore: ['&7Show HyXDuels kill blast particles.', '&eClick to toggle.']
+      duel-requests:
+        Slot: 14
+        Material: DIAMOND_SWORD
+        Glow: false
+        Name: '&eDuel Requests: &f<value>'
+        Lore: ['&7Choose who may challenge you.', '&eClick to cycle.']
+      direct-messages:
+        Slot: 15
+        Material: WRITABLE_BOOK
+        Glow: false
+        Name: '&eDirect Messages: &f<value>'
+        Lore: ['&7Choose who may message you.', '&eClick to cycle.']
+      party-invites:
+        Slot: 16
+        Material: PLAYER_HEAD
+        Glow: false
+        Name: '&eParty Invites: &f<value>'
+        Lore: ['&7Choose who may invite you.', '&eClick to cycle.']
+      friend-requests:
+        Slot: 17
+        Material: NAME_TAG
+        Glow: false
+        Name: '&eFriend Requests: &f<value>'
+        Lore: ['&7Allow or block new friend requests.', '&eClick to toggle.']
+  Kit-Editor:
+    Title: '&8Edit Kit: &f<kit>'
+    Controls:
+      Save:
+        Material: LIME_DYE
+        Glow: true
+        Name: '&aSave Layout'
+        Lore: ['&7Persist this storage, armor, and offhand layout.']
+      Reset:
+        Material: ORANGE_DYE
+        Glow: false
+        Name: '&eReset'
+        Lore: ['&7Restore the layout from when the editor opened.']
+      Cancel:
+        Material: RED_DYE
+        Glow: false
+        Name: '&cCancel'
+        Lore: ['&7Discard all layout changes.']
+  Kit-Editor-Selector:
+    Title: '&8Kit Editor &7(<page>/<pages>)'
+    Item-Name: '&a<kit>'
+    Item-Lore: ['&7Kit key: &f<kit_key>', '&eClick to edit this layout.']
+  Common:
+    Previous: '&ePrevious page'
+    Next: '&eNext page'
+    Back: '&cBack'
+    Enabled: '&aEnabled'
+    Disabled: '&cDisabled'
+    Available: '&aAvailable'
+    Unavailable: '&cUnavailable'
+
+# Every entry below accepts either one string or a YAML list of lines.
+Messages:
+  No-Permission: ['&cYou do not have permission to use the duel menu.']
+  Unavailable: ['&cThe duel menu is unavailable while you are in an arena.']
+  No-Arena: ['&cNo compatible arena is currently available.']
+  Join-Failed: ['&cThat selection became unavailable. Please try again.']
+  Joined: ['&aJoined arena &e<map> &awith mode &e<mode>&a.']
+  Map-Incompatible: ['&cThat map does not support your selected mode.']
+  Player-Unavailable: ['&cThat player is no longer available.']
