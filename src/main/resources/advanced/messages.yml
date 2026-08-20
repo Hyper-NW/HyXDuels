@@ -1,5 +1,5 @@
 # All player-facing messages. Scalars and YAML lists are both supported.
-Config-Version: 2
+Config-Version: 3
 
 Messages:
   # ---------- General match flow ----------
@@ -85,8 +85,8 @@ Messages:
 
   # ---------- Parties ----------
   Party-Usage:
-    - '&e/p invite|kick|promote|demote|transfer <player>'
-    - '&e/p accept|deny|leave|disband|list|menu'
+    - '&e/duels party invite|kick|promote|demote|transfer <player>'
+    - '&e/duels party accept|deny|leave|disband|list|menu'
   Party-Player-Unavailable: ['&cThat player is unavailable.']
   Party-No-Authority: ['&cYou cannot manage that party member.']
   Party-Already-In-Party: ['&cThat player is already in a party.']
@@ -94,7 +94,7 @@ Messages:
   Party-Invite-Sent: ['&aInvited &e<player> &ato your party.']
   Party-Invite-Received:
     - '&e<player> &ainvited you to &e<leader>''s &aparty.'
-    - '&7Use &e/p accept &7or &e/p deny&7.'
+    - '&7Use &e/duels party accept &7or &e/duels party deny&7.'
   Party-No-Invite: ['&cYou have no pending party invite.']
   Party-Invite-Invalid: ['&cThat party invite is no longer valid.']
   Party-Invite-Denied: ['&cParty invite denied.']
@@ -139,7 +139,7 @@ Messages:
     - '&e<player> &ahas challenged you!'
     - '&7Mode: &f<mode> &8| &7Kit: &f<kit>'
     - '&7Combat: &f<combat> &8| &7Map: &f<arena>'
-    - '&7Use &e/duel accept &7or &e/duel deny&7.'
+    - '&7Use &e/duels challenge accept &7or &e/duels challenge deny&7.'
   Challenge-None: '&cYou have no incoming duel challenge.'
   Challenge-No-Arena: '&cNo completely empty compatible arena is available. Your challenge remains pending; try again.'
   Challenge-Accepted: '&aChallenge with &e<player> &aaccepted using &e<kit> &ain arena &e<arena>&a.'
@@ -150,7 +150,7 @@ Messages:
   Party-Invites-Friends-Only: ['&cThat player only accepts party invites from friends.']
 
   # ---------- Direct messages ----------
-  Message-Usage: ['&cUsage: /msg <player> <message>']
+  Message-Usage: ['&cUsage: /duels social message <player> <message>']
   Message-Player-Unavailable: ['&cThat player is unavailable.']
   Message-Private: ['&c<player> only accepts messages from friends.']
   Message-Sent: ['&7[You -> <player>] &f<message>']
@@ -158,8 +158,8 @@ Messages:
 
   # ---------- Friends ----------
   Friend-Usage:
-    - '&e/friend add|accept|deny|remove|best <player>'
-    - '&e/friend list'
+    - '&e/duels social friends add|accept|deny|remove|best <player>'
+    - '&e/duels social friends list'
   Friend-Player-Unavailable: ['&cThat player is unavailable.']
   Friend-Requests-Disabled: ['&cThat player has friend requests disabled.']
   Friend-Already: ['&cYou are already friends.']
@@ -167,7 +167,7 @@ Messages:
   Friend-Request-Sent: ['&aFriend request sent to &e<player>&a.']
   Friend-Request-Received:
     - '&e<player> &asent you a friend request.'
-    - '&7Use &e/friend accept <player> &7or &e/friend deny <player>&7.'
+    - '&7Use &e/duels social friends accept <player> &7or &e/duels social friends deny <player>&7.'
   Friend-Request-None: ['&cNo friend request from that player.']
   Friend-Accepted: ['&aYou are now friends with &e<player>&a.']
   Friend-Request-Denied: ['&cFriend request from &e<player> &cdenied.']
@@ -180,7 +180,7 @@ Messages:
   Friend-Joined: ['&aFriend &e<player> &ajoined the server.']
 
   # ---------- Kit layout editor ----------
-  Kit-Editor-Usage: ['&cUsage: /kiteditor <kit>']
+  Kit-Editor-Usage: ['&cUsage: /duels kits edit <kit>']
   Kit-Editor-Cursor: ['&cEmpty your cursor before opening the kit editor.']
   Kit-Editor-Not-Found: ['&cKit &e<kit> &cdoes not exist.']
   Kit-Editor-Place-Cursor: ['&cPlace the cursor item into the layout before saving.']
@@ -203,23 +203,20 @@ Messages:
   Help-Header: '&9&lHyXDuels Help &7(Page <page>/<pages>)'
   Help-Footer: '&7Use &e/duels help <page> &7to change pages.'
   Help-Menu:
+    - '&6/duels help [page]&f: &eShow this command index without flooding chat'
     - '&6/duel <player>&f: &eOpen a duel request for an online player'
-    - '&6/duel challenge <player>&f: &eOpen the mode and kit request flow'
-    - '&6/duel accept|deny&f: &eAnswer an incoming challenge'
-    - '&6/duels menu&f: &eOpen the duel queue GUI'
-    - '&6/duels join [id] &7or &6/duels leave&f: &eJoin or leave duel gameplay'
+    - '&6/duels queue open|join|leave&f: &eUse matchmaking and queue controls'
+    - '&6/duels challenge send|accept|deny&f: &eManage duel challenges'
     - '&6/duels kits help&f: &eShow structured kit management commands'
     - '&6/duels modes list|select <mode> [kit]&f: &eList or select modes'
     - '&6/duels arena help&f: &eShow structured arena administration commands'
-    - '&6/duels stats [player] [mode]&f: &eView aggregate and mode statistics'
-    - '&6/duels top [wins|kills|divisions <mode>]&f: &eView leaderboards'
-    - '&6/p invite|kick|promote|demote|transfer <player>&f: &eManage party members and roles'
-    - '&6/p accept|deny|leave|disband|list|menu&f: &eAnswer invites or use the leader party GUI'
-    - '&6/friend add|accept|deny|remove|best|list [player]&f: &eManage persistent friends'
-    - '&6/msg <player> <message>&f: &eSend a privacy-aware direct message'
-    - '&6/settings&f: &eCustomize displays, effects, and social privacy'
-    - '&6/kiteditor <kit>&f: &eSafely edit a kit layout (administrator)'
+    - '&6/duels stats view|leaderboard ...&f: &eView statistics and rankings'
+    - '&6/duels party <subcommand>&f: &eManage parties and invitations'
+    - '&6/duels social friends <subcommand>&f: &eManage friends and best friends'
+    - '&6/duels social message <player> <message>&f: &eSend a direct message'
+    - '&6/duels social settings&f: &eCustomize privacy and display preferences'
     - '&6/duels hologram status|list|create|move|delete|reload&f: &eManage leaderboard holograms'
+    - '&6/duels admin update|load-old-stats|file-to-sql&f: &eRun maintenance operations'
   # Available placeholders: <name>, <wins>, <overall_wins>, <winstreak>, <win_streak>,
   # <highest_winstreak>, <highest_win_streak>, <losses>, <kills>, <overall_kills>, <deaths>, <gamemode>,
   # <gamemode_key>, <kit>, <gamemode_wins>, <division>, <next_division>, <wins_to_next>.

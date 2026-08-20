@@ -3,6 +3,7 @@ package me.alphatct3209.duels.commands.subcommands.duel;
 import me.alphatct3209.duels.Duels;
 import me.alphatct3209.duels.commands.subcommands.DuelsSubCommand;
 import me.alphatct3209.duels.game.kits.Kit;
+import me.alphatct3209.duels.game.kits.KitEditorCommand;
 import me.alphatct3209.duels.game.kits.KitManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -35,6 +36,7 @@ public class KitsDuelsSubCmd extends DuelsSubCommand
                 player.sendMessage(ChatColor.YELLOW + "/duels kits create <name>");
                 player.sendMessage(ChatColor.YELLOW + "/duels kits delete <name>");
                 player.sendMessage(ChatColor.YELLOW + "/duels kits select <name>");
+                player.sendMessage(ChatColor.YELLOW + "/duels kits edit <name>");
                 return true;
             }
             if(args.length == 1)
@@ -139,9 +141,14 @@ public class KitsDuelsSubCmd extends DuelsSubCommand
                     }
                     return true;
                 }
+                else if (args[0].equalsIgnoreCase("edit"))
+                {
+                    return new KitEditorCommand(plugin).onCommand(
+                            sender, null, "duels kits edit", new String[]{args[1]});
+                }
                 else
                 {
-                    incorrectArgs(player, "/duels kits <create/delete/select> <kit name>");
+                    incorrectArgs(player, "/duels kits <create|delete|select|edit> <kit name>");
                     return true;
                 }
             }

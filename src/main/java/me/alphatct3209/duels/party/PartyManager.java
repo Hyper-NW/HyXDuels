@@ -58,7 +58,7 @@ public final class PartyManager
                 "&aInvited &e<player> &ato your party.");
         send(target, "Messages.Party-Invite-Received", Map.of(
                         "<player>", sender.getName(), "<leader>", name(party.leader())),
-                "&e<player> &ainvited you to a party. Use &e/p accept&a.");
+                "&e<player> &ainvited you to a party. Use &e/duels party accept&a.");
         return true;
     }
 

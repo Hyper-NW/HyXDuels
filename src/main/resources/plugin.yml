@@ -7,28 +7,13 @@ api-version: '1.21.11'
 description: A duel system with AdvancedSlimePaper-backed arena worlds and configurable per-kit win divisions.
 commands:
   duel:
-    description: Player duels and structured HyXDuels administration
+    description: Directly challenge an online player
+    usage: /<command> <player>
+    aliases: [1v1, 1v1duel, duel1v1]
+  duels:
+    description: Structured HyXDuels commands
     usage: /<command> help [page]
-    aliases: [duels, 1v1, 1v1duel, duel1v1]
-  party:
-    description: Create and manage duel parties
-    usage: /<command> [invite|kick|promote|demote|transfer|disband|menu]
-    aliases: [p]
-  friend:
-    description: Manage persistent friends and best friends
-    usage: /<command> [add|accept|deny|remove|best|list] [player]
-    aliases: [friends]
-  message:
-    description: Send a privacy-aware direct message
-    usage: /<command> <player> <message>
-    aliases: [msg, tell, w]
-  settings:
-    description: Open persistent player settings
-    usage: /<command>
-    aliases: [preferences, prefs]
-  kiteditor:
-    description: Safely edit a kit inventory layout
-    usage: /<command> <kit>
+    aliases: [hyxduels]
 permissions:
   duels.help:
     description: View paginated HyXDuels command help

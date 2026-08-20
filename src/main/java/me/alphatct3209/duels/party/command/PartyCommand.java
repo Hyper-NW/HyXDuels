@@ -55,8 +55,8 @@ public final class PartyCommand implements CommandExecutor
             case "disband" -> parties.disband(player);
             case "list" -> showList(player);
             default -> MessageService.send(player, plugin.getConfig(), "Messages.Party-Usage", Map.of(),
-                    "&e/p invite|kick|promote|demote|transfer <player>",
-                    "&e/p accept|deny|leave|disband|list|menu");
+                    "&e/duels party invite|kick|promote|demote|transfer <player>",
+                    "&e/duels party accept|deny|leave|disband|list|menu");
         }
         return true;
     }
@@ -66,7 +66,7 @@ public final class PartyCommand implements CommandExecutor
         if (args.length != 2)
         {
             MessageService.send(actor, plugin.getConfig(), "Messages.Party-Usage", Map.of(),
-                    "&cUsage: /p " + args[0] + " <player>");
+                    "&cUsage: /duels party " + args[0] + " <player>");
             return;
         }
         Player target = plugin.getPartyManager().exactOnline(args[1]);

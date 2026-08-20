@@ -34,7 +34,7 @@ public class UpdateDuelsSubCommand extends DuelsSubCommand
         }
         else
         {
-            incorrectArgs(sender, "/duels help");
+            incorrectArgs(sender, "/duels admin update");
             return true;
         }
     }

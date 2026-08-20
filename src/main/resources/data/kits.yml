@@ -1,4 +1,4 @@
-# Runtime-owned kit definitions. Prefer /kiteditor for inventory changes.
+# Runtime-owned kit definitions. Prefer /duels kits edit for inventory changes.
 #
 # Format-Version 2 inventories contain exactly slots 0-35; empty strings preserve empty slots.
 # Kits without Format-Version remain legacy v1 packed inventories for backward compatibility.

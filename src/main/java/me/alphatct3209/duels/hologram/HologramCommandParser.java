@@ -10,7 +10,7 @@ public final class HologramCommandParser
     {
         if (args.length == 0)
         {
-            throw new IllegalArgumentException("/duel hologram status|list|create|move|delete|reload");
+            throw new IllegalArgumentException("/duels hologram status|list|create|move|delete|reload");
         }
         Action action;
         try
@@ -35,7 +35,7 @@ public final class HologramCommandParser
                 if (args.length < 3 || args.length > 4)
                 {
                     throw new IllegalArgumentException(
-                            "/duel hologram create <id> <wins|kills|divisions> [gamemode]");
+                            "/duels hologram create <id> <wins|kills|divisions> [gamemode]");
                 }
                 HologramDefinition.Type type = HologramDefinition.Type.parse(args[2]);
                 String mode = args.length == 4 ? args[3] : null;

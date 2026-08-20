@@ -23,7 +23,7 @@ public final class DenyChallengeDuelsSubCmd extends DuelsSubCommand
         }
         if (args.length != 0)
         {
-            incorrectArgs(sender, "/duel deny");
+            incorrectArgs(sender, "/duels challenge deny");
             return true;
         }
         plugin.getChallengeManager().deny(player);

@@ -6,5 +6,5 @@ Enabled: false
 # Applied by DecentHolograms; valid range is 20-72000 ticks.
 Default-Update-Interval-Ticks: 100
 
-# `/duel hologram create` adds validated entries here. Keep this section empty by default.
+# `/duels hologram create` adds validated entries here. Keep this section empty by default.
 Managed: {}

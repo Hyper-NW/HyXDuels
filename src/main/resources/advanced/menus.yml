@@ -41,8 +41,8 @@ Openers:
     Name: '&6&lCreate / Manage Party'
     Lore:
       - '&7Create a party or open party management.'
-      - '&7/p invite, kick, promote, demote'
-      - '&7/p transfer, disband'
+      - '&7/duels party invite, kick, promote, demote'
+      - '&7/duels party transfer, disband'
       - '&eRight-click to open.'
     Action: PARTY
   kit-editor:
@@ -92,7 +92,7 @@ Openers:
 
 # ---------- Inventory menus ----------
 Menus:
-  # Retained for /duel menu navigation and optional map/opponent selection.
+  # Retained for /duels queue open navigation and optional map/opponent selection.
   Main:
     Title: '&8Duels'
     Mode-Slot: 11

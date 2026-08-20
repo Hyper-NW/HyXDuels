@@ -23,7 +23,7 @@ public final class AcceptChallengeDuelsSubCmd extends DuelsSubCommand
         }
         if (args.length != 0)
         {
-            incorrectArgs(sender, "/duel accept");
+            incorrectArgs(sender, "/duels challenge accept");
             return true;
         }
         plugin.getChallengeManager().accept(player);

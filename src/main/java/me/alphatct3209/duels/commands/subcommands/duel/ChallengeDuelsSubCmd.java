@@ -23,7 +23,7 @@ public final class ChallengeDuelsSubCmd extends DuelsSubCommand
         }
         if (args.length != 1)
         {
-            incorrectArgs(sender, "/duel challenge <player>");
+            incorrectArgs(sender, "/duels challenge send <player>");
             return true;
         }
         plugin.getChallengeManager().openSelection(player,

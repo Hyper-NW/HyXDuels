@@ -64,6 +64,43 @@ public final class AdvancedConfiguration
             "&6/duel hologram status|list|reload&f: &eInspect or reconcile managed holograms",
             "&6/duel hologram create <id> <wins|kills|divisions> [gamemode]&f: &eCreate at your stable-world location",
             "&6/duel hologram move|delete <id>&f: &eMove to your location or delete a managed definition");
+    private static final List<String> VERSION_1_2_HELP = List.of(
+            "&6/duel <player>&f: &eOpen a duel request for an online player",
+            "&6/duel challenge <player>&f: &eOpen the mode and kit request flow",
+            "&6/duel accept|deny&f: &eAnswer an incoming challenge",
+            "&6/duels menu&f: &eOpen the duel queue GUI",
+            "&6/duels join [id] &7or &6/duels leave&f: &eJoin or leave duel gameplay",
+            "&6/duels kits help&f: &eShow structured kit management commands",
+            "&6/duels modes list|select <mode> [kit]&f: &eList or select modes",
+            "&6/duels arena help&f: &eShow structured arena administration commands",
+            "&6/duels stats [player] [mode]&f: &eView aggregate and mode statistics",
+            "&6/duels top [wins|kills|divisions <mode>]&f: &eView leaderboards",
+            "&6/p invite|kick|promote|demote|transfer <player>&f: &eManage party members and roles",
+            "&6/p accept|deny|leave|disband|list|menu&f: &eAnswer invites or use the leader party GUI",
+            "&6/friend add|accept|deny|remove|best|list [player]&f: &eManage persistent friends",
+            "&6/msg <player> <message>&f: &eSend a privacy-aware direct message",
+            "&6/settings&f: &eCustomize displays, effects, and social privacy",
+            "&6/kiteditor <kit>&f: &eSafely edit a kit layout (administrator)",
+            "&6/duels hologram status|list|create|move|delete|reload&f: &eManage leaderboard holograms");
+    private static final Map<String, Object> VERSION_1_2_MESSAGE_DEFAULTS = Map.ofEntries(
+            Map.entry("Messages.Party-Usage", List.of(
+                    "&e/p invite|kick|promote|demote|transfer <player>",
+                    "&e/p accept|deny|leave|disband|list|menu")),
+            Map.entry("Messages.Party-Invite-Received", List.of(
+                    "&e<player> &ainvited you to &e<leader>'s &aparty.",
+                    "&7Use &e/p accept &7or &e/p deny&7.")),
+            Map.entry("Messages.Challenge-Received", List.of(
+                    "&e<player> &ahas challenged you!",
+                    "&7Mode: &f<mode> &8| &7Kit: &f<kit>",
+                    "&7Combat: &f<combat> &8| &7Map: &f<arena>",
+                    "&7Use &e/duel accept &7or &e/duel deny&7.")),
+            Map.entry("Messages.Message-Usage", List.of("&cUsage: /msg <player> <message>")),
+            Map.entry("Messages.Friend-Usage", List.of(
+                    "&e/friend add|accept|deny|remove|best <player>", "&e/friend list")),
+            Map.entry("Messages.Friend-Request-Received", List.of(
+                    "&e<player> &asent you a friend request.",
+                    "&7Use &e/friend accept <player> &7or &e/friend deny <player>&7.")),
+            Map.entry("Messages.Kit-Editor-Usage", List.of("&cUsage: /kiteditor <kit>")));
 
     private final Duels plugin;
 
@@ -177,20 +214,33 @@ public final class AdvancedConfiguration
 
     static boolean migrate(String fileName, YamlConfiguration configured, YamlConfiguration bundled)
     {
-        if (configured.getInt("Config-Version", 0) >= 2) return false;
+        int version = configured.getInt("Config-Version", 0);
+        boolean changed = false;
         if ("display.yml".equals(fileName)
+                && version < 2
                 && configured.getStringList(LOBBY_LINES).equals(LEGACY_REVERSED_LOBBY))
         {
             configured.set(LOBBY_LINES, NATURAL_LOBBY);
-            return true;
+            changed = true;
         }
-        if ("messages.yml".equals(fileName) && bundled != null
-                && configured.getStringList(HELP_MENU).equals(LEGACY_HELP))
+        if ("messages.yml".equals(fileName) && bundled != null && version < 3)
         {
-            configured.set(HELP_MENU, bundled.getStringList(HELP_MENU));
-            return true;
+            List<String> currentHelp = configured.getStringList(HELP_MENU);
+            if (currentHelp.equals(LEGACY_HELP) || currentHelp.equals(VERSION_1_2_HELP))
+            {
+                configured.set(HELP_MENU, bundled.getStringList(HELP_MENU));
+                changed = true;
+            }
+            for (Map.Entry<String, Object> entry : VERSION_1_2_MESSAGE_DEFAULTS.entrySet())
+            {
+                if (Objects.equals(configured.get(entry.getKey()), entry.getValue()))
+                {
+                    configured.set(entry.getKey(), bundled.get(entry.getKey()));
+                    changed = true;
+                }
+            }
         }
-        return false;
+        return changed;
     }
 
     static boolean updateSchemaVersion(YamlConfiguration configured, YamlConfiguration bundled)

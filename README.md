@@ -2,7 +2,7 @@
 
 HyXDuels is a multi-arena duel plugin with AdvancedSlimePaper-backed arena worlds, aggregate combat statistics, and configurable per-kit win divisions.
 
-The Maven release line starts at **1.0.0** under `me.alphatct3209`; the current release is **1.2.0**. Versioning follows the project policy: feature releases increment the middle number, fixes/minor updates increment the patch number, and exceptionally large compatibility generations increment the first number.
+The Maven release line starts at **1.0.0** under `me.alphatct3209`; the current release is **1.3.0**. Versioning follows the project policy: feature releases increment the middle number, fixes/minor updates increment the patch number, and exceptionally large compatibility generations increment the first number.
 
 ## Runtime requirements
 
@@ -23,7 +23,7 @@ Fresh installations use a purpose-based layout:
 
 When upgrading from the former flat layout, HyXDuels copies each legacy root file into its new folder and retains the original as a backup. Existing `Kits` and `Arenas` sections in `config.yml` are imported into `data/kits.yml` and `data/arenas.yml`. New writes target only the organized files.
 
-Updates do not require deleting the HyXDuels data folder. On startup, `config.yml` receives newly shipped defaults and every bundled `advanced/*.yml` file is synchronized against its versioned schema: missing files and keys are added, administrator values and unknown custom keys are preserved, and only paths explicitly retired by a named migration may be removed. Runtime-owned files under `data/` are never schema-pruned. Version 1.1.2 also migrates the exact legacy reversed lobby-sidebar default into natural top-to-bottom order while leaving customized line lists untouched.
+Updates do not require deleting the HyXDuels data folder. On startup, `config.yml` receives newly shipped defaults and every bundled `advanced/*.yml` file is synchronized against its versioned schema: missing files and keys are added, administrator values and unknown custom keys are preserved, and only paths explicitly retired by a named migration may be removed. Runtime-owned files under `data/` are never schema-pruned. Version 1.1.2 migrates the exact legacy reversed lobby-sidebar default into natural top-to-bottom order. Version 1.3.0 migrates only unchanged built-in command help and usage messages to the structured command paths; customized values remain untouched.
 
 ## Arena world lifecycle
 
@@ -31,7 +31,7 @@ Every nonblank world referenced by a saved arena's `Spawn-One`, `Spawn-Two`, or 
 
 After every completed `PLAYING` duel (death, forfeit, or quit), the map enters `REGENERATING` and cannot accept players. If several arenas share that map, new admissions are locked immediately, queued/countdown occupants are restored, and existing matches may finish. Once drained, HyXDuels evacuates remaining players, requires a successful `Bukkit.unloadWorld(world, false)`, rereads the same read-only `.slime` template, loads and verifies a fresh Bukkit world, rebinds all arena locations by canonical world name, and only then returns affected arenas to `IDLE`. Failures keep the map unavailable and retry persistently with a capped, log-throttled delay; investigate the actionable server error rather than expecting a modified runtime map to be saved.
 
-Every `/duel join` admission additionally requires each saved location to reference the exact current Bukkit `World` instance owned by ASP—not merely a world with the same name. Immediately before teleport, HyXDuels synchronously probes the destination chunk and rechecks both the world identity and regeneration lock. A stale location or shut-down chunk system rejects and rolls back the admission without moving the player. Unexpected external unload requests for managed worlds are cancelled and rerouted through the same locked drain/regeneration lifecycle.
+Every `/duels queue join` admission additionally requires each saved location to reference the exact current Bukkit `World` instance owned by ASP—not merely a world with the same name. Immediately before teleport, HyXDuels synchronously probes the destination chunk and rechecks both the world identity and regeneration lock. A stale location or shut-down chunk system rejects and rolls back the admission without moving the player. Unexpected external unload requests for managed worlds are cancelled and rerouted through the same locked drain/regeneration lifecycle.
 
 On disable, retries and challenges are stopped, countdowns are cancelled, arena players are restored, and managed worlds are evacuated where a safe non-managed destination exists before unloading without saving.
 
@@ -39,20 +39,22 @@ On disable, retries and challenges are stopped, countdowns are cancelled, arena 
 
 Overall wins and kills are lifetime aggregate combat statistics. A completed win increments the winner's current win streak and updates their highest win streak when a new personal best is reached; the loser's current streak resets to zero. Losses and deaths remain tracked, while division progress is independent for each configured mode.
 
-- `/duels stats` — your aggregate statistics and selected kit; falls back to `Default`.
-- `/duels stats <player>` — preserves the existing player lookup form and uses that online player's selected kit or `Default` for an offline player.
-- `/duels stats <player> <gamemode>` — aggregate statistics plus the requested gamemode's wins, current division, next division, and wins required for the next division.
-- `/duels stats <gamemode>` — when no player with that name exists, shows your own statistics for that gamemode.
-- `/duels top wins` and `/duels top kills` — aggregate top-ten leaderboards.
-- `/duels top divisions <gamemode>` — top ten by that gamemode's wins, displaying each player's division and wins.
+The only public command roots are `/duel <player>` for the direct challenge shortcut and `/duels` for the organized command tree. `/duels help [page]` displays the configurable index in bounded pages. Functions are grouped under `/duels queue`, `/duels challenge`, `/duels kits`, `/duels modes`, `/duels arena`, `/duels stats`, `/duels party`, `/duels social`, `/duels hologram`, and `/duels admin`; tab completion follows the same hierarchy.
+
+- `/duels stats view` — your aggregate statistics and selected kit; falls back to `Default`.
+- `/duels stats view <player>` — uses that online player's selected kit or `Default` for an offline player.
+- `/duels stats view <player> <gamemode>` — aggregate statistics plus the requested gamemode's wins, current division, next division, and wins required for the next division.
+- `/duels stats view <gamemode>` — when no player with that name exists, shows your own statistics for that gamemode.
+- `/duels stats leaderboard wins` and `/duels stats leaderboard kills` — aggregate top-ten leaderboards.
+- `/duels stats leaderboard divisions <gamemode>` — top ten by that gamemode's wins, displaying each player's division and wins.
 
 Gamemode command arguments accept either the configured kit name or its safe mode key. Tab completion offers both.
 
 ## Player menus and challenges
 
-`/duel menu` (`duels.gui`, granted by default) and the default glowing diamond sword in hotbar slot 0 open the mode queue. Selecting a single-kit mode such as Bed Wars immediately enters matchmaking; selecting a multi-kit mode such as Classic opens the kit menu first. Matchmaking keys include the canonical mode, kit, and combat profile, and `/duel leave` removes a waiting player from the queue. Two matching players are admitted atomically into a completely empty compatible arena.
+`/duels queue open` (`duels.gui`, granted by default) and the default glowing diamond sword in hotbar slot 0 open the mode queue. Selecting a single-kit mode such as Bed Wars immediately enters matchmaking; selecting a multi-kit mode such as Classic opens the kit menu first. Matchmaking keys include the canonical mode, kit, and combat profile, and `/duels queue leave` removes a waiting player from the queue. Two matching players are admitted atomically into a completely empty compatible arena.
 
-`/duel <player>` and `/duel challenge <player>` open the same mode→kit flow, but completion sends that exact visible online player a request instead of joining random matchmaking. The request captures mode, kit, optional arena, and combat profile until `/duel accept`, `/duel deny`, expiry, or disconnect cleanup.
+`/duel <player>` and `/duels challenge send <player>` open the same mode→kit flow, but completion sends that exact visible online player a request instead of joining random matchmaking. The request captures mode, kit, optional arena, and combat profile until `/duels challenge accept`, `/duels challenge deny`, expiry, or disconnect cleanup.
 
 `advanced/menus.yml` independently configures menu titles, slots, materials, names, lore, party action commands, messages, settings entries, kit-editor controls, and tagged opener items. Openers support `DUEL_MENU`, `MODE_SELECTOR`, `MAP_SELECTOR`, `SETTINGS`, `PARTY`, and `KIT_EDITOR` plus material, slot, name, lore, glow, lock, force-slot, and custom-model-data settings. Items use a plugin PDC tag rather than their display name. Forced lobby slots temporarily preserve and later restore their original contents before duel admission, logout, or plugin shutdown; non-forced items fall back to the first empty inventory slot. Locked openers cannot be moved, swapped, or dropped. The shipped lobby hotbar places Queue Duels in slot 0, Create / Manage Party in slot 1, Kit Editor in slot 6, and Player Settings in slot 7.
 
@@ -76,25 +78,25 @@ UHC gives each participant three custom Golden Heads rendered with that particip
 
 Arena routing writes `Arenas.<id>.Allowed-Modes` through `/duels arena modes <id> list|add|remove|clear [mode]` (`duels.arenamodes`). The global matrix is unchanged: a listed mode uses only arenas listing it, while modes not listed anywhere use empty-route arenas. Legacy `Allowed-Kits` is read only when `Allowed-Modes` is absent. A legacy entry resolves as a mode key/alias first; otherwise its kit must belong to exactly one mode or startup rejects the ambiguity. If both fields exist, `Allowed-Modes` is authoritative and the old field is left untouched. The first queue entrant claims the arena mode; entrant two must match it, while each participant's exact kit is captured independently.
 
-Use `/duel <player>` or `/duel challenge <player>` for the shared configurable mode and kit picker. The player fallback is exact-name only, includes only online players visible to the sender, and never overrides a known subcommand. GUI pages cancel all top/bottom inventory clicks and drags. `/duel accept` starts the incoming challenge and `/duel deny` rejects it.
+Use `/duel <player>` or `/duels challenge send <player>` for the shared configurable mode and kit picker. The direct shortcut is exact-name only and includes only online players visible to the sender. GUI pages cancel all top/bottom inventory clicks and drags. `/duels challenge accept` starts the incoming challenge and `/duels challenge deny` rejects it.
 
 Only one pending challenge may involve a player at a time. `Challenges.Timeout-Seconds` defaults to 60 seconds; expiry and quit cleanup use unique request tokens so stale tasks cannot affect later requests. Acceptance revalidates online state, queue state, mode, kit, combat profile, and a completely empty compatible arena. If no arena is free, the request remains pending. `Messages.Challenge-*` accepts either a scalar string or a YAML list, as do all other `Messages.*` entries. Round and kill messages are participant-only and expose the documented score, mode, kit, round, player, opponent, and health placeholders.
 
 ## Parties
 
-`/party` (alias `/p`, permission `duels.party`) provides `/p invite`, `/p kick`, `/p promote`, `/p demote`, `/p transfer`, and `/p disband`, plus the required `/p accept`, `/p deny`, `/p leave`, `/p list`, and `/p menu` flows. Parties have one leader, moderators, members, configurable size/invite expiry, and leader-controlled visibility. Moderators may invite and remove ordinary members; promotion, demotion, transfer, disband, visibility, and the management GUI remain leader-only.
+`/duels party` (permission `duels.party`) provides `invite`, `kick`, `promote`, `demote`, `transfer`, and `disband`, plus the required `accept`, `deny`, `leave`, `list`, and `menu` flows. Parties have one leader, moderators, members, configurable size/invite expiry, and leader-controlled visibility. Moderators may invite and remove ordinary members; promotion, demotion, transfer, disband, visibility, and the management GUI remain leader-only.
 
 The leader GUI in `advanced/menus.yml` contains Party FFA, Red vs Blue Team Battle, visibility, host duel, and invite-friends actions. Visibility and invites are native. Host duel opens the same mode/kit queue. FFA and Team Battle run their independently configurable console command lists (`<leader>`, `<party_size>`, and `<action>` placeholders), allowing the buttons to integrate with the server's chosen multi-player arena implementation without pretending the core two-player arena model supports arbitrary team sizes.
 
 ## Player settings, friends, and messages
 
-`/settings` (aliases `/preferences` and `/prefs`, permission `duels.settings`) opens the configurable settings GUI; the default lever opener is placed in hotbar slot 7. All nine entries in `advanced/menus.yml` have independent slot, material, name, lore, and glow settings. Preferences default on/public/anyone and persist by UUID in atomically replaced `data/player-data.yml`: Show Own Tier, Scoreboard, Profile Kits Public/Private, Friend Join Notifier, Blast Particles, Duel Requests Anyone/Friends Only, Direct Messages Anyone/Friends Only, Party Invites Anyone/Friends Only, and Friend Requests On/Off.
+`/duels social settings` (permission `duels.settings`) opens the configurable settings GUI; the default lever opener is placed in hotbar slot 7. All nine entries in `advanced/menus.yml` have independent slot, material, name, lore, and glow settings. Preferences default on/public/anyone and persist by UUID in atomically replaced `data/player-data.yml`: Show Own Tier, Scoreboard, Profile Kits Public/Private, Friend Join Notifier, Blast Particles, Duel Requests Anyone/Friends Only, Direct Messages Anyone/Friends Only, Party Invites Anyone/Friends Only, and Friend Requests On/Off.
 
-`/friend add|accept|deny|remove|list [player]` manages symmetric persistent UUID friendships. Last-known names and pending incoming requests persist across restarts. Friend-request blocking is checked before creating a request; join notifications are sent only to online friends who enabled their own notifier. Duel requests, party invitations, and direct messages are checked against the recipient's privacy setting. `/message <player> <message>` has `/msg`, `/tell`, and `/w` aliases. Viewing another player's stats renders private tier fields or selected kit as `Private`; the owner still sees their own values. Disabling Scoreboard restores the scoreboard HyXDuels replaced. Blast Particles controls only HyXDuels' participant-visible kill burst and does not claim to suppress vanilla client effects. All new responses accept a scalar or multiline YAML list under `Messages`.
+`/duels social friends add|accept|deny|remove|list [player]` manages symmetric persistent UUID friendships. Last-known names and pending incoming requests persist across restarts. Friend-request blocking is checked before creating a request; join notifications are sent only to online friends who enabled their own notifier. Duel requests, party invitations, and direct messages are checked against the recipient's privacy setting. `/duels social message <player> <message>` sends privacy-aware direct messages. Viewing another player's stats renders private tier fields or selected kit as `Private`; the owner still sees their own values. Disabling Scoreboard restores the scoreboard HyXDuels replaced. Blast Particles controls only HyXDuels' participant-visible kill burst and does not claim to suppress vanilla client effects. All new responses accept a scalar or multiline YAML list under `Messages`.
 
 ## Safe kit layout editor
 
-Operators use `/kiteditor <kit>` (`duels.kits.edit`) to edit cloned kit items in a 54-slot inventory: storage slots 0-35, boots/leggings/chestplate/helmet in 36-39, and offhand in 40. Save, reset, and cancel controls are customizable in `advanced/menus.yml`. The editor requires an empty cursor, blocks bottom-inventory access, outside clicks, shift/number/offhand/drop/double/creative actions, and allows drags only wholly within editable top slots. Closing or cancelling clears any editor-derived cursor clone, so the editor never mutates the player's real inventory or lets cloned equipment escape.
+Operators use `/duels kits edit <kit>` (`duels.kits.edit`) to edit cloned kit items in a 54-slot inventory: storage slots 0-35, boots/leggings/chestplate/helmet in 36-39, and offhand in 40. Save, reset, and cancel controls are customizable in `advanced/menus.yml`. The editor requires an empty cursor, blocks bottom-inventory access, outside clicks, shift/number/offhand/drop/double/creative actions, and allows drags only wholly within editable top slots. Closing or cancelling clears any editor-derived cursor clone, so the editor never mutates the player's real inventory or lets cloned equipment escape.
 
 Saving always writes positional `Format-Version: 2`. Existing configured kits retain their non-negative ID; editing a negative-ID built-in creates a positive-ID configured override with the same canonical key and immediately replaces that runtime kit. Legacy packed kits can therefore be safely converted through the editor.
 
@@ -172,11 +174,11 @@ This is a Maven project. Build with `mvn clean package`. The shaded plugin jar i
 
 ## Optional DecentHolograms leaderboards
 
-HyXDuels can create managed leaderboard holograms when both **PlaceholderAPI** and **DecentHolograms 2.10.1** are installed and enabled. Both are soft dependencies: HyXDuels remains enabled when either is absent, and the PlaceholderAPI expansion continues to work when DecentHolograms is absent. `/duel hologram status` reports the global switch, both plugin states, integration state, configured/owned counts, foreign-name conflicts, and the last integration/config error.
+HyXDuels can create managed leaderboard holograms when both **PlaceholderAPI** and **DecentHolograms 2.10.1** are installed and enabled. Both are soft dependencies: HyXDuels remains enabled when either is absent, and the PlaceholderAPI expansion continues to work when DecentHolograms is absent. `/duels hologram status` reports the global switch, both plugin states, integration state, configured/owned counts, foreign-name conflicts, and the last integration/config error.
 
 `advanced/holograms.yml` is independent from `config.yml`, ships with `Enabled: false` and an empty `Managed` section, and is always authoritative. HyXDuels creates each DH object with `saveToFile=false`; no managed definition is written to DecentHolograms' files. Generated lines use viewer-aware `%duels_flb_*%` placeholders and display the viewer's active filter summary. The default and per-entry update interval must be 20-72000 ticks.
 
-Right-clicking an owned leaderboard hologram opens **Leaderboard Settings**. Left/right click cycles Mode (all enabled duel modes), Time (daily, weekly, monthly, lifetime), and Players (all, friends, best friends, guild members). Apply persists the draft to `data/leaderboard-filters.yml`; Discard closes without changing the saved view. Best friends are toggled with `/friend best <player>`. Guild filtering stays plugin-neutral: set `Leaderboard-Filters.Guild-Placeholder` in `advanced/social.yml` to a PlaceholderAPI placeholder that returns the same stable guild ID for all members.
+Right-clicking an owned leaderboard hologram opens **Leaderboard Settings**. Left/right click cycles Mode (all enabled duel modes), Time (daily, weekly, monthly, lifetime), and Players (all, friends, best friends, guild members). Apply persists the draft to `data/leaderboard-filters.yml`; Discard closes without changing the saved view. Best friends are toggled with `/duels social friends best <player>`. Guild filtering stays plugin-neutral: set `Leaderboard-Filters.Guild-Placeholder` in `advanced/social.yml` to a PlaceholderAPI placeholder that returns the same stable guild ID for all members.
 
 Enable the feature by setting `Enabled: true`. A command-created entry has this shape:
 
@@ -204,10 +206,10 @@ Division entries additionally require a canonical `Gamemode` key and may use `%d
 
 Administrators with `duels.holograms.admin` (operator by default) can use:
 
-- `/duel hologram status` and `/duel hologram list`
-- `/duel hologram create <id> <wins|kills|divisions> [gamemode]` (player only; saves the current location)
-- `/duel hologram move <id>` (player only; persists the current location)
-- `/duel hologram delete <id>`
-- `/duel hologram reload` (strictly reloads and reconciles `advanced/holograms.yml`)
+- `/duels hologram status` and `/duels hologram list`
+- `/duels hologram create <id> <wins|kills|divisions> [gamemode]` (player only; saves the current location)
+- `/duels hologram move <id>` (player only; persists the current location)
+- `/duels hologram delete <id>`
+- `/duels hologram reload` (strictly reloads and reconciles `advanced/holograms.yml`)
 
 HyXDuels records the exact DH object returned for every exact name it creates. It updates, moves, or deletes a name only while DH still returns that same object instance. A preexisting or replaced foreign hologram is never adopted or modified. Reload removes only no-longer-configured owned objects; plugin disable removes only objects still verifiably owned by this runtime. Any DH `RuntimeException` or linkage failure disables this integration alone and leaves the duel plugin operational.

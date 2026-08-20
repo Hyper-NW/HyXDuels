@@ -59,7 +59,7 @@ public class LeaveDuelsSubCmd extends DuelsSubCommand
             }
             else
             {
-                incorrectArgs(sender, "/duels leave");
+                incorrectArgs(sender, "/duels queue leave");
                 return true;
             }
         }

@@ -163,7 +163,7 @@ public final class SocialManager implements Listener
         send(sender, "Messages.Friend-Request-Sent", Map.of("<player>", target.getName()),
                 "&aFriend request sent to &e<player>&a.");
         send(target, "Messages.Friend-Request-Received", Map.of("<player>", sender.getName()),
-                "&e<player> &asent you a friend request. Use &e/friend accept <player>&a.");
+                "&e<player> &asent you a friend request. Use &e/duels social friends accept <player>&a.");
         return true;
     }
 

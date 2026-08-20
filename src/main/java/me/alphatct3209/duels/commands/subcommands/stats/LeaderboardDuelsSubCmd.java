@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class LeaderboardDuelsSubCmd extends DuelsSubCommand
 {
-    private static final String USAGE = "/duels top [wins|kills|divisions <gamemode>]";
+    private static final String USAGE = "/duels stats leaderboard [wins|kills|divisions <mode>]";
 
     public LeaderboardDuelsSubCmd(Duels plugin)
     {

@@ -50,6 +50,6 @@ public final class ModesDuelsSubCmd extends DuelsSubCommand
             }
             return true;
         }
-        incorrectArgs(sender, "/duel modes list|select <mode> [kit]"); return true;
+        incorrectArgs(sender, "/duels modes list|select <mode> [kit]"); return true;
     }
 }

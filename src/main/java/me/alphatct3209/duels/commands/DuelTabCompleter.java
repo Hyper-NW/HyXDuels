@@ -26,19 +26,21 @@ public class DuelTabCompleter implements TabCompleter
         List<String> recommendations = new ArrayList<>();
         if (args.length == 1)
         {
-            recommendations.addAll(List.of("help", "menu", "join", "leave", "challenge", "accept", "deny",
-                    "kits", "modes", "stats", "top"));
+            recommendations.addAll(List.of("help", "queue", "challenge", "kits", "modes",
+                    "stats", "party", "social"));
             if (canManageArenas(sender)) recommendations.add("arena");
             if (sender.hasPermission("duels.holograms.admin")) recommendations.add("hologram");
-            if (sender.hasPermission("duels.admin")) recommendations.add("update");
-            addVisiblePlayers(sender, recommendations);
+            if (sender.hasPermission("duels.admin")) recommendations.add("admin");
         }
         else if (args.length == 2)
         {
-            if (matches(args[0], "challenge")) addVisiblePlayers(sender, recommendations);
-            else if (matches(args[0], "help")) addHelpPages(recommendations);
+            if (matches(args[0], "help")) addHelpPages(recommendations);
+            else if (matches(args[0], "queue"))
+                recommendations.addAll(List.of("help", "open", "join", "leave"));
+            else if (matches(args[0], "challenge"))
+                recommendations.addAll(List.of("help", "send", "accept", "deny"));
             else if (matches(args[0], "kits", "kit"))
-                recommendations.addAll(List.of("help", "list", "create", "delete", "select"));
+                recommendations.addAll(List.of("help", "list", "create", "delete", "select", "edit"));
             else if (matches(args[0], "modes")) recommendations.addAll(List.of("list", "select"));
             else if (matches(args[0], "arena") && canManageArenas(sender))
                 recommendations.addAll(List.of("help", "list", "create", "setlobby", "setspawn1",
@@ -46,17 +48,23 @@ public class DuelTabCompleter implements TabCompleter
             else if (args[0].equalsIgnoreCase("hologram")
                     && sender.hasPermission("duels.holograms.admin"))
                 recommendations.addAll(List.of("status", "list", "create", "move", "delete", "reload"));
-            else if (isLeaderboard(args[0]))
-                recommendations.addAll(List.of("wins", "kills", "divisions"));
-            else if (args[0].equalsIgnoreCase("stats"))
-            {
-                Bukkit.getOnlinePlayers().forEach(player -> recommendations.add(player.getName()));
-                addModes(recommendations);
-            }
+            else if (matches(args[0], "stats"))
+                recommendations.addAll(List.of("help", "view", "leaderboard"));
+            else if (matches(args[0], "party"))
+                recommendations.addAll(List.of("help", "invite", "kick", "promote", "demote",
+                        "transfer", "accept", "deny", "leave", "disband", "list", "menu"));
+            else if (matches(args[0], "social"))
+                recommendations.addAll(List.of("help", "friends", "message", "settings"));
+            else if (matches(args[0], "admin") && sender.hasPermission("duels.admin"))
+                recommendations.addAll(List.of("help", "update", "load-old-stats", "file-to-sql"));
         }
         else if (args.length == 3)
         {
-            if (matches(args[0], "arena") && matches(args[1],
+            if (matches(args[0], "queue") && matches(args[1], "join"))
+                addArenaIds(recommendations);
+            else if (matches(args[0], "challenge") && matches(args[1], "send"))
+                addVisiblePlayers(sender, recommendations);
+            else if (matches(args[0], "arena") && matches(args[1],
                     "modes", "kits", "settings", "point", "objective"))
                 addArenaIds(recommendations);
             else if (args[0].equalsIgnoreCase("hologram")
@@ -65,10 +73,21 @@ public class DuelTabCompleter implements TabCompleter
             else if (args[0].equalsIgnoreCase("modes") && args[1].equalsIgnoreCase("select"))
                 addModes(recommendations);
             else if (matches(args[0], "kits", "kit")
-                    && matches(args[1], "delete", "select")) addKits(recommendations);
-            else if (isLeaderboard(args[0]) && args[1].equalsIgnoreCase("divisions"))
+                    && matches(args[1], "delete", "select", "edit")) addKits(recommendations);
+            else if (matches(args[0], "stats") && matches(args[1], "view"))
+            {
+                addVisiblePlayers(sender, recommendations);
                 addModes(recommendations);
-            else if (args[0].equalsIgnoreCase("stats")) addModes(recommendations);
+            }
+            else if (matches(args[0], "stats") && matches(args[1], "leaderboard"))
+                recommendations.addAll(List.of("wins", "kills", "divisions"));
+            else if (matches(args[0], "party")
+                    && matches(args[1], "invite", "kick", "promote", "demote", "transfer"))
+                addVisiblePlayers(sender, recommendations);
+            else if (matches(args[0], "social") && matches(args[1], "friends"))
+                recommendations.addAll(List.of("add", "accept", "deny", "remove", "best", "list"));
+            else if (matches(args[0], "social") && matches(args[1], "message"))
+                addVisiblePlayers(sender, recommendations);
         }
         else if (args.length == 4)
         {
@@ -87,6 +106,13 @@ public class DuelTabCompleter implements TabCompleter
                 recommendations.addAll(List.of("wins", "kills", "divisions"));
             else if (args[0].equalsIgnoreCase("modes") && args[1].equalsIgnoreCase("select"))
                 addAllowedKits(args[2], recommendations);
+            else if (matches(args[0], "stats") && matches(args[1], "view"))
+                addModes(recommendations);
+            else if (matches(args[0], "stats") && matches(args[1], "leaderboard")
+                    && matches(args[2], "divisions")) addModes(recommendations);
+            else if (matches(args[0], "social") && matches(args[1], "friends")
+                    && matches(args[2], "add", "accept", "deny", "remove", "best"))
+                addVisiblePlayers(sender, recommendations);
         }
         else if (args.length == 5)
         {
@@ -104,7 +130,7 @@ public class DuelTabCompleter implements TabCompleter
 
         if (recommendations.isEmpty())
         {
-            return null;
+            return List.of();
         }
         String prefix = args[args.length - 1].toLowerCase(Locale.ROOT);
         return recommendations.stream()
@@ -182,9 +208,4 @@ public class DuelTabCompleter implements TabCompleter
         });
     }
 
-    private boolean isLeaderboard(String value)
-    {
-        return value.equalsIgnoreCase("top") || value.equalsIgnoreCase("leaderboard")
-                || value.equalsIgnoreCase("lb");
-    }
 }

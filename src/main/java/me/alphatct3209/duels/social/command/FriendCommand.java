@@ -80,7 +80,8 @@ public final class FriendCommand implements CommandExecutor, TabCompleter
     private void usage(Player player)
     {
         MessageService.send(player, plugin.getConfig(), "Messages.Friend-Usage", Map.of(),
-                "&e/friend add|accept|deny|remove|best <player>", "&e/friend list");
+                "&e/duels social friends add|accept|deny|remove|best <player>",
+                "&e/duels social friends list");
     }
 
     @Override

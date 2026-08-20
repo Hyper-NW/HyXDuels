@@ -23,7 +23,7 @@ public final class MenuDuelsSubCmd extends DuelsSubCommand
         }
         if (args.length != 0)
         {
-            incorrectArgs(sender, "/duel menu");
+            incorrectArgs(sender, "/duels queue open");
             return true;
         }
         plugin.getDuelMenuManager().open(player);

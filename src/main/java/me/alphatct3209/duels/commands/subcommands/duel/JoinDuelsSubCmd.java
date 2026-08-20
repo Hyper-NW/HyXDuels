@@ -32,7 +32,7 @@ public class JoinDuelsSubCmd extends DuelsSubCommand
         }
         if (args.length > 1)
         {
-            incorrectArgs(sender, "/duels join [arena id]");
+            incorrectArgs(sender, "/duels queue join [arena id]");
             return true;
         }
         if (plugin.getArenaManager().getArena(player) != null)

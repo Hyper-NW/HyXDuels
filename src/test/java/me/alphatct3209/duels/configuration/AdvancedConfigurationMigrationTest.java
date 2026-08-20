@@ -61,4 +61,34 @@ class AdvancedConfigurationMigrationTest
         assertEquals(List.of("&aMy custom first line", "&bMy custom second line"),
                 custom.getStringList(LOBBY_LINES));
     }
+
+    @Test
+    void migratesOnlyUnchangedVersionTwoCommandMessages()
+    {
+        YamlConfiguration configured = new YamlConfiguration();
+        configured.set("Config-Version", 2);
+        configured.set("Messages.Help-Menu", List.of("&aMy private help entry"));
+        configured.set("Messages.Message-Usage",
+                List.of("&cUsage: /msg <player> <message>"));
+        configured.set("Messages.Party-Invite-Received", List.of(
+                "&e<player> &ainvited you to &e<leader>'s &aparty.",
+                "&7Use &e/p accept &7or &e/p deny&7."));
+        configured.set("Messages.Friend-Usage", List.of("&bMy custom friend syntax"));
+
+        YamlConfiguration bundled = YamlConfiguration.loadConfiguration(
+                new java.io.File("src/main/resources/advanced/messages.yml"));
+
+        assertTrue(AdvancedConfiguration.migrate("messages.yml", configured, bundled));
+        assertEquals(List.of("&aMy private help entry"),
+                configured.getStringList("Messages.Help-Menu"));
+        assertEquals(List.of("&cUsage: /duels social message <player> <message>"),
+                configured.getStringList("Messages.Message-Usage"));
+        assertEquals(List.of(
+                        "&e<player> &ainvited you to &e<leader>'s &aparty.",
+                        "&7Use &e/duels party accept &7or &e/duels party deny&7."),
+                configured.getStringList("Messages.Party-Invite-Received"));
+        assertEquals(List.of("&bMy custom friend syntax"),
+                configured.getStringList("Messages.Friend-Usage"));
+        assertFalse(AdvancedConfiguration.migrate("messages.yml", configured, bundled));
+    }
 }

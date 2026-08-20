@@ -4,6 +4,7 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import me.alphatct3209.duels.challenge.ChallengeManager;
 import me.alphatct3209.duels.commands.DuelCmd;
 import me.alphatct3209.duels.commands.DuelTabCompleter;
+import me.alphatct3209.duels.commands.DirectDuelCommand;
 import me.alphatct3209.duels.configuration.GameDataConfiguration;
 import me.alphatct3209.duels.configuration.AdvancedConfiguration;
 import me.alphatct3209.duels.divisions.DivisionManager;
@@ -12,7 +13,6 @@ import me.alphatct3209.duels.game.arenas.ArenaManager;
 import me.alphatct3209.duels.game.modes.DuelSelectionService;
 import me.alphatct3209.duels.game.modes.ModeManager;
 import me.alphatct3209.duels.game.kits.KitManager;
-import me.alphatct3209.duels.game.kits.KitEditorCommand;
 import me.alphatct3209.duels.game.kits.KitLayoutEditor;
 import me.alphatct3209.duels.gui.DuelMenuManager;
 import me.alphatct3209.duels.hologram.HologramManager;
@@ -26,14 +26,9 @@ import me.alphatct3209.duels.listeners.ModeMechanicsListener;
 import me.alphatct3209.duels.listeners.PlayerListener;
 import me.alphatct3209.duels.listeners.StatsListener;
 import me.alphatct3209.duels.party.PartyManager;
-import me.alphatct3209.duels.party.command.PartyCommand;
-import me.alphatct3209.duels.party.command.PartyTabCompleter;
 import me.alphatct3209.duels.party.gui.PartyGui;
 import me.alphatct3209.duels.queue.DuelQueueManager;
 import me.alphatct3209.duels.social.SocialManager;
-import me.alphatct3209.duels.social.command.FriendCommand;
-import me.alphatct3209.duels.social.command.MessageCommand;
-import me.alphatct3209.duels.social.command.SettingsCommand;
 import me.alphatct3209.duels.social.gui.SettingsGui;
 import me.alphatct3209.duels.stats.StatisticsManager;
 import me.alphatct3209.duels.stats.db.DatabaseType;
@@ -172,21 +167,12 @@ public class Duels extends JavaPlugin
             getLogger().warning("Managed holograms are disabled; HyXDuels will continue normally.");
         }
 
-        DuelCmd duelCommand = new DuelCmd(this);
-        getCommand("duel").setExecutor(duelCommand);
-        getCommand("duel").setTabCompleter(new DuelTabCompleter(this));
-        PartyCommand partyCommand = new PartyCommand(this);
-        getCommand("party").setExecutor(partyCommand);
-        getCommand("party").setTabCompleter(
-                new PartyTabCompleter(this));
-        FriendCommand friendCommand = new FriendCommand(this);
-        getCommand("friend").setExecutor(friendCommand);
-        getCommand("friend").setTabCompleter(friendCommand);
-        getCommand("message").setExecutor(new MessageCommand(this));
-        getCommand("settings").setExecutor(new SettingsCommand(this));
-        KitEditorCommand kitEditorCommand = new KitEditorCommand(this);
-        getCommand("kiteditor").setExecutor(kitEditorCommand);
-        getCommand("kiteditor").setTabCompleter(kitEditorCommand);
+        DirectDuelCommand directDuelCommand = new DirectDuelCommand(this);
+        getCommand("duel").setExecutor(directDuelCommand);
+        getCommand("duel").setTabCompleter(directDuelCommand);
+        DuelCmd duelsCommand = new DuelCmd(this);
+        getCommand("duels").setExecutor(duelsCommand);
+        getCommand("duels").setTabCompleter(new DuelTabCompleter(this));
 
         getServer().getPluginManager().registerEvents(slimeWorldManager, this);
         getServer().getPluginManager().registerEvents(new ArenaListener(this), this);

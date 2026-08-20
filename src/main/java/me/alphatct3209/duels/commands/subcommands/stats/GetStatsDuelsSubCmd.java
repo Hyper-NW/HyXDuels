@@ -66,7 +66,7 @@ public class GetStatsDuelsSubCmd extends DuelsSubCommand
     @Override public boolean execute(CommandSender sender, String[] args)
     {
         if (!sender.hasPermission("duels.stats")) { noPerm(sender); return true; }
-        if (args.length > 2) { incorrectArgs(sender, "/duels stats [player] [mode]"); return true; }
+        if (args.length > 2) { incorrectArgs(sender, "/duels stats view [player] [mode]"); return true; }
         Target target;
         DuelMode mode;
         Kit kit;
