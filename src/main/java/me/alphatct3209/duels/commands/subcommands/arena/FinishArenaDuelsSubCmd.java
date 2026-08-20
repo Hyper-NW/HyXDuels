@@ -35,7 +35,7 @@ public class FinishArenaDuelsSubCmd extends DuelsSubCommand
                 if(arenaConfig == null)
                 {
                     player.sendMessage(ChatColor.RED + "You must do " + ChatColor.YELLOW +
-                            "/duels createarena <arena name> " +
+                            "/duels arena create <arena name> " +
                             ChatColor.RED + "before doing that!");
                     return true;
                 }
@@ -65,7 +65,7 @@ public class FinishArenaDuelsSubCmd extends DuelsSubCommand
             }
             else
             {
-                incorrectArgs(sender, "/duels finisharena");
+                incorrectArgs(sender, "/duels arena finish");
                 return true;
             }
         }

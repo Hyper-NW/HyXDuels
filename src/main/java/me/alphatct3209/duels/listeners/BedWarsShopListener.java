@@ -5,6 +5,8 @@ import me.alphatct3209.duels.game.GameState;
 import me.alphatct3209.duels.game.arenas.Arena;
 import me.alphatct3209.duels.game.modes.ModeHandlerType;
 import me.alphatct3209.duels.game.modes.bedwars.BedWarsUpgrade;
+import me.alphatct3209.duels.gui.config.MenuConfiguration;
+import me.alphatct3209.duels.gui.item.MenuItemFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,8 +33,13 @@ public final class BedWarsShopListener implements Listener
 {
     private static final Map<Integer, Offer> OFFERS = offers();
     private final Duels plugin;
+    private final MenuItemFactory items;
 
-    public BedWarsShopListener(Duels plugin) { this.plugin = plugin; }
+    public BedWarsShopListener(Duels plugin)
+    {
+        this.plugin = plugin;
+        this.items = new MenuItemFactory(plugin, new MenuConfiguration(plugin));
+    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockInteract(PlayerInteractEvent event)
@@ -128,6 +135,7 @@ public final class BedWarsShopListener implements Listener
         Inventory inventory = Bukkit.createInventory(holder, 27, ChatColor.DARK_GRAY + "Bed Wars Quick Shop");
         holder.inventory = inventory;
         OFFERS.forEach((slot, offer) -> inventory.setItem(slot, icon(offer)));
+        items.fillEmpty(inventory);
         player.openInventory(inventory);
     }
 

@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProjectMetadataTest
 {
     @Test
-    void usesTheAlphatctNamespaceAndOnePointOnePatchRelease() throws Exception
+    void usesTheAlphatctNamespaceAndOnePointTwoFeatureRelease() throws Exception
     {
         String pom = Files.readString(Path.of("pom.xml"));
         assertTrue(pom.contains("<groupId>me.alphatct3209</groupId>"));
-        assertTrue(pom.contains("<version>1.1.2</version>"));
+        assertTrue(pom.contains("<version>1.2.0</version>"));
         YamlConfiguration plugin = YamlConfiguration.loadConfiguration(
                 new File("src/main/resources/plugin.yml"));
         assertEquals("me.alphatct3209.duels.Duels", plugin.getString("main"));

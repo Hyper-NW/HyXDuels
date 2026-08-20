@@ -2,6 +2,8 @@ package me.alphatct3209.duels.stats.filter;
 
 import me.alphatct3209.duels.Duels;
 import me.alphatct3209.duels.game.modes.DuelMode;
+import me.alphatct3209.duels.gui.config.MenuConfiguration;
+import me.alphatct3209.duels.gui.item.MenuItemFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,6 +37,7 @@ public final class LeaderboardFilterGui implements Listener
     private final Duels plugin;
     private final LeaderboardFilterManager filters;
     private final FilteredLeaderboardService service;
+    private final MenuItemFactory items;
     private final Map<UUID, LeaderboardFilter> drafts = new HashMap<>();
 
     public LeaderboardFilterGui(Duels plugin, LeaderboardFilterManager filters,
@@ -43,6 +46,7 @@ public final class LeaderboardFilterGui implements Listener
         this.plugin = plugin;
         this.filters = filters;
         this.service = service;
+        this.items = new MenuItemFactory(plugin, new MenuConfiguration(plugin));
     }
 
     public void open(Player player)
@@ -71,6 +75,7 @@ public final class LeaderboardFilterGui implements Listener
                 List.of("&7Save these filters across lobbies.", "&eClick to apply!")));
         inventory.setItem(DISCARD_SLOT, option(Material.RED_DYE, "&cDiscard Changes",
                 List.of("&7Keep your previously saved filters.", "&eClick to discard!")));
+        items.fillEmpty(inventory);
         player.openInventory(inventory);
     }
 

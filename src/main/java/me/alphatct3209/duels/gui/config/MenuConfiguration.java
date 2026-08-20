@@ -37,6 +37,7 @@ public final class MenuConfiguration
         {
             throw new IllegalArgumentException("menus.yml Version must be 1");
         }
+        validateFiller();
         openers = parseOpeners();
         validateMainLayout();
         validatePartyLayout();
@@ -111,6 +112,34 @@ public final class MenuConfiguration
         return List.copyOf(yaml.getStringList(path));
     }
 
+    public boolean fillerEnabled()
+    {
+        return yaml.getBoolean("Filler.Enabled", true);
+    }
+
+    public Material fillerMaterial()
+    {
+        Material material = Material.matchMaterial(yaml.getString(
+                "Filler.Material", Material.GRAY_STAINED_GLASS_PANE.name()));
+        return material == null ? Material.GRAY_STAINED_GLASS_PANE : material;
+    }
+
+    public String fillerName()
+    {
+        return yaml.getString("Filler.Name", " ");
+    }
+
+    public List<String> fillerLore()
+    {
+        return yaml.contains("Filler.Lore")
+                ? List.copyOf(yaml.getStringList("Filler.Lore")) : List.of("HyXDuels");
+    }
+
+    public boolean fillerGlow()
+    {
+        return yaml.getBoolean("Filler.Glow", false);
+    }
+
 
     public List<String> messageLines(String path, String fallback)
     {
@@ -131,6 +160,16 @@ public final class MenuConfiguration
                     + (inventorySize - 1));
         }
         return slot;
+    }
+
+    private void validateFiller()
+    {
+        if (!fillerEnabled()) return;
+        Material material = Material.matchMaterial(yaml.getString(
+                "Filler.Material", Material.GRAY_STAINED_GLASS_PANE.name()));
+        if (material == null || material == Material.AIR
+                || material == Material.CAVE_AIR || material == Material.VOID_AIR)
+            throw new IllegalArgumentException("menus.yml Filler.Material is not a usable material");
     }
 
     private void validatePartyLayout()

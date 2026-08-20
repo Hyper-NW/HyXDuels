@@ -20,6 +20,7 @@ import java.util.Objects;
 public final class AdvancedConfiguration
 {
     private static final String LOBBY_LINES = "Display.Scoreboards.Lobby.Lines";
+    private static final String HELP_MENU = "Messages.Help-Menu";
     private static final List<String> LEGACY_REVERSED_LOBBY = List.of(
             "&ewww.hyxduels.net", "",
             "&fOverall Kills: &a%duels_your_overall_kills%",
@@ -36,6 +37,33 @@ public final class AdvancedConfiguration
             "&fOverall Wins: &a%duels_your_overall_wins%",
             "&fOverall Kills: &a%duels_your_overall_kills%", "",
             "&ewww.hyxduels.net");
+    private static final List<String> LEGACY_HELP = List.of(
+            "&9Duels Help Menu&f:",
+            "&6/duels help&f: &eDisplay this help menu",
+            "&6/duels menu&f: &eOpen the mode and kit queue GUI",
+            "&6/duels join [id]&f: &eJoin an available arena directly (administrative/legacy flow)",
+            "&6/duel <player> &7or &6/duel challenge <player>&f: &eUse the same mode/kit menu to send a request",
+            "&6/duel accept &7or &6/duel deny&f: &eAnswer your incoming challenge",
+            "&6/duels listarenas&f: &eList all arenas",
+            "&6/duels createarena <name> [block-break] [block-place]&f: &eBegin an arena with its protection rules",
+            "&6/duels setlobby &7or &6setspawn1 &7or &6setspawn2&f: &eSet the respective location of the arena you are currently making",
+            "&6/duels finisharena&f: &eSave and finish the arena you are currently making",
+            "&6/duels kits list&f: &eList all kits",
+            "&6/duels kits <create/delete/select> <kit name>&f: &eManage reusable kits; select changes the kit within your selected mode",
+            "&6/duels modes list &7or &6/duels modes select <mode> [kit]&f: &eList or select a first-class mode and allowed kit",
+            "&6/duels arenamodes <id> list|add|remove|clear [mode]&f: &eConfigure canonical mode routes for an arena (&7arenakits&e is deprecated)",
+            "&6/duels arenasettings <id> [list|<flag> <true|false>]&f: &eView or update administrator arena rules",
+            "&6/p invite|kick|promote|demote|transfer <player>&f: &eManage party members and roles",
+            "&6/p accept|deny|leave|disband|list|menu&f: &eAnswer invites or use the leader party GUI",
+            "&6/friend add|accept|deny|remove|best|list [player]&f: &eManage persistent friends",
+            "&6/msg <player> <message>&f: &eSend a privacy-aware direct message",
+            "&6/settings&f: &eCustomize displays, effects, and social privacy",
+            "&6/kiteditor <kit>&f: &eSafely edit a kit layout (administrator)",
+            "&6/duels stats [player] [gamemode]&f: &eView aggregate stats and gamemode division progress",
+            "&6/duels top [wins|kills|divisions <gamemode>]&f: &eView aggregate or gamemode division top 10 players",
+            "&6/duel hologram status|list|reload&f: &eInspect or reconcile managed holograms",
+            "&6/duel hologram create <id> <wins|kills|divisions> [gamemode]&f: &eCreate at your stable-world location",
+            "&6/duel hologram move|delete <id>&f: &eMove to your location or delete a managed definition");
 
     private final Duels plugin;
 
@@ -98,7 +126,7 @@ public final class AdvancedConfiguration
     {
         YamlConfiguration configured = loadYaml(file);
         YamlConfiguration bundled = loadBundled(fileName);
-        boolean changed = migrate(fileName, configured);
+        boolean changed = migrate(fileName, configured, bundled);
         changed |= mergeMissing(configured, bundled);
         changed |= updateSchemaVersion(configured, bundled);
         changed |= removeRetiredPaths(fileName, configured);
@@ -144,14 +172,25 @@ public final class AdvancedConfiguration
 
     static boolean migrate(String fileName, YamlConfiguration configured)
     {
-        if (!"display.yml".equals(fileName)
-                || configured.getInt("Config-Version", 0) >= 2
-                || !configured.getStringList(LOBBY_LINES).equals(LEGACY_REVERSED_LOBBY))
+        return migrate(fileName, configured, null);
+    }
+
+    static boolean migrate(String fileName, YamlConfiguration configured, YamlConfiguration bundled)
+    {
+        if (configured.getInt("Config-Version", 0) >= 2) return false;
+        if ("display.yml".equals(fileName)
+                && configured.getStringList(LOBBY_LINES).equals(LEGACY_REVERSED_LOBBY))
         {
-            return false;
+            configured.set(LOBBY_LINES, NATURAL_LOBBY);
+            return true;
         }
-        configured.set(LOBBY_LINES, NATURAL_LOBBY);
-        return true;
+        if ("messages.yml".equals(fileName) && bundled != null
+                && configured.getStringList(HELP_MENU).equals(LEGACY_HELP))
+        {
+            configured.set(HELP_MENU, bundled.getStringList(HELP_MENU));
+            return true;
+        }
+        return false;
     }
 
     static boolean updateSchemaVersion(YamlConfiguration configured, YamlConfiguration bundled)

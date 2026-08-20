@@ -67,6 +67,8 @@ public final class KitLayoutEditor implements Listener
                 "&eReset", List.of("&7Restore the layout from when this editor opened.")));
         inventory.setItem(CANCEL_SLOT, control("Menus.Kit-Editor.Controls.Cancel", Material.RED_DYE,
                 "&cCancel", List.of("&7Discard changes.")));
+        // Slots 0-40 represent the editable kit and must remain genuinely empty when the kit is empty.
+        items.fillEmpty(inventory, 41, SIZE);
         active.put(player.getUniqueId(), token);
         player.openInventory(inventory);
         return true;

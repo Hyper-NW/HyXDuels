@@ -39,7 +39,7 @@ public class ListArenasDuelsSubCmd extends DuelsSubCommand
         }
         else
         {
-            incorrectArgs(sender, "/duels listarenas");
+            incorrectArgs(sender, "/duels arena list");
             return true;
         }
     }

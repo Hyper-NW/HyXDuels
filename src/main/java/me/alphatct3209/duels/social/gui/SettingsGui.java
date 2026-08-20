@@ -59,6 +59,7 @@ public final class SettingsGui implements Listener
             choices.put(slot, setting);
             inventory.setItem(slot, icon(path, setting, preferences));
         }
+        items.fillEmpty(inventory);
         active.put(player.getUniqueId(), token);
         player.openInventory(inventory);
     }

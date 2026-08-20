@@ -28,7 +28,7 @@ public class ArenaKitsDuelsSubCmd extends DuelsSubCommand
         }
         if (args.length < 2 || args.length > 3)
         {
-            incorrectArgs(sender, "/duel arenamodes <id> list|add|remove|clear [mode]"); return true;
+            incorrectArgs(sender, "/duels arena modes <id> list|add|remove|clear [mode]"); return true;
         }
         Arena arena = arena(sender, args[0]);
         if (arena == null) return true;
@@ -55,7 +55,7 @@ public class ArenaKitsDuelsSubCmd extends DuelsSubCommand
             else plugin.getArenaManager().removeAllowedMode(arena, mode);
             changed(sender, arena); return true;
         }
-        incorrectArgs(sender, "/duel arenamodes <id> list|add|remove|clear [mode]"); return true;
+        incorrectArgs(sender, "/duels arena modes <id> list|add|remove|clear [mode]"); return true;
     }
 
     private Arena arena(CommandSender sender, String value)

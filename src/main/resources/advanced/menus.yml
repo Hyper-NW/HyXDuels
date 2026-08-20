@@ -5,6 +5,16 @@ Enabled: true
 Give-On-Join: true
 Give-Delay-Ticks: 2
 
+# ---------- Empty GUI slots ----------
+# Existing configured menus receive this section automatically on update.
+Filler:
+  Enabled: true
+  Material: GRAY_STAINED_GLASS_PANE
+  Name: ' '
+  Lore:
+    - 'HyXDuels'
+  Glow: false
+
 # ---------- Lobby hotbar ----------
 # Tagged items never overwrite an occupied slot unless Force-Slot is true.
 # With Force-Slot false, an occupied preferred slot falls back to the first empty inventory slot.

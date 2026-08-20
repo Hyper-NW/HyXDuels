@@ -84,6 +84,15 @@ class MenuConfigurationTest
         assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(outOfRange));
     }
 
+    @Test
+    void rejectsAnInvalidEnabledFillerMaterial()
+    {
+        YamlConfiguration yaml = valid();
+        yaml.set("Filler.Enabled", true);
+        yaml.set("Filler.Material", "NOT_A_MATERIAL");
+        assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(yaml));
+    }
+
     private YamlConfiguration valid()
     {
         YamlConfiguration yaml = new YamlConfiguration();

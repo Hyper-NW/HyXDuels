@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -53,6 +54,30 @@ public final class MenuItemFactory
         }
         item.setItemMeta(meta);
         return item;
+    }
+
+    /** Fills currently empty slots without replacing any interactive or content item. */
+    public void fillEmpty(Inventory inventory)
+    {
+        fillEmpty(inventory, 0, inventory.getSize());
+    }
+
+    /** Fills currently empty slots in the half-open range, preserving editable GUI regions. */
+    public void fillEmpty(Inventory inventory, int fromInclusive, int toExclusive)
+    {
+        Objects.requireNonNull(inventory, "inventory");
+        if (!configuration.fillerEnabled()) return;
+        if (fromInclusive < 0 || toExclusive > inventory.getSize() || fromInclusive > toExclusive)
+            throw new IllegalArgumentException("Invalid filler slot range");
+        ItemStack template = icon(configuration.fillerMaterial(), configuration.fillerName(),
+                configuration.fillerLore(), configuration.fillerGlow());
+        for (int slot = fromInclusive; slot < toExclusive; slot++)
+        {
+            ItemStack current = inventory.getItem(slot);
+            if (current == null || current.getType() == Material.AIR
+                    || current.getType() == Material.CAVE_AIR || current.getType() == Material.VOID_AIR)
+                inventory.setItem(slot, template.clone());
+        }
     }
 
     public MenuOpener configured(ItemStack item)

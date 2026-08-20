@@ -12,7 +12,7 @@ public final class ArenaObjectiveDuelsSubCmd extends DuelsSubCommand
     public boolean execute(CommandSender sender, String[] args)
     {
         if (!sender.hasPermission("duels.arenaobjective")) { noPerm(sender); return true; }
-        if (args.length < 2) { incorrectArgs(sender, "/duel arenaobjective <id> list|set|remove [key] [value]"); return true; }
+        if (args.length < 2) { incorrectArgs(sender, "/duels arena objective <id> list|set|remove [key] [value]"); return true; }
         Arena arena;
         try { arena = plugin.getArenaManager().getArena(Integer.parseInt(args[0])); }
         catch (NumberFormatException exception) { arena = null; }
@@ -28,7 +28,7 @@ public final class ArenaObjectiveDuelsSubCmd extends DuelsSubCommand
                 plugin.getArenaManager().setObjective(arena, args[2], null);
             else if (args[1].equalsIgnoreCase("set") && args.length == 4)
                 plugin.getArenaManager().setObjective(arena, args[2], Double.parseDouble(args[3]));
-            else { incorrectArgs(sender, "/duel arenaobjective <id> list|set|remove [key] [value]"); return true; }
+            else { incorrectArgs(sender, "/duels arena objective <id> list|set|remove [key] [value]"); return true; }
             sender.sendMessage(ChatColor.GREEN + "Arena objective setting updated.");
         }
         catch (IllegalArgumentException exception) { sender.sendMessage(ChatColor.RED + exception.getMessage()); }

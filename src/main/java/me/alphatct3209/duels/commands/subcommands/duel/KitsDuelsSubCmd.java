@@ -28,6 +28,15 @@ public class KitsDuelsSubCmd extends DuelsSubCommand
     {
         if(sender instanceof Player player)
         {
+            if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help")))
+            {
+                player.sendMessage(ChatColor.DARK_AQUA + "HyXDuels Kit Commands");
+                player.sendMessage(ChatColor.YELLOW + "/duels kits list");
+                player.sendMessage(ChatColor.YELLOW + "/duels kits create <name>");
+                player.sendMessage(ChatColor.YELLOW + "/duels kits delete <name>");
+                player.sendMessage(ChatColor.YELLOW + "/duels kits select <name>");
+                return true;
+            }
             if(args.length == 1)
             {
                 if(args[0].equalsIgnoreCase("list"))
@@ -45,7 +54,7 @@ public class KitsDuelsSubCmd extends DuelsSubCommand
                 }
                 else
                 {
-                    incorrectArgs(player, "/duels help");
+                    incorrectArgs(player, "/duels kits help");
                     return true;
                 }
             }
@@ -138,7 +147,7 @@ public class KitsDuelsSubCmd extends DuelsSubCommand
             }
             else
             {
-                incorrectArgs(player, "/duels help");
+                incorrectArgs(player, "/duels kits help");
                 return true;
             }
         }

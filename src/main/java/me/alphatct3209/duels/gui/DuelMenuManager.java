@@ -826,6 +826,7 @@ public final class DuelMenuManager implements Listener
 
     private void open(Player player, MenuInventoryHolder holder, Inventory inventory)
     {
+        items.fillEmpty(inventory);
         activeInventories.put(player.getUniqueId(), holder.sessionToken());
         player.openInventory(inventory);
     }

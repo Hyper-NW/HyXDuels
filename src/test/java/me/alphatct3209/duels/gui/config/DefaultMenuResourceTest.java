@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,5 +37,10 @@ class DefaultMenuResourceTest
         assertNotNull(yaml.getConfigurationSection("Menus.Kit-Editor.Controls"));
         assertNotNull(yaml.getConfigurationSection("Menus.Kit"));
         assertNotNull(yaml.getConfigurationSection("Menus.Party.Actions"));
+        assertEquals(true, configuration.fillerEnabled());
+        assertEquals("GRAY_STAINED_GLASS_PANE", configuration.fillerMaterial().name());
+        assertEquals(" ", configuration.fillerName());
+        assertEquals(List.of("HyXDuels"), configuration.fillerLore());
+        assertEquals(false, configuration.fillerGlow());
     }
 }

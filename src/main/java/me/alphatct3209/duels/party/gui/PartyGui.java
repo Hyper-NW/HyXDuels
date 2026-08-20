@@ -63,6 +63,7 @@ public final class PartyGui implements Listener
                 "&bHost Duel", List.of("&7Open the duel mode menu."), party);
         addAction(inventory, choices, size, "Invite-Friends", "invite", 22, Material.PLAYER_HEAD,
                 "&aInvite Friends", List.of("&7Browse online players."), party);
+        items.fillEmpty(inventory);
         active.put(leader.getUniqueId(), token);
         leader.openInventory(inventory);
     }
@@ -104,6 +105,7 @@ public final class PartyGui implements Listener
                 items.icon(Material.BARRIER, configuration.text("Menus.Common.Back", "&cBack"), List.of(), false));
         if (page.hasNext()) inventory.setItem(PagedMenuLayout.NEXT_SLOT,
                 items.icon(Material.ARROW, configuration.text("Menus.Common.Next", "&eNext page"), List.of(), false));
+        items.fillEmpty(inventory);
         active.put(leader.getUniqueId(), token);
         leader.openInventory(inventory);
     }

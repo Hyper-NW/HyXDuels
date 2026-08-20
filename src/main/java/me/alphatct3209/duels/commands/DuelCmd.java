@@ -6,6 +6,7 @@ import me.alphatct3209.duels.commands.subcommands.HologramDuelsSubCmd;
 import me.alphatct3209.duels.commands.subcommands.DuelsSubCommand;
 import me.alphatct3209.duels.commands.subcommands.UpdateDuelsSubCommand;
 import me.alphatct3209.duels.commands.subcommands.arena.ArenaKitsDuelsSubCmd;
+import me.alphatct3209.duels.commands.subcommands.arena.ArenaDuelsSubCmd;
 import me.alphatct3209.duels.commands.subcommands.arena.ArenaObjectiveDuelsSubCmd;
 import me.alphatct3209.duels.commands.subcommands.arena.ArenaPointDuelsSubCmd;
 import me.alphatct3209.duels.commands.subcommands.arena.ArenaSettingsDuelsSubCmd;
@@ -57,6 +58,7 @@ public final class DuelCmd implements CommandExecutor
                 new DenyChallengeDuelsSubCmd(plugin),
                 new KitsDuelsSubCmd(plugin),
                 new ModesDuelsSubCmd(plugin),
+                new ArenaDuelsSubCmd(plugin),
                 new ListArenasDuelsSubCmd(plugin),
                 new CreateArenaDuelsSubCmd(plugin),
                 new SetLobbyDuelsSubCmd(plugin),

@@ -1,5 +1,5 @@
 # All player-facing messages. Scalars and YAML lists are both supported.
-Config-Version: 1
+Config-Version: 2
 
 Messages:
   # ---------- General match flow ----------
@@ -198,33 +198,28 @@ Messages:
   Hologram-Error: '&c<error>'
 
   # ---------- Commands and statistics ----------
+  # Help is paginated to avoid flooding chat. Accepted range: 3-10 entries per page.
+  Help-Page-Size: 6
+  Help-Header: '&9&lHyXDuels Help &7(Page <page>/<pages>)'
+  Help-Footer: '&7Use &e/duels help <page> &7to change pages.'
   Help-Menu:
-    - '&9Duels Help Menu&f:'
-    - '&6/duels help&f: &eDisplay this help menu'
-    - '&6/duels menu&f: &eOpen the mode and kit queue GUI'
-    - '&6/duels join [id]&f: &eJoin an available arena directly (administrative/legacy flow)'
-    - '&6/duel <player> &7or &6/duel challenge <player>&f: &eUse the same mode/kit menu to send a request'
-    - '&6/duel accept &7or &6/duel deny&f: &eAnswer your incoming challenge'
-    - '&6/duels listarenas&f: &eList all arenas'
-    - '&6/duels createarena <name> [block-break] [block-place]&f: &eBegin an arena with its protection rules'
-    - '&6/duels setlobby &7or &6setspawn1 &7or &6setspawn2&f: &eSet the respective location of the arena you are currently making'
-    - '&6/duels finisharena&f: &eSave and finish the arena you are currently making'
-    - '&6/duels kits list&f: &eList all kits'
-    - '&6/duels kits <create/delete/select> <kit name>&f: &eManage reusable kits; select changes the kit within your selected mode'
-    - '&6/duels modes list &7or &6/duels modes select <mode> [kit]&f: &eList or select a first-class mode and allowed kit'
-    - '&6/duels arenamodes <id> list|add|remove|clear [mode]&f: &eConfigure canonical mode routes for an arena (&7arenakits&e is deprecated)'
-    - '&6/duels arenasettings <id> [list|<flag> <true|false>]&f: &eView or update administrator arena rules'
+    - '&6/duel <player>&f: &eOpen a duel request for an online player'
+    - '&6/duel challenge <player>&f: &eOpen the mode and kit request flow'
+    - '&6/duel accept|deny&f: &eAnswer an incoming challenge'
+    - '&6/duels menu&f: &eOpen the duel queue GUI'
+    - '&6/duels join [id] &7or &6/duels leave&f: &eJoin or leave duel gameplay'
+    - '&6/duels kits help&f: &eShow structured kit management commands'
+    - '&6/duels modes list|select <mode> [kit]&f: &eList or select modes'
+    - '&6/duels arena help&f: &eShow structured arena administration commands'
+    - '&6/duels stats [player] [mode]&f: &eView aggregate and mode statistics'
+    - '&6/duels top [wins|kills|divisions <mode>]&f: &eView leaderboards'
     - '&6/p invite|kick|promote|demote|transfer <player>&f: &eManage party members and roles'
     - '&6/p accept|deny|leave|disband|list|menu&f: &eAnswer invites or use the leader party GUI'
     - '&6/friend add|accept|deny|remove|best|list [player]&f: &eManage persistent friends'
     - '&6/msg <player> <message>&f: &eSend a privacy-aware direct message'
     - '&6/settings&f: &eCustomize displays, effects, and social privacy'
     - '&6/kiteditor <kit>&f: &eSafely edit a kit layout (administrator)'
-    - '&6/duels stats [player] [gamemode]&f: &eView aggregate stats and gamemode division progress'
-    - '&6/duels top [wins|kills|divisions <gamemode>]&f: &eView aggregate or gamemode division top 10 players'
-    - '&6/duel hologram status|list|reload&f: &eInspect or reconcile managed holograms'
-    - '&6/duel hologram create <id> <wins|kills|divisions> [gamemode]&f: &eCreate at your stable-world location'
-    - '&6/duel hologram move|delete <id>&f: &eMove to your location or delete a managed definition'
+    - '&6/duels hologram status|list|create|move|delete|reload&f: &eManage leaderboard holograms'
   # Available placeholders: <name>, <wins>, <overall_wins>, <winstreak>, <win_streak>,
   # <highest_winstreak>, <highest_win_streak>, <losses>, <kills>, <overall_kills>, <deaths>, <gamemode>,
   # <gamemode_key>, <kit>, <gamemode_wins>, <division>, <next_division>, <wins_to_next>.

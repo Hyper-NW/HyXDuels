@@ -34,7 +34,7 @@ public class SetSpawn1DuelsSubCmd extends DuelsSubCommand
                 if(arenaConfig == null)
                 {
                     player.sendMessage(ChatColor.RED + "You must do " + ChatColor.YELLOW +
-                            "/duels createarena <arena name> " +
+                            "/duels arena create <arena name> " +
                             ChatColor.RED + "before doing that!");
                     return true;
                 }
@@ -45,7 +45,7 @@ public class SetSpawn1DuelsSubCmd extends DuelsSubCommand
             }
             else
             {
-                incorrectArgs(sender, "/duels createarena <arena name>");
+                incorrectArgs(sender, "/duels arena setspawn1");
                 return true;
             }
         }

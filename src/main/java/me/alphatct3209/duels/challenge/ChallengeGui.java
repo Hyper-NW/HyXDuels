@@ -2,6 +2,8 @@ package me.alphatct3209.duels.challenge;
 
 import me.alphatct3209.duels.Duels;
 import me.alphatct3209.duels.game.kits.Kit;
+import me.alphatct3209.duels.gui.config.MenuConfiguration;
+import me.alphatct3209.duels.gui.item.MenuItemFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -26,12 +28,14 @@ public final class ChallengeGui implements Listener
 {
     private final Duels plugin;
     private final ChallengeManager challenges;
+    private final MenuItemFactory items;
     private final Map<UUID, UUID> activeSessions = new HashMap<>();
 
     ChallengeGui(Duels plugin, ChallengeManager challenges)
     {
         this.plugin = plugin;
         this.challenges = challenges;
+        this.items = new MenuItemFactory(plugin, new MenuConfiguration(plugin));
     }
 
     public void open(Player viewer, Player target, int requestedPage)
@@ -69,6 +73,7 @@ public final class ChallengeGui implements Listener
             inventory.setItem(ChallengeGuiLayout.NEXT_SLOT,
                     named(Material.ARROW, "Challenges.Gui.Next", "&eNext page"));
         }
+        items.fillEmpty(inventory);
 
         activeSessions.put(viewer.getUniqueId(), token);
         viewer.openInventory(inventory);

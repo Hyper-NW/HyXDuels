@@ -87,6 +87,6 @@ public class ArenaSettingsDuelsSubCmd extends DuelsSubCommand
 
     private void usage(CommandSender sender)
     {
-        incorrectArgs(sender, "/duel arenasettings <id> [list|<flag> <true|false>]");
+        incorrectArgs(sender, "/duels arena settings <id> [list|<flag> <true|false>]");
     }
 }

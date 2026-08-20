@@ -7,8 +7,8 @@ api-version: '1.21.11'
 description: A duel system with AdvancedSlimePaper-backed arena worlds and configurable per-kit win divisions.
 commands:
   duel:
-    description: Duels, aggregate statistics, and per-gamemode divisions
-    usage: /<command> help
+    description: Player duels and structured HyXDuels administration
+    usage: /<command> help [page]
     aliases: [duels, 1v1, 1v1duel, duel1v1]
   party:
     description: Create and manage duel parties
@@ -30,6 +30,15 @@ commands:
     description: Safely edit a kit inventory layout
     usage: /<command> <kit>
 permissions:
+  duels.help:
+    description: View paginated HyXDuels command help
+    default: true
+  duels.admin:
+    description: Run maintenance and migration commands
+    default: op
+  duels.join:
+    description: Join an arena directly by optional id
+    default: true
   duels.queue:
     description: Join random duel matchmaking queues
     default: true
@@ -50,6 +59,18 @@ permissions:
     default: true
   duels.kits.edit:
     description: Edit kit storage, armor, and offhand layouts safely
+    default: op
+  duels.kits.list:
+    description: List configured duel kits
+    default: true
+  duels.kits.select:
+    description: Select an allowed kit for the current duel mode
+    default: true
+  duels.kits.create:
+    description: Create duel kits from the player's inventory
+    default: op
+  duels.kits.delete:
+    description: Delete unreferenced configured duel kits
     default: op
   duels.gui:
     description: Open and use the player duel, mode, map, and opponent menus
@@ -77,6 +98,12 @@ permissions:
     default: true
   duels.arenamodes:
     description: Configure stable mode routes for duel arenas
+    default: op
+  duels.createarena:
+    description: Create and finish duel arena definitions
+    default: op
+  duels.listarenas:
+    description: List configured duel arenas
     default: op
   duels.arenapoint:
     description: Configure generic objective point markers

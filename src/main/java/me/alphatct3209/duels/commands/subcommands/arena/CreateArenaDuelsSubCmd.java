@@ -33,7 +33,7 @@ public class CreateArenaDuelsSubCmd extends DuelsSubCommand
         }
         if (args.length < 1 || args.length > 3)
         {
-            incorrectArgs(sender, "/duel createarena <name> [block-break] [block-place]");
+            incorrectArgs(sender, "/duels arena create <name> [block-break] [block-place]");
             return true;
         }
         Boolean blockBreak = args.length >= 2 ? booleanValue(args[1]) : Boolean.FALSE;

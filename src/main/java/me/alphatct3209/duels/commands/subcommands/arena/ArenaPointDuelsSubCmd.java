@@ -13,7 +13,7 @@ public final class ArenaPointDuelsSubCmd extends DuelsSubCommand
     public boolean execute(CommandSender sender, String[] args)
     {
         if (!sender.hasPermission("duels.arenapoint")) { noPerm(sender); return true; }
-        if (args.length < 2) { incorrectArgs(sender, "/duel arenapoint <id> list|set|remove [name]"); return true; }
+        if (args.length < 2) { incorrectArgs(sender, "/duels arena point <id> list|set|remove [name]"); return true; }
         Arena arena;
         try { arena = plugin.getArenaManager().getArena(Integer.parseInt(args[0])); }
         catch (NumberFormatException exception) { arena = null; }
@@ -24,7 +24,7 @@ public final class ArenaPointDuelsSubCmd extends DuelsSubCommand
                     ? "none" : String.join(", ", arena.getPoints().keySet())));
             return true;
         }
-        if (args.length != 3) { incorrectArgs(sender, "/duel arenapoint <id> set|remove <name>"); return true; }
+        if (args.length != 3) { incorrectArgs(sender, "/duels arena point <id> set|remove <name>"); return true; }
         try
         {
             if (args[1].equalsIgnoreCase("remove")) plugin.getArenaManager().removePoint(arena, args[2]);
@@ -33,7 +33,7 @@ public final class ArenaPointDuelsSubCmd extends DuelsSubCommand
                 if (!(sender instanceof Player player)) { sender.sendMessage(ChatColor.RED + "Setting a point requires a player."); return true; }
                 plugin.getArenaManager().setPoint(arena, args[2], player.getLocation());
             }
-            else { incorrectArgs(sender, "/duel arenapoint <id> list|set|remove [name]"); return true; }
+            else { incorrectArgs(sender, "/duels arena point <id> list|set|remove [name]"); return true; }
             sender.sendMessage(ChatColor.GREEN + "Arena point updated.");
         }
         catch (IllegalArgumentException exception) { sender.sendMessage(ChatColor.RED + exception.getMessage()); }
