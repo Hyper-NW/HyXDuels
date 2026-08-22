@@ -55,6 +55,10 @@ public final class ModeConfigParser
 
             Map<String, ?> combat = map(values.get("combat"), path + ".combat");
             rejectUnknown(combat, COMBAT_FIELDS, path + ".combat");
+            boolean naturalRegeneration = bool(combat, "natural-regeneration", path);
+            if (naturalRegeneration)
+                fail(path + ".combat.natural-regeneration must be false; duel healing is limited "
+                        + "to Regeneration effects and health potions");
             Set<String> aliases = new LinkedHashSet<>(strings(values, "aliases", path));
             if (key.value().equals("classic")) aliases.add("default");
             for (String alias : aliases)
@@ -70,7 +74,7 @@ public final class ModeConfigParser
                     enumeration(values, "reset-policy", path, ResetPolicy.class),
                     new CombatFlags(bool(combat, "pvp", path), bool(combat, "projectiles", path),
                             bool(combat, "melee", path), bool(combat, "health-damage", path),
-                            bool(combat, "natural-regeneration", path), bool(combat, "hunger", path),
+                            false, bool(combat, "hunger", path),
                             bool(combat, "fall-damage", path), bool(combat, "block-damage", path),
                             bool(combat, "no-hit-delay", path)),
                     integer(values, "target-score", path, 1),

@@ -115,6 +115,13 @@ public final class DuelQueueManager implements Listener
         return queuedPlayers.containsKey(player);
     }
 
+    public int queuedCount(ModeKey mode)
+    {
+        Objects.requireNonNull(mode, "mode");
+        return Math.toIntExact(queuedPlayers.values().stream()
+                .filter(key -> key.mode().equals(mode)).count());
+    }
+
     public boolean cancel(UUID player)
     {
         return leave(player, false);

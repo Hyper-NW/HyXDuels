@@ -52,7 +52,7 @@ public final class PartyCommand implements CommandExecutor
             case "accept" -> parties.accept(player);
             case "deny" -> parties.deny(player);
             case "leave" -> parties.leave(player);
-            case "disband" -> parties.disband(player);
+            case "disband" -> plugin.getPartyGui().openDisbandConfirmation(player);
             case "list" -> showList(player);
             default -> MessageService.send(player, plugin.getConfig(), "Messages.Party-Usage", Map.of(),
                     "&e/duels party invite|kick|promote|demote|transfer <player>",

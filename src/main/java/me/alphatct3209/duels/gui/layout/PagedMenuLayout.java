@@ -3,6 +3,7 @@ package me.alphatct3209.duels.gui.layout;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public final class PagedMenuLayout
 {
@@ -16,14 +17,25 @@ public final class PagedMenuLayout
 
     public static <T> Page<T> page(List<T> entries, int requestedPage)
     {
-        int pageCount = Math.max(1, (entries.size() + PAGE_SIZE - 1) / PAGE_SIZE);
+        return page(entries, requestedPage, java.util.stream.IntStream.range(0, PAGE_SIZE)
+                .boxed().toList());
+    }
+
+    /** Maps a page into administrator-selected inventory slots. */
+    public static <T> Page<T> page(List<T> entries, int requestedPage, List<Integer> contentSlots)
+    {
+        Objects.requireNonNull(entries, "entries");
+        Objects.requireNonNull(contentSlots, "contentSlots");
+        if (contentSlots.isEmpty()) throw new IllegalArgumentException("Content slots cannot be empty");
+        int pageSize = contentSlots.size();
+        int pageCount = Math.max(1, (entries.size() + pageSize - 1) / pageSize);
         int page = Math.max(0, Math.min(requestedPage, pageCount - 1));
-        int start = page * PAGE_SIZE;
-        int end = Math.min(entries.size(), start + PAGE_SIZE);
+        int start = page * pageSize;
+        int end = Math.min(entries.size(), start + pageSize);
         Map<Integer, T> slots = new LinkedHashMap<>();
         for (int index = start; index < end; index++)
         {
-            slots.put(index - start, entries.get(index));
+            slots.put(contentSlots.get(index - start), entries.get(index));
         }
         return new Page<>(page, pageCount, Map.copyOf(slots));
     }

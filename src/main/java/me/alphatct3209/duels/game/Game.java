@@ -405,10 +405,14 @@ public class Game
             StatisticsDatabase database = arena.getStatisticsDatabase();
             StatisticsDatabase.DuelWinUpdate update =
                     database.recordDuelWin(winnerId, loserId, mode.key());
+            int winnerScore = Math.max(1, state.score(winnerId));
+            int loserScore = state.score(loserId);
             arena.sendConfiguredToPlayers("Messages.Win", Map.of(
                     "<winner>", winner.getName(), "<loser>", defeatedPlayer.getName(),
                     "<mode>", mode.displayName(), "<mode_key>", mode.key().value(),
-                    "<kit>", winnerKit.getName(), "<health>", health(winner.getHealth())),
+                    "<kit>", winnerKit.getName(), "<health>", health(winner.getHealth()),
+                    "<max_health>", health(winner.getMaxHealth()),
+                    "<winner_score>", winnerScore, "<loser_score>", loserScore),
                     "&a<winner> wins!");
             sendDivisionMessages(winner, winnerKit, mode,
                     update.previousModeWins(), update.currentModeWins());

@@ -2,7 +2,7 @@
 #
 # Mode keys are permanent routing/statistics identifiers and must not be renamed after use.
 # Kit keys are reusable and may be assigned to more than one mode.
-Config-Version: 1
+Config-Version: 2
 
 Modes:
   bed_wars:
@@ -15,7 +15,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: true
       fall-damage: true
       block-damage: true
@@ -38,7 +38,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: true
       fall-damage: true
       block-damage: false
@@ -84,7 +84,7 @@ Modes:
       projectiles: false
       melee: true
       health-damage: false
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: false
       block-damage: false
@@ -107,7 +107,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: true
       block-damage: true
@@ -130,7 +130,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: true
       fall-damage: true
       block-damage: false
@@ -153,7 +153,7 @@ Modes:
       projectiles: false
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: true
       block-damage: false
@@ -176,7 +176,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: true
       fall-damage: true
       block-damage: false
@@ -199,7 +199,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: true
       fall-damage: true
       block-damage: true
@@ -222,7 +222,7 @@ Modes:
       projectiles: false
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: true
       block-damage: false
@@ -245,7 +245,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: true
       fall-damage: true
       block-damage: false
@@ -268,7 +268,7 @@ Modes:
       projectiles: false
       melee: false
       health-damage: false
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: false
       block-damage: false
@@ -291,7 +291,7 @@ Modes:
       projectiles: true
       melee: false
       health-damage: false
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: false
       block-damage: false
@@ -314,7 +314,7 @@ Modes:
       projectiles: true
       melee: true
       health-damage: true
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: true
       fall-damage: true
       block-damage: true
@@ -337,7 +337,7 @@ Modes:
       projectiles: true
       melee: false
       health-damage: false
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: false
       block-damage: true
@@ -360,7 +360,7 @@ Modes:
       projectiles: false
       melee: true
       health-damage: false
-      natural-regeneration: true
+      natural-regeneration: false
       hunger: false
       fall-damage: false
       block-damage: false

@@ -6,6 +6,6 @@ public record CombatFlags(boolean pvp, boolean projectiles, boolean melee, boole
 {
     public static CombatFlags standard()
     {
-        return new CombatFlags(true, true, true, true, true, true, true, false, false);
+        return new CombatFlags(true, true, true, true, false, true, true, false, false);
     }
 }

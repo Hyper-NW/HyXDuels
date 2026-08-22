@@ -6,6 +6,9 @@ import me.alphatct3209.duels.game.arenas.ArenaSettings;
 import me.alphatct3209.duels.game.kits.Kit;
 import me.alphatct3209.duels.game.modes.DuelMode;
 import me.alphatct3209.duels.game.modes.DuelSelection;
+import me.alphatct3209.duels.party.Party;
+import me.alphatct3209.duels.stats.leaderboard.LeaderboardEntry;
+import me.alphatct3209.duels.utils.MessageService;
 import me.alphatct3209.duels.gui.config.MenuAction;
 import me.alphatct3209.duels.gui.config.MenuConfiguration;
 import me.alphatct3209.duels.gui.config.MenuOpener;
@@ -68,7 +71,7 @@ public final class DuelMenuManager implements Listener
         Session session = session(player);
         session.context = MenuContext.QUEUE;
         session.target = null;
-        openModes(player, 0);
+        openDuelTypes(player);
     }
 
     public void openChallenge(Player player, Player target)
@@ -107,8 +110,15 @@ public final class DuelMenuManager implements Listener
                     return;
                 }
                 plugin.getPartyManager().getOrCreate(player);
-                plugin.getPartyGui().open(player);
+                giveOpeners(player);
+                MessageService.send(player, plugin.getConfig(), "Messages.Party-Commands", Map.of(),
+                        "&d&l★ Party Commands ★",
+                        "&7▶ Invite: &e/p invite", "&7▶ Kick: &e/p kick",
+                        "&7▶ Promote: &e/p promote", "&7▶ Demote: &e/p demote",
+                        "&7▶ Transfer: &e/p transfer", "&7▶ Disband: &e/p disband");
             }
+            case PARTY_MANAGE -> plugin.getPartyGui().open(player);
+            case PARTY_DISBAND -> plugin.getPartyGui().openDisbandConfirmation(player);
         }
     }
 
@@ -122,33 +132,38 @@ public final class DuelMenuManager implements Listener
         }
         // Normalize an existing managed hotbar first so changed configuration never leaves duplicates.
         suspendOpeners(player);
+        Party party = plugin.getPartyManager().getParty(player.getUniqueId());
+        boolean partyLeader = party != null && party.leader().equals(player.getUniqueId());
         for (MenuOpener configured : configuration.openers())
         {
-            if (!configured.enabled())
-            {
-                continue;
-            }
-            ItemStack opener = items.opener(configured);
-            ItemStack preferred = player.getInventory().getItem(configured.slot());
-            if (configured.forceSlot())
-            {
-                displacedHotbar.computeIfAbsent(player.getUniqueId(), ignored -> new LinkedHashMap<>())
-                        .put(configured.slot(), preferred == null
-                                ? new ItemStack(Material.AIR) : preferred.clone());
-                player.getInventory().setItem(configured.slot(), opener);
-            }
-            else if (preferred == null || preferred.getType().isAir())
-            {
-                player.getInventory().setItem(configured.slot(), opener);
-            }
-            else
-            {
-                int empty = player.getInventory().firstEmpty();
-                if (empty >= 0)
-                {
-                    player.getInventory().setItem(empty, opener);
-                }
-            }
+            if (!configured.enabled() || (partyLeader
+                    && (configured.action() == MenuAction.DUEL_MENU
+                    || configured.action() == MenuAction.PARTY))) continue;
+            placeOpener(player, configured);
+        }
+        if (partyLeader)
+            configuration.partyHotbarItems().forEach(configured -> placeOpener(player, configured));
+    }
+
+    private void placeOpener(Player player, MenuOpener configured)
+    {
+        ItemStack opener = items.opener(configured);
+        ItemStack preferred = player.getInventory().getItem(configured.slot());
+        if (configured.forceSlot())
+        {
+            displacedHotbar.computeIfAbsent(player.getUniqueId(), ignored -> new LinkedHashMap<>())
+                    .put(configured.slot(), preferred == null
+                            ? new ItemStack(Material.AIR) : preferred.clone());
+            player.getInventory().setItem(configured.slot(), opener);
+        }
+        else if (preferred == null || preferred.getType().isAir())
+        {
+            player.getInventory().setItem(configured.slot(), opener);
+        }
+        else
+        {
+            int empty = player.getInventory().firstEmpty();
+            if (empty >= 0) player.getInventory().setItem(empty, opener);
         }
     }
 
@@ -202,67 +217,90 @@ public final class DuelMenuManager implements Listener
         displacedHotbar.clear();
     }
 
-    private void openMain(Player player)
+    private void openDuelTypes(Player player)
     {
-        DuelSelection selection = plugin.getSelectionService().resolve(player.getUniqueId());
-        DuelMode mode = plugin.getSelectionService().mode(selection);
-        Arena selected = selectedArena(player, selection);
-        int size = 27;
+        int size = 54;
         Map<Integer, String> choices = new LinkedHashMap<>();
         UUID token = UUID.randomUUID();
         MenuInventoryHolder holder = new MenuInventoryHolder(token, player.getUniqueId(),
-                MenuView.MAIN, 0, 1, choices);
+                MenuView.DUEL_TYPE, 0, 1, choices);
         Inventory inventory = Bukkit.createInventory(holder, size,
-                items.color(configuration.text("Menus.Main.Title", "&8Duels")));
+                items.color(configuration.text("Menus.Duel-Type.Title", "&8Play Duels")));
         holder.attach(inventory);
-
-        int modeSlot = configuration.slot("Menus.Main.Mode-Slot", 11, size);
-        int mapSlot = configuration.slot("Menus.Main.Map-Slot", 13, size);
-        int opponentSlot = configuration.slot("Menus.Main.Opponent-Slot", 15, size);
-        int quickSlot = configuration.slot("Menus.Main.Quick-Join-Slot", 22, size);
-        choices.put(modeSlot, "mode");
-        choices.put(mapSlot, "map");
-        choices.put(opponentSlot, "opponent");
-        choices.put(quickSlot, "quick");
-
-        inventory.setItem(modeSlot, icon(Material.NETHER_STAR,
-                "Menus.Main.Mode-Name", "&eSelect Mode", "Menus.Main.Mode-Lore",
-                Map.of("<mode>", mode.displayName()), false));
-        inventory.setItem(mapSlot, icon(Material.FILLED_MAP,
-                "Menus.Main.Map-Name", "&aSelect Map", "Menus.Main.Map-Lore",
-                mapValues(selected), false));
-        inventory.setItem(opponentSlot, icon(Material.DIAMOND_SWORD,
-                "Menus.Main.Opponent-Name", "&cChallenge Player", "Menus.Main.Opponent-Lore",
-                Map.of(), false));
-        Map<String, String> quickValues = new HashMap<>(mapValues(selected));
-        quickValues.put("<mode>", mode.displayName());
-        inventory.setItem(quickSlot, icon(Material.ENDER_PEARL,
-                "Menus.Main.Quick-Join-Name", "&bQuick Join", "Menus.Main.Quick-Join-Lore",
-                quickValues, true));
+        int soloSlot = configuration.slot("Menus.Duel-Type.Solo.Slot", 20, size);
+        int teamSlot = configuration.slot("Menus.Duel-Type.Team.Slot", 22, size);
+        int otherSlot = configuration.slot("Menus.Duel-Type.Other.Slot", 24, size);
+        choices.put(soloSlot, "solo");
+        choices.put(teamSlot, "team");
+        choices.put(otherSlot, "other");
+        inventory.setItem(soloSlot, icon(Material.DIAMOND_SWORD,
+                "Menus.Duel-Type.Solo.Name", "&cSolo Duels",
+                "Menus.Duel-Type.Solo.Lore", Map.of(), true));
+        inventory.setItem(teamSlot, icon(Material.IRON_CHESTPLATE,
+                "Menus.Duel-Type.Team.Name", "&9Team Duels",
+                "Menus.Duel-Type.Team.Lore", Map.of(), false));
+        inventory.setItem(otherSlot, icon(Material.GOLDEN_SWORD,
+                "Menus.Duel-Type.Other.Name", "&6Other Modes",
+                "Menus.Duel-Type.Other.Lore", Map.of(), false));
         open(player, holder, inventory);
     }
 
     private void openModes(Player player, int requestedPage)
     {
+        List<String> configuredOrder = configuration.stringList("Menus.Mode.Order");
+        Map<String, Integer> order = new HashMap<>();
+        for (int index = 0; index < configuredOrder.size(); index++)
+            order.putIfAbsent(configuredOrder.get(index).toLowerCase(java.util.Locale.ROOT), index);
+        List<String> categoryKeys = modeCategoryKeys(player);
         List<DuelMode> modes = plugin.getModeManager().enabledModes().stream()
-                .sorted(Comparator.comparing(DuelMode::displayName, String.CASE_INSENSITIVE_ORDER))
+                .filter(mode -> categoryKeys.isEmpty() || categoryKeys.contains(mode.key().value()))
+                .sorted(Comparator.comparingInt((DuelMode mode) -> order.getOrDefault(
+                                mode.key().value(), Integer.MAX_VALUE))
+                        .thenComparing(DuelMode::displayName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
-        PagedMenuLayout.Page<DuelMode> page = PagedMenuLayout.page(modes, requestedPage);
+        List<Integer> contentSlots = configuration.integerList("Menus.Mode.Content-Slots",
+                java.util.stream.IntStream.range(0, 45).boxed().toList());
+        PagedMenuLayout.Page<DuelMode> page = PagedMenuLayout.page(
+                modes, requestedPage, contentSlots);
         Map<Integer, String> choices = new LinkedHashMap<>();
         UUID token = UUID.randomUUID();
         MenuInventoryHolder holder = new MenuInventoryHolder(token, player.getUniqueId(),
                 MenuView.MODE, page.index(), page.count(), choices);
         Inventory inventory = Bukkit.createInventory(holder, PagedMenuLayout.INVENTORY_SIZE,
-                title("Menus.Mode.Title", "&8Select Mode &7(<page>/<pages>)", page.index(), page.count()));
+                title(modeTitlePath(player), "&8Select Mode &7(<page>/<pages>)",
+                        page.index(), page.count()));
         holder.attach(inventory);
         DuelSelection selected = plugin.getSelectionService().resolve(player.getUniqueId());
         page.slots().forEach((slot, mode) -> {
             choices.put(slot, mode.key().value());
             Material material = Material.matchMaterial(mode.icon());
+            Map<String, String> values = new HashMap<>();
+            values.put("<mode>", mode.displayName());
+            values.put("<mode_key>", mode.key().value());
+            values.put("<kit>", mode.defaultKitKey());
+            String format = switch (session(player).context)
+            {
+                case TEAM -> "2v2";
+                case PERSONAL_KIT_EDITOR -> "Kit";
+                default -> "1v1";
+            };
+            String description = configuration.text("Menus.Mode.Descriptions."
+                    + mode.key().value(), "1v1 " + mode.displayName() + " duel.");
+            if (session(player).context == MenuContext.TEAM)
+                description = description.replace("1v1", "2v2");
+            values.put("<format>", format);
+            values.put("<description>", description);
+            values.put("<playing>", Integer.toString(playersInMode(mode)));
+            for (int rank = 1; rank <= 3; rank++)
+            {
+                LeaderboardEntry entry = plugin.getLeaderboardService().snapshot()
+                        .dailyMode(mode.key().value(), rank).orElse(null);
+                values.put("<daily_" + rank + "_player>", entry == null ? "Nobody" : entry.name());
+                values.put("<daily_" + rank + "_score>", entry == null ? "0" : Integer.toString(entry.value()));
+            }
             inventory.setItem(slot, icon(material == null ? Material.IRON_SWORD : material,
-                    "Menus.Mode.Item-Name", "&e<mode>", "Menus.Mode.Item-Lore",
-                    Map.of("<mode>", mode.displayName(), "<mode_key>", mode.key().value(),
-                            "<kit>", mode.defaultKitKey()), mode.key().equals(selected.modeKey())));
+                    modeItemNamePath(player), "&e<mode>", modeItemLorePath(player),
+                    values, mode.key().equals(selected.modeKey())));
         });
         int legacySlot = configuration.slot("Menus.Mode.Legacy-PvP-Slot", 47,
                 PagedMenuLayout.INVENTORY_SIZE);
@@ -397,21 +435,23 @@ public final class DuelMenuManager implements Listener
             {
                 reopenPage(player, holder.view(), holder.page() + 1);
             }
-            else if (rawSlot == PagedMenuLayout.BACK_SLOT && holder.view() != MenuView.MAIN)
+            else if (rawSlot == PagedMenuLayout.BACK_SLOT)
             {
                 if (holder.view() == MenuView.KIT)
                 {
                     openModes(player, 0);
                 }
                 else if (holder.view() == MenuView.MODE
-                        && session(player).context == MenuContext.CHALLENGE)
+                        && (session(player).context == MenuContext.QUEUE
+                        || session(player).context == MenuContext.TEAM
+                        || session(player).context == MenuContext.OTHER))
                 {
-                    activeInventories.remove(player.getUniqueId());
-                    player.closeInventory();
+                    openDuelTypes(player);
                 }
                 else
                 {
-                    openMain(player);
+                    activeInventories.remove(player.getUniqueId());
+                    player.closeInventory();
                 }
             }
             else
@@ -560,20 +600,60 @@ public final class DuelMenuManager implements Listener
         open(player, holder, inventory);
     }
 
+    private String modeTitlePath(Player player)
+    {
+        return switch (session(player).context)
+        {
+            case TEAM -> "Menus.Team-Mode.Title";
+            case OTHER -> "Menus.Other-Mode.Title";
+            case PERSONAL_KIT_EDITOR -> "Menus.Kit-Mode.Title";
+            default -> "Menus.Mode.Title";
+        };
+    }
+
+    private List<String> modeCategoryKeys(Player player)
+    {
+        return switch (session(player).context)
+        {
+            case QUEUE -> configuration.stringList("Menus.Duel-Type.Solo.Mode-Keys");
+            case TEAM -> configuration.stringList("Menus.Duel-Type.Team.Mode-Keys");
+            case OTHER -> configuration.stringList("Menus.Duel-Type.Other.Mode-Keys");
+            default -> List.of();
+        };
+    }
+
+    private String modeItemNamePath(Player player)
+    {
+        return session(player).context == MenuContext.PERSONAL_KIT_EDITOR
+                ? "Menus.Kit-Mode.Item-Name" : "Menus.Mode.Item-Name";
+    }
+
+    private String modeItemLorePath(Player player)
+    {
+        return session(player).context == MenuContext.PERSONAL_KIT_EDITOR
+                ? "Menus.Kit-Mode.Item-Lore" : "Menus.Mode.Item-Lore";
+    }
+
+    private int playersInMode(DuelMode mode)
+    {
+        int players = plugin.getQueueManager().queuedCount(mode.key());
+        for (Arena arena : plugin.getArenaManager().getArenaList())
+        {
+            for (UUID participant : arena.getPlayers())
+            {
+                if (arena.getCapturedSelection(participant)
+                        .map(selection -> selection.modeKey().equals(mode.key())).orElse(false))
+                    players++;
+            }
+        }
+        return players;
+    }
+
     private void choose(Player player, MenuView view, String choice)
     {
         switch (view)
         {
-            case MAIN -> {
-                switch (choice)
-                {
-                    case "mode" -> openModes(player, 0);
-                    case "map" -> openMaps(player, 0);
-                    case "opponent" -> openOpponents(player, 0);
-                    case "quick" -> quickJoin(player);
-                    default -> { }
-                }
-            }
+            case DUEL_TYPE -> selectDuelType(player, choice);
             case MODE -> selectMode(player, choice);
             case KIT -> selectKit(player, choice);
             case MAP -> selectMap(player, choice);
@@ -583,6 +663,19 @@ public final class DuelMenuManager implements Listener
                 if (kit != null) plugin.getKitLayoutEditor().openShared(player, kit);
             }
         }
+    }
+
+    private void selectDuelType(Player player, String choice)
+    {
+        Session current = session(player);
+        current.target = null;
+        current.context = switch (choice)
+        {
+            case "team" -> MenuContext.TEAM;
+            case "other" -> MenuContext.OTHER;
+            default -> MenuContext.QUEUE;
+        };
+        openModes(player, 0);
     }
 
     private void selectMode(Player player, String key)
@@ -623,6 +716,30 @@ public final class DuelMenuManager implements Listener
 
     private void completeSelection(Player player, DuelMode mode, String kitKey)
     {
+        Session current = session(player);
+        if (current.context == MenuContext.PERSONAL_KIT_EDITOR
+                || current.context == MenuContext.TEAM)
+        {
+            Kit kit = mode.allowsKit(kitKey)
+                    ? plugin.getKitManager().getKitByCanonicalKey(kitKey) : null;
+            if (kit == null)
+            {
+                message(player, "Messages.Join-Failed", "&cThat mode or kit is no longer available.");
+                return;
+            }
+            if (current.context == MenuContext.PERSONAL_KIT_EDITOR)
+            {
+                activeInventories.remove(player.getUniqueId());
+                player.closeInventory();
+                plugin.getKitLayoutEditor().openPersonal(player, kit);
+            }
+            else if (startTeamDuel(player, mode, kit))
+            {
+                activeInventories.remove(player.getUniqueId());
+                player.closeInventory();
+            }
+            return;
+        }
         DuelSelection selection;
         try
         {
@@ -634,7 +751,6 @@ public final class DuelMenuManager implements Listener
             message(player, "Messages.Join-Failed", "&cThat mode or kit is no longer available.");
             return;
         }
-        Session current = session(player);
         boolean completed;
         if (current.context == MenuContext.CHALLENGE)
         {
@@ -654,12 +770,65 @@ public final class DuelMenuManager implements Listener
         }
     }
 
+    private boolean startTeamDuel(Player player, DuelMode mode, Kit kit)
+    {
+        Party party = plugin.getPartyManager().getParty(player.getUniqueId());
+        if (party == null)
+        {
+            message(player, "Messages.Team-Requires-Party",
+                    "&cCreate a two-player party before joining Team Duels.");
+            return false;
+        }
+        if (!party.leader().equals(player.getUniqueId()))
+        {
+            message(player, "Messages.Team-Leader-Only",
+                    "&cOnly the party leader can queue for Team Duels.");
+            return false;
+        }
+        if (party.size() != 2)
+        {
+            message(player, "Messages.Team-Party-Size",
+                    "&cTeam Duels requires a party of exactly two players.",
+                    "<party_size>", Integer.toString(party.size()));
+            return false;
+        }
+        if (party.members().stream().anyMatch(member -> {
+            Player online = Bukkit.getPlayer(member);
+            return online == null || !online.isOnline();
+        }))
+        {
+            message(player, "Messages.Team-Member-Offline",
+                    "&cBoth party members must be online for Team Duels.");
+            return false;
+        }
+        List<String> commands = configuration.lines("Menus.Duel-Type.Team.Commands");
+        if (commands.isEmpty())
+        {
+            message(player, "Messages.Team-Not-Configured",
+                    "&cTeam Duels needs commands configured in advanced/menus.yml.");
+            return false;
+        }
+        Map<String, String> values = Map.of(
+                "<leader>", player.getName(), "<party_size>", Integer.toString(party.size()),
+                "<mode>", mode.displayName(), "<mode_key>", mode.key().value(),
+                "<kit>", kit.getName(), "<kit_key>", kit.getKey());
+        for (String configured : commands)
+        {
+            String command = MessageService.replace(configured, values);
+            if (command.startsWith("/")) command = command.substring(1);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
+        plugin.getPartyManager().broadcastAction(party, "Team " + mode.displayName());
+        return true;
+    }
+
     private void selectMap(Player player, String choice)
     {
         if (choice.equals(AUTOMATIC))
         {
             session(player).preferredArenaId = null;
-            openMain(player);
+            activeInventories.remove(player.getUniqueId());
+            player.closeInventory();
             return;
         }
         Arena arena;
@@ -680,7 +849,8 @@ public final class DuelMenuManager implements Listener
             return;
         }
         session(player).preferredArenaId = arena.getId();
-        openMain(player);
+        activeInventories.remove(player.getUniqueId());
+        player.closeInventory();
     }
 
     private void challenge(Player player, String rawUuid)
@@ -706,17 +876,6 @@ public final class DuelMenuManager implements Listener
         Arena selected = selectedArena(player, selection);
         if (plugin.getChallengeManager().send(player, target, kit,
                 selected == null ? null : selected.getId()))
-        {
-            activeInventories.remove(player.getUniqueId());
-            player.closeInventory();
-        }
-    }
-
-    private void quickJoin(Player player)
-    {
-        DuelSelection selection = plugin.getSelectionService().resolve(player.getUniqueId());
-        if (plugin.getQueueManager().join(player, selection,
-                session(player).preferredArenaId))
         {
             activeInventories.remove(player.getUniqueId());
             player.closeInventory();
@@ -812,6 +971,7 @@ public final class DuelMenuManager implements Listener
     {
         switch (view)
         {
+            case DUEL_TYPE -> openDuelTypes(player);
             case MODE -> openModes(player, page);
             case KIT -> {
                 DuelMode mode = plugin.getModeManager().resolve(session(player).pendingModeKey).orElse(null);
@@ -820,7 +980,6 @@ public final class DuelMenuManager implements Listener
             case MAP -> openMaps(player, page);
             case OPPONENT -> openOpponents(player, page);
             case EDIT_KIT -> openSharedKitEditorSelection(player, page);
-            case MAIN -> openMain(player);
         }
     }
 
@@ -839,7 +998,10 @@ public final class DuelMenuManager implements Listener
                     "&cYou do not have permission to edit your kit layout.");
             return;
         }
-        plugin.getKitLayoutEditor().openPersonal(player, plugin.getKitManager().resolveKit(player));
+        Session current = session(player);
+        current.context = MenuContext.PERSONAL_KIT_EDITOR;
+        current.target = null;
+        openModes(player, 0);
     }
 
     private boolean active(Player player, MenuInventoryHolder holder)
@@ -911,7 +1073,10 @@ public final class DuelMenuManager implements Listener
     private enum MenuContext
     {
         QUEUE,
-        CHALLENGE
+        CHALLENGE,
+        TEAM,
+        OTHER,
+        PERSONAL_KIT_EDITOR
     }
 
     private static final class Session

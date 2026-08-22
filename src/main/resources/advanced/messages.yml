@@ -1,5 +1,5 @@
 # All player-facing messages. Scalars and YAML lists are both supported.
-Config-Version: 4
+Config-Version: 6
 
 Messages:
   # ---------- General match flow ----------
@@ -16,11 +16,12 @@ Messages:
   # <victim_health>, <victim_max_health>, <health>, <round>, <mode>, <mode_key>,
   # <kit>, <killer_score>, and <victim_score>.
   Kill:
-    - '&c<victim> &7was killed by &a<killer>&7.'
-    - '&7Killer health: &c<killer_health>❤&7/&c<killer_max_health>❤'
+    - '&c<victim> &7was defeated by &b<killer>&7.'
   Win:
-    - '&6&l<winner> wins!'
-    - '&7Remaining health: &c<health>❤'
+    - '&8&m--------------------------------'
+    - '&b⚔ <winner> &7won the duel! &c(<loser_score> &7- &b<winner_score>&c)'
+    - '&c❤ <health>/<max_health> HP'
+    - '&8&m--------------------------------'
   Draw: ['&eThe duel ended in a draw.']
   Bed-Destroyed: ['&cBED DESTROYED! &f<player> can no longer respawn.']
   Respawn-Wait: ['&eYou will respawn in <seconds> seconds...']
@@ -84,6 +85,14 @@ Messages:
     - '&7Arena: &f<arena> &8| &7Mode: &f<mode> &8| &7Kit: &f<kit>'
 
   # ---------- Parties ----------
+  Party-Commands:
+    - '&d&l★ Party Commands ★'
+    - '&7▶ Invite: &e/p invite'
+    - '&7▶ Kick: &e/p kick'
+    - '&7▶ Promote: &e/p promote'
+    - '&7▶ Demote: &e/p demote'
+    - '&7▶ Transfer: &e/p transfer'
+    - '&7▶ Disband: &e/p disband'
   Party-Usage:
     - '&e/duels party invite|kick|promote|demote|transfer <player>'
     - '&e/duels party accept|deny|leave|disband|list|menu'

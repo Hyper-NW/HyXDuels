@@ -113,4 +113,143 @@ class AdvancedConfigurationMigrationTest
         assertEquals(bundled.getStringList("Menus.Kit-Editor-Selector.Item-Lore"),
                 configured.getStringList("Menus.Kit-Editor-Selector.Item-Lore"));
     }
+
+    @Test
+    void migratesOnlyUnchangedSoloDuelsPresentationDefaults()
+    {
+        YamlConfiguration menus = new YamlConfiguration();
+        menus.set("Config-Version", 2);
+        menus.set("Openers.duel-menu.Name", "&b&lQueue Duels");
+        menus.set("Openers.duel-menu.Lore", List.of(
+                "&7Choose a duel mode and queue.", "&eRight-click to open."));
+        menus.set("Menus.Mode.Title", "&9⚔ Queue Duels &7(<page>/<pages>)");
+        menus.set("Menus.Mode.Item-Name", "&dMy Custom Mode");
+        menus.set("Menus.Mode.Item-Lore", List.of(
+                "&7Key: &f<mode_key>", "&7Default kit: &f<kit>",
+                "&eClick to queue or choose a kit."));
+        YamlConfiguration bundledMenus = YamlConfiguration.loadConfiguration(
+                new java.io.File("src/main/resources/advanced/menus.yml"));
+
+        assertTrue(AdvancedConfiguration.migrate("menus.yml", menus, bundledMenus));
+        assertEquals("&b&lQueue Duels", menus.getString("Openers.duel-menu.Name"));
+        assertEquals("Solo Duels", menus.getString("Menus.Mode.Title"));
+        assertEquals("&dMy Custom Mode", menus.getString("Menus.Mode.Item-Name"));
+        assertEquals(bundledMenus.getStringList("Menus.Mode.Item-Lore"),
+                menus.getStringList("Menus.Mode.Item-Lore"));
+
+        YamlConfiguration messages = new YamlConfiguration();
+        messages.set("Config-Version", 4);
+        messages.set("Messages.Kill", List.of(
+                "&c<victim> &7was killed by &a<killer>&7.",
+                "&7Killer health: &c<killer_health>❤&7/&c<killer_max_health>❤"));
+        messages.set("Messages.Win", List.of("&dCustom victory"));
+        YamlConfiguration bundledMessages = YamlConfiguration.loadConfiguration(
+                new java.io.File("src/main/resources/advanced/messages.yml"));
+
+        assertTrue(AdvancedConfiguration.migrate("messages.yml", messages, bundledMessages));
+        assertEquals(bundledMessages.getStringList("Messages.Kill"),
+                messages.getStringList("Messages.Kill"));
+        assertEquals(List.of("&dCustom victory"), messages.getStringList("Messages.Win"));
+    }
+
+    @Test
+    void migratesOnlyTheFormerDefaultSoloOpenerToQueueDuels()
+    {
+        List<String> formerLore = List.of(
+                "&7Click to play a &cSolo Duel &7against another player!", "",
+                "&b&lDuel Types:", "&7• Bow Duel", "&7• Classic Duel", "&7• OP Duel",
+                "&7• UHC Duel", "&7• NoDebuff Duel", "&7• Mega Walls Duel",
+                "&7• Blitz Duel", "&7• SkyWars Duel", "&7• Combo Duel", "&7• Spleef Duel",
+                "&7• Sumo Duel", "&7• Quakecraft Duel", "&7• Boxing Duel",
+                "&7• Bridge Duel", "&7• Bed Wars Duel", "&7• Duel Arena",
+                "&7• Parkour Duel", "", "&eRight-click to play!");
+        YamlConfiguration menus = new YamlConfiguration();
+        menus.set("Config-Version", 5);
+        menus.set("Openers.duel-menu.Name", "&c&lSolo Duels");
+        menus.set("Openers.duel-menu.Lore", formerLore);
+        YamlConfiguration bundled = YamlConfiguration.loadConfiguration(
+                new java.io.File("src/main/resources/advanced/menus.yml"));
+
+        assertTrue(AdvancedConfiguration.migrate("menus.yml", menus, bundled));
+        assertEquals("&b&lQueue Duels", menus.getString("Openers.duel-menu.Name"));
+        assertEquals(bundled.getStringList("Openers.duel-menu.Lore"),
+                menus.getStringList("Openers.duel-menu.Lore"));
+
+        YamlConfiguration custom = new YamlConfiguration();
+        custom.set("Config-Version", 5);
+        custom.set("Openers.duel-menu.Name", "&dServer Duels");
+        custom.set("Openers.duel-menu.Lore", List.of("&7Custom lore"));
+        assertFalse(AdvancedConfiguration.migrate("menus.yml", custom, bundled));
+        assertEquals("&dServer Duels", custom.getString("Openers.duel-menu.Name"));
+        assertEquals(List.of("&7Custom lore"), custom.getStringList("Openers.duel-menu.Lore"));
+    }
+
+    @Test
+    void migratesDefaultDisbandButtonsAndPreservesCustomizedConfirmation()
+    {
+        String base = "Menus.Party.Disband-Confirmation.";
+        YamlConfiguration menus = new YamlConfiguration();
+        menus.set("Config-Version", 7);
+        menus.set(base + "Cancel.Slot", 13);
+        menus.set(base + "Cancel.Material", "CAKE");
+        menus.set(base + "Cancel.Name", "&aKeep Party");
+        menus.set(base + "Cancel.Lore", List.of("&7Return to party management."));
+        menus.set(base + "Confirm.Slot", 31);
+        menus.set(base + "Confirm.Material", "BARRIER");
+        menus.set(base + "Confirm.Name", "&c✖ Disband Party");
+        menus.set(base + "Confirm.Lore", List.of(
+                "&7This permanently disbands the party.", "&eClick to confirm."));
+        YamlConfiguration custom = new YamlConfiguration();
+        for (String path : menus.getKeys(true))
+            if (!menus.isConfigurationSection(path)) custom.set(path, menus.get(path));
+        custom.set(base + "Cancel.Name", "&dReturn");
+        YamlConfiguration bundled = YamlConfiguration.loadConfiguration(
+                new java.io.File("src/main/resources/advanced/menus.yml"));
+
+        assertTrue(AdvancedConfiguration.migrate("menus.yml", menus, bundled));
+        assertEquals(13, menus.getInt(base + "Confirm.Slot"));
+        assertEquals("CAKE", menus.getString(base + "Confirm.Material"));
+        assertEquals(31, menus.getInt(base + "Cancel.Slot"));
+        assertEquals("BARRIER", menus.getString(base + "Cancel.Material"));
+        assertEquals("&cGo Back", menus.getString(base + "Cancel.Name"));
+
+        assertFalse(AdvancedConfiguration.migrate("menus.yml", custom, bundled));
+        assertEquals("&dReturn", custom.getString(base + "Cancel.Name"));
+    }
+
+    @Test
+    void migratesOnlyDefaultLobbyCommandArgumentToLiteralTarget()
+    {
+        YamlConfiguration bundled = YamlConfiguration.loadConfiguration(
+                new java.io.File("src/main/resources/advanced/display.yml"));
+        List<String> former = bundled.getStringList(LOBBY_LINES).stream()
+                .map(line -> line.replace("/duel <target>", "/duel <player>"))
+                .toList();
+        YamlConfiguration display = new YamlConfiguration();
+        display.set("Config-Version", 3);
+        display.set(LOBBY_LINES, former);
+
+        assertTrue(AdvancedConfiguration.migrate("display.yml", display, bundled));
+        assertTrue(display.getStringList(LOBBY_LINES).contains("&e/duel <target>"));
+
+        YamlConfiguration custom = new YamlConfiguration();
+        custom.set("Config-Version", 3);
+        custom.set(LOBBY_LINES, List.of("&dUse /duel <player> now"));
+        assertFalse(AdvancedConfiguration.migrate("display.yml", custom, bundled));
+        assertEquals(List.of("&dUse /duel <player> now"), custom.getStringList(LOBBY_LINES));
+    }
+
+    @Test
+    void disablesNaturalRegenerationInLegacyModeConfigurations()
+    {
+        YamlConfiguration modes = new YamlConfiguration();
+        modes.set("Config-Version", 1);
+        modes.set("Modes.classic.combat.natural-regeneration", true);
+        modes.set("Modes.uhc.combat.natural-regeneration", false);
+
+        assertTrue(AdvancedConfiguration.migrate("modes.yml", modes));
+        assertFalse(modes.getBoolean("Modes.classic.combat.natural-regeneration"));
+        assertFalse(modes.getBoolean("Modes.uhc.combat.natural-regeneration"));
+        assertFalse(AdvancedConfiguration.migrate("modes.yml", modes));
+    }
 }

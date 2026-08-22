@@ -21,7 +21,6 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -33,6 +32,7 @@ import java.util.Objects;
 public final class SlimeWorldManager implements Listener
 {
     private static final String DEFAULT_DIRECTORY = "slime_worlds";
+    static final boolean PUBLISH_BUKKIT_WORLD_LOAD_EVENT = false;
     private static final long MAX_RETRY_TICKS = 20L * 60L;
     private static final long PLAYER_DRAIN_GRACE_TICKS = 2L;
 
@@ -61,22 +61,25 @@ public final class SlimeWorldManager implements Listener
         this.loader = new FileLoader(new File(configuredPath).getAbsoluteFile());
     }
 
-    /** Validates and preloads every distinct nonblank Spawn-One, Spawn-Two, and Lobby world. */
+    /** Preloads every .slime template and validates every configured arena against that set. */
     public void loadConfiguredWorlds() throws Exception
     {
-        ConfigurationSection arenas = plugin.getConfig().getConfigurationSection("Arenas");
-        if (arenas == null)
+        for (String templateName : loader.listWorlds())
         {
-            return;
+            addManagedName(templateName);
         }
 
+        ConfigurationSection arenas = plugin.getConfig().getConfigurationSection("Arenas");
         List<String> validationErrors = new ArrayList<>();
-        for (String arenaId : arenas.getKeys(false))
+        if (arenas != null)
         {
-            String base = "Arenas." + arenaId + ".";
-            collectConfiguredWorld(base + "Spawn-One.World", validationErrors);
-            collectConfiguredWorld(base + "Spawn-Two.World", validationErrors);
-            collectConfiguredWorld(base + "Lobby.World", validationErrors);
+            for (String arenaId : arenas.getKeys(false))
+            {
+                String base = "Arenas." + arenaId + ".";
+                collectConfiguredWorld(base + "Spawn-One.World", validationErrors);
+                collectConfiguredWorld(base + "Spawn-Two.World", validationErrors);
+                collectConfiguredWorld(base + "Lobby.World", validationErrors);
+            }
         }
         if (!validationErrors.isEmpty())
         {
@@ -95,45 +98,47 @@ public final class SlimeWorldManager implements Listener
         }
     }
 
-    /** Registers a runtime arena location only when its loaded world and immutable template are ASP-owned. */
+    /** Registers a runtime arena location only when HyXDuels preloaded its immutable template. */
     public void registerLoadedWorld(String worldName)
     {
         String exactName = requireName(worldName);
         String canonical = WorldRegenerationCoordinator.canonical(exactName);
         String existing = managedWorlds.get(canonical);
-        if (existing != null)
+        if (existing == null)
         {
-            requireAvailable(existing);
-            return;
+            throw new IllegalStateException("World '" + exactName + "' was not preloaded from "
+                    + "World-Loader.Slime-World-Directory. Add its .slime template and restart "
+                    + "the server before creating an arena there");
         }
-        try
-        {
-            if (!loader.worldExists(exactName))
-            {
-                throw new IllegalStateException("No immutable .slime template named '" + exactName
-                        + "' exists in World-Loader.Slime-World-Directory");
-            }
-        }
-        catch (IOException exception)
-        {
-            throw new IllegalStateException("Could not verify immutable .slime template '"
-                    + exactName + "'", exception);
-        }
-        requireAvailable(exactName);
-        managedWorlds.put(canonical, exactName);
-        plugin.getLogger().info("Registered runtime ASP arena world '" + exactName + "'.");
+        requireAvailable(existing);
     }
 
     public void requireAvailable(String worldName)
     {
-        if (verifiedLoadedWorld(worldName) == null)
+        World verified = verifiedLoadedWorld(worldName);
+        if (verified == null)
         {
             World bukkit = findBukkitWorld(worldName);
             String detail = bukkit == null ? "Bukkit does not expose it"
-                    : "Bukkit exposes it but ASP does not own the same live instance";
+                    : "Bukkit exposes it but it is not the same read-only ASP live instance";
             throw new IllegalStateException("ASP arena world '" + worldName
                     + "' is unavailable: " + detail + ". Check the .slime template and startup logs.");
         }
+        configureLiveWorld(verified);
+    }
+
+    /** Resolves a configured arena location only through ASP's live-world registry. */
+    public World requireManagedWorld(String worldName)
+    {
+        String exact = requireName(worldName);
+        if (!managedWorlds.containsKey(WorldRegenerationCoordinator.canonical(exact)))
+            throw new IllegalStateException("World '" + exact
+                    + "' is not a configured HyXDuels slime world");
+        World world = verifiedLoadedWorld(exact);
+        if (world == null)
+            throw new IllegalStateException("ASP arena world '" + exact
+                    + "' is not loaded or no longer owns its live server instance");
+        return world;
     }
 
     /** Lightweight admission check: pending names and stale same-name World objects are rejected. */
@@ -248,10 +253,31 @@ public final class SlimeWorldManager implements Listener
     {
         String worldName = event.getWorld().getName();
         if (stopping || !isManagedWorld(worldName) || coordinator.isPending(worldName)) return;
-        // Do not let another plugin/server command shut chunks down behind live arena locations.
-        event.setCancelled(true);
-        plugin.getLogger().warning("Blocked an unmanaged unload request for ASP arena world '"
-                + worldName + "'. Arena worlds may only unload through HyXDuels regeneration.");
+        String canonical = WorldRegenerationCoordinator.canonical(worldName);
+        List<Arena> mapArenas = plugin.getArenaManager().getArenaList().stream()
+                .filter(arena -> arena.mapUsesWorld(canonical)).toList();
+        boolean busy = !event.getWorld().getPlayers().isEmpty()
+                || mapArenas.stream().anyMatch(arena -> arena.getGameState() == GameState.PLAYING);
+        if (busy)
+        {
+            event.setCancelled(true);
+            plugin.getLogger().warning("Blocked an external unload of active ASP arena world '"
+                    + worldName + "'. Move its players out or let the match finish first.");
+            return;
+        }
+
+        // Allow tools such as Multiverse to forget stale folder-backed registrations. The world is
+        // immediately admission-locked and restored exclusively from the immutable slime template.
+        coordinator.request(canonical);
+        for (Arena arena : mapArenas) arena.prepareForRegeneration();
+        for (Arena arena : plugin.getArenaManager().getArenaList())
+        {
+            if (!arena.mapUsesWorld(canonical) && arena.lobbyUsesWorld(canonical))
+                arena.cancelQueueForLobbyReload();
+        }
+        scheduleAttempt(canonical, 1L);
+        plugin.getLogger().info("Allowed external registry cleanup for ASP arena world '"
+                + worldName + "'; its read-only .slime instance will be restored next tick.");
     }
 
 
@@ -298,13 +324,6 @@ public final class SlimeWorldManager implements Listener
     {
         List<Arena> mapArenas = plugin.getArenaManager().getArenaList().stream()
                 .filter(arena -> arena.mapUsesWorld(canonical)).toList();
-        if (mapArenas.isEmpty())
-        {
-            failAndRetry(canonical, new IllegalStateException(
-                    "No arena owns pending map world '" + exactName(canonical) + "'"));
-            return;
-        }
-
         for (Arena arena : mapArenas)
         {
             if (arena.getGameState() != GameState.PLAYING)
@@ -376,14 +395,15 @@ public final class SlimeWorldManager implements Listener
             }
 
             // Always reread the immutable template, including retries after an already-completed unload.
-            SlimeWorld template = api.readWorld(loader, exactName, true, new SlimePropertyMap());
-            SlimeWorldInstance loaded = api.loadWorld(template, true);
+            SlimeWorld template = readImmutableTemplate(exactName);
+            SlimeWorldInstance loaded = api.loadWorld(template, PUBLISH_BUKKIT_WORLD_LOAD_EVENT);
             World freshWorld = loaded == null ? null : loaded.getBukkitWorld();
             World verified = verifiedLoadedWorld(exactName);
             if (freshWorld == null || verified == null || freshWorld != verified)
             {
                 throw new IllegalStateException("ASP load completed without a verified Bukkit world instance");
             }
+            configureLiveWorld(freshWorld);
 
             int rebound = 0;
             for (Arena arena : plugin.getArenaManager().getArenaList())
@@ -407,7 +427,8 @@ public final class SlimeWorldManager implements Listener
             attempts.remove(canonical);
             drainingWorlds.remove(canonical);
             plugin.getLogger().info("Regenerated immutable ASP arena world '" + exactName
-                    + "' and released " + mapArenas.size() + " arena(s).");
+                    + "', rebound " + rebound + " location(s), and released "
+                    + mapArenas.size() + " map arena(s).");
         }
         catch (Exception | LinkageError exception)
         {
@@ -565,7 +586,17 @@ public final class SlimeWorldManager implements Listener
         }
         try
         {
-            addManagedName(worldName);
+            String exact = requireName(worldName);
+            String template = managedWorlds.get(WorldRegenerationCoordinator.canonical(exact));
+            if (template == null)
+            {
+                errors.add(path + ": no .slime template named '" + exact
+                        + "' exists in World-Loader.Slime-World-Directory");
+            }
+            else if (!template.equals(exact))
+            {
+                errors.add(path + ": use exact template name '" + template + "'");
+            }
         }
         catch (IllegalArgumentException exception)
         {
@@ -586,47 +617,99 @@ public final class SlimeWorldManager implements Listener
 
     private World loadInitialWorld(String worldName) throws Exception
     {
+        if (!loader.worldExists(worldName))
+        {
+            throw new IllegalStateException("Missing immutable arena template '" + worldName
+                    + "' in World-Loader.Slime-World-Directory");
+        }
         World verified = verifiedLoadedWorld(worldName);
         if (verified != null)
         {
+            configureLiveWorld(verified);
             plugin.getLogger().info("Verified preloaded ASP arena world '" + worldName + "'.");
             return verified;
         }
         World bukkitWorld = findBukkitWorld(worldName);
         if (bukkitWorld != null)
         {
-            throw new IllegalStateException("A Bukkit world named '" + worldName
-                    + "' is loaded without a matching live ASP instance; refusing arena ownership");
+            plugin.getLogger().warning("Replacing preloaded conflicting world '" + worldName
+                    + "' with the configured read-only .slime template.");
+            evacuate(bukkitWorld, true);
+            if (!Bukkit.unloadWorld(bukkitWorld, false))
+            {
+                throw new IllegalStateException("Bukkit refused to unload the conflicting world '"
+                        + worldName + "'. If it is the server level-name/default world, configure a "
+                        + "different primary world; HyXDuels cannot replace a primary Anvil world "
+                        + "after server world initialization");
+            }
+            if (findBukkitWorld(worldName) != null)
+            {
+                throw new IllegalStateException("Bukkit still exposes conflicting world '"
+                        + worldName + "' after unload; the .slime template was not loaded");
+            }
         }
-        if (!loader.worldExists(worldName))
-        {
-            throw new IllegalStateException("Missing immutable arena template '" + worldName
-                    + "' in World-Loader.Slime-World-Directory");
-        }
-        SlimeWorld template = api.readWorld(loader, worldName, true, new SlimePropertyMap());
-        SlimeWorldInstance instance = api.loadWorld(template, true);
+        SlimeWorld template = readImmutableTemplate(worldName);
+        SlimeWorldInstance instance = api.loadWorld(template, PUBLISH_BUKKIT_WORLD_LOAD_EVENT);
         World world = instance == null ? null : instance.getBukkitWorld();
         if (world == null || verifiedLoadedWorld(worldName) != world)
         {
             throw new IllegalStateException("AdvancedSlimePaper did not expose a verified Bukkit world for '"
                     + worldName + "'");
         }
+        configureLiveWorld(world);
         plugin.getLogger().info("Preloaded ASP arena world '" + worldName + "'.");
         return world;
+    }
+
+    private SlimeWorld readImmutableTemplate(String worldName) throws Exception
+    {
+        SlimeWorld template = api.readWorld(loader, worldName, true, new SlimePropertyMap());
+        if (!template.isReadOnly())
+            throw new IllegalStateException("ASP template '" + worldName + "' was not opened read-only");
+        return template;
+    }
+
+    private void configureLiveWorld(World world)
+    {
+        world.setAutoSave(false);
     }
 
     private World verifiedLoadedWorld(String worldName)
     {
         String exact = requireName(worldName);
         World bukkit = findBukkitWorld(exact);
-        SlimeWorldInstance instance = api.getLoadedWorld(exact);
-        World aspBukkit = instance == null ? null : instance.getBukkitWorld();
-        if (bukkit == null || aspBukkit == null || bukkit != aspBukkit
-                || !sameWorld(aspBukkit.getName(), exact))
+        SlimeWorldInstance direct = api.getLoadedWorld(exact);
+        SlimeWorldInstance instance = selectOwnedInstance(
+                exact, bukkit, direct, api.getLoadedWorlds());
+        return instance == null ? null : bukkit;
+    }
+
+    /**
+     * ASP ownership is established by the exact Bukkit World object exposed by a read-only live
+     * instance. Writable instances are deliberately rejected so runtime arena creation can never
+     * adopt a normal/imported world in place of HyXDuels' immutable .slime template.
+     */
+    static SlimeWorldInstance selectOwnedInstance(String worldName, World bukkit,
+                                                   SlimeWorldInstance direct,
+                                                   Collection<? extends SlimeWorldInstance> loaded)
+    {
+        if (ownsBukkitWorld(worldName, bukkit, direct)) return direct;
+        if (loaded == null) return null;
+        for (SlimeWorldInstance candidate : loaded)
         {
-            return null;
+            if (ownsBukkitWorld(worldName, bukkit, candidate)) return candidate;
         }
-        return bukkit;
+        return null;
+    }
+
+    private static boolean ownsBukkitWorld(String worldName, World bukkit,
+                                           SlimeWorldInstance instance)
+    {
+        if (bukkit == null || instance == null || !instance.isReadOnly()) return false;
+        World aspBukkit = instance.getBukkitWorld();
+        return aspBukkit == bukkit
+                && sameWorld(instance.getName(), worldName)
+                && sameWorld(aspBukkit.getName(), worldName);
     }
 
     private World findBukkitWorld(String worldName)

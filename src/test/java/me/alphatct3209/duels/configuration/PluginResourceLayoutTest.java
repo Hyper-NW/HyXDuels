@@ -72,5 +72,7 @@ class PluginResourceLayoutTest
         List<String> lobby = display.getStringList("Display.Scoreboards.Lobby.Lines");
         assertEquals("&7<date>", lobby.getFirst());
         assertEquals("&ewww.hyxduels.net", lobby.getLast());
+        assertTrue(display.isList("Display.Scoreboards.Arena-Countdown.Lines"));
+        assertTrue(display.isList("Display.Scoreboards.Arena-Playing.Lines"));
     }
 }

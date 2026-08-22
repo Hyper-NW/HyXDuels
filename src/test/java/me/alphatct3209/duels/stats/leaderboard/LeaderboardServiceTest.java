@@ -35,6 +35,7 @@ class LeaderboardServiceTest
         database.wins.put(THIRD, 12);
         database.kills.put(FIRST, 4);
         database.modes.put("nodebuff_ranked", map(SECOND, 5, FIRST, 5));
+        database.daily.put("nodebuff_ranked", map(THIRD, 3, SECOND, 7));
 
         LeaderboardService service = service(database, List.of("nodebuff_ranked"), new ArrayList<>(), new long[]{0});
         assertTrue(service.refresh());
@@ -45,6 +46,7 @@ class LeaderboardServiceTest
         assertEquals(List.of(FIRST, SECOND), snapshot.modes().get("nodebuff_ranked").stream()
                 .map(LeaderboardEntry::uuid).toList());
         assertEquals("Division 5", snapshot.mode("nodebuff_ranked", 1).orElseThrow().division());
+        assertEquals(SECOND, snapshot.dailyMode("nodebuff_ranked", 1).orElseThrow().uuid());
         assertEquals(FIRST.toString(),
                 new LeaderboardEntry(FIRST, null, 1, null).name(), "null names fall back to UUID");
         assertThrows(UnsupportedOperationException.class,
@@ -100,6 +102,7 @@ class LeaderboardServiceTest
         private final HashMap<UUID, Integer> wins = new HashMap<>();
         private final HashMap<UUID, Integer> kills = new HashMap<>();
         private final Map<String, HashMap<UUID, Integer>> modes = new HashMap<>();
+        private final Map<String, HashMap<UUID, Integer>> daily = new HashMap<>();
         private boolean fail;
 
         @Override public int getWins(UUID uuid) { return wins.getOrDefault(uuid, 0); }
@@ -138,7 +141,7 @@ class LeaderboardServiceTest
         @Override public void incrementPeriodic(UUID player, ModeKey mode, LeaderboardMetric metric, LocalDate date) {}
         @Override public HashMap<UUID, Integer> getFilteredLeaderboard(
                 LeaderboardMetric metric, String mode, LocalDate since, Set<UUID> players) {
-            return new HashMap<>();
+            return new HashMap<>(daily.getOrDefault(mode, new HashMap<>()));
         }
     }
 }

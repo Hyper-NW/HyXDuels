@@ -149,6 +149,8 @@ public final class PartyManager
         catch (IllegalStateException exception) { return fail(leader, "Messages.Party-Cannot-Transfer", "&cLeadership cannot be transferred to that player."); }
         broadcast(party, "Messages.Party-Transferred", Map.of("<player>", target.getName()),
                 "&e<player> is now the party leader.");
+        plugin.getDuelMenuManager().giveOpeners(leader);
+        plugin.getDuelMenuManager().giveOpeners(target);
         return true;
     }
 

@@ -23,6 +23,8 @@ public final class MenuConfiguration
 {
     private final YamlConfiguration yaml;
     private final List<MenuOpener> openers;
+    private final MenuOpener partyManageItem;
+    private final MenuOpener partyDisbandItem;
 
     public MenuConfiguration(Duels plugin)
     {
@@ -34,13 +36,20 @@ public final class MenuConfiguration
         this.yaml = Objects.requireNonNull(yaml, "yaml");
         int version = yaml.contains("Config-Version")
                 ? yaml.getInt("Config-Version", 0) : yaml.getInt("Version", 0);
-        if (version < 1 || version > 2)
+        if (version < 1 || version > 8)
         {
-            throw new IllegalArgumentException("menus.yml Config-Version must be 1 or 2");
+            throw new IllegalArgumentException("menus.yml Config-Version must be from 1 through 8");
         }
         validateFiller();
         openers = parseOpeners();
-        validateMainLayout();
+        partyManageItem = parsePartyHotbarItem("Manage", "party-manage", Material.LECTERN,
+                0, "&6&lManage Party", List.of("&7Open party management.", "&eRight-click to open."),
+                MenuAction.PARTY_MANAGE);
+        partyDisbandItem = parsePartyHotbarItem("Disband", "party-disband", Material.BARRIER,
+                1, "&c&l✖ Disband Party", List.of("&7Permanently disband your party.",
+                        "&eRight-click to continue."), MenuAction.PARTY_DISBAND);
+        validatePartyHotbar();
+        validateDuelTypeLayout();
         validatePartyLayout();
         validateModeLayout();
         validateSettingsLayout();
@@ -100,7 +109,16 @@ public final class MenuConfiguration
 
     public MenuOpener opener(String id)
     {
-        return openers.stream().filter(value -> value.id().equals(id)).findFirst().orElse(null);
+        MenuOpener configured = openers.stream()
+                .filter(value -> value.id().equals(id)).findFirst().orElse(null);
+        if (configured != null) return configured;
+        if (partyManageItem.id().equals(id)) return partyManageItem;
+        return partyDisbandItem.id().equals(id) ? partyDisbandItem : null;
+    }
+
+    public List<MenuOpener> partyHotbarItems()
+    {
+        return List.of(partyManageItem, partyDisbandItem);
     }
 
     public String text(String path, String fallback)
@@ -111,6 +129,17 @@ public final class MenuConfiguration
     public List<String> lines(String path)
     {
         return List.copyOf(yaml.getStringList(path));
+    }
+
+    public List<String> stringList(String path)
+    {
+        return List.copyOf(yaml.getStringList(path));
+    }
+
+    public List<Integer> integerList(String path, List<Integer> fallback)
+    {
+        List<Integer> values = yaml.getIntegerList(path);
+        return values.isEmpty() ? List.copyOf(fallback) : List.copyOf(values);
     }
 
     public boolean fillerEnabled()
@@ -181,6 +210,10 @@ public final class MenuConfiguration
         validateUniquePartySlot(slots, "Menus.Party.Actions.Visibility.Slot", 14);
         validateUniquePartySlot(slots, "Menus.Party.Actions.Host-Duel.Slot", 16);
         validateUniquePartySlot(slots, "Menus.Party.Actions.Invite-Friends.Slot", 22);
+        int cancel = slot("Menus.Party.Disband-Confirmation.Cancel.Slot", 13, 36);
+        int confirm = slot("Menus.Party.Disband-Confirmation.Confirm.Slot", 31, 36);
+        if (cancel == confirm)
+            throw new IllegalArgumentException("menus.yml party disband confirmation slots must be unique");
     }
 
     private void validateUniquePartySlot(Set<Integer> slots, String path, int fallback)
@@ -211,27 +244,42 @@ public final class MenuConfiguration
         int legacy = slot("Menus.Mode.Legacy-PvP-Slot", 47, 54);
         if (legacy < 45 || legacy == 45 || legacy == 49 || legacy == 53)
             throw new IllegalArgumentException("Menus.Mode.Legacy-PvP-Slot must be an unused bottom-row slot");
-    }
-
-    private void validateMainLayout()
-    {
-        Set<Integer> slots = new HashSet<>();
-        validateUniqueSlot(slots, "Menus.Main.Mode-Slot", 11);
-        validateUniqueSlot(slots, "Menus.Main.Map-Slot", 13);
-        validateUniqueSlot(slots, "Menus.Main.Opponent-Slot", 15);
-        validateUniqueSlot(slots, "Menus.Main.Quick-Join-Slot", 22);
-    }
-
-    private void validateUniqueSlot(Set<Integer> slots, String path, int fallback)
-    {
-        int configured = slot(path, fallback, 27);
-        if (!slots.add(configured))
+        Set<Integer> used = new HashSet<>();
+        for (int configured : integerList("Menus.Mode.Content-Slots",
+                java.util.stream.IntStream.range(0, 45).boxed().toList()))
         {
-            throw new IllegalArgumentException("menus.yml main-menu slots must be unique; "
-                    + path + " duplicates slot " + configured);
+            if (configured < 0 || configured >= 45)
+                throw new IllegalArgumentException("Menus.Mode.Content-Slots values must be from 0 through 44");
+            if (!used.add(configured))
+                throw new IllegalArgumentException("Menus.Mode.Content-Slots cannot contain duplicate slot "
+                        + configured);
         }
     }
 
+    private void validatePartyHotbar()
+    {
+        if (partyManageItem.slot() == partyDisbandItem.slot())
+            throw new IllegalArgumentException("menus.yml party hotbar items must use different slots");
+        Set<Integer> retainedSlots = new HashSet<>();
+        for (MenuOpener opener : openers)
+        {
+            if (opener.enabled() && opener.action() != MenuAction.DUEL_MENU
+                    && opener.action() != MenuAction.PARTY)
+                retainedSlots.add(opener.slot());
+        }
+        if (retainedSlots.contains(partyManageItem.slot())
+                || retainedSlots.contains(partyDisbandItem.slot()))
+            throw new IllegalArgumentException("menus.yml party hotbar items cannot replace retained lobby items");
+    }
+
+    private void validateDuelTypeLayout()
+    {
+        Set<Integer> slots = new HashSet<>();
+        slots.add(slot("Menus.Duel-Type.Solo.Slot", 20, 54));
+        if (!slots.add(slot("Menus.Duel-Type.Team.Slot", 22, 54))
+                || !slots.add(slot("Menus.Duel-Type.Other.Slot", 24, 54)))
+            throw new IllegalArgumentException("menus.yml duel-type slots must be unique");
+    }
 
     private List<MenuOpener> parseOpeners()
     {
@@ -266,7 +314,8 @@ public final class MenuConfiguration
             catch (IllegalArgumentException exception)
             {
                 throw new IllegalArgumentException(path
-                        + ".Action must be DUEL_MENU, MODE_SELECTOR, MAP_SELECTOR, SETTINGS, PARTY, or KIT_EDITOR");
+                        + ".Action must be DUEL_MENU, MODE_SELECTOR, MAP_SELECTOR, SETTINGS, PARTY, "
+                        + "PARTY_MANAGE, PARTY_DISBAND, or KIT_EDITOR");
             }
             int slot = yaml.getInt(path + ".Slot", 0);
             boolean forceSlot = yaml.getBoolean(path + ".Force-Slot", false);
@@ -284,5 +333,25 @@ public final class MenuConfiguration
                     yaml.getBoolean(path + ".Locked", true), forceSlot, model));
         }
         return List.copyOf(values);
+    }
+
+    private MenuOpener parsePartyHotbarItem(String key, String id, Material fallbackMaterial,
+                                            int fallbackSlot, String fallbackName,
+                                            List<String> fallbackLore, MenuAction action)
+    {
+        String path = "Party-Hotbar." + key;
+        Material material = Material.matchMaterial(yaml.getString(
+                path + ".Material", fallbackMaterial.name()));
+        if (material == null || material == Material.AIR
+                || material == Material.CAVE_AIR || material == Material.VOID_AIR)
+            throw new IllegalArgumentException("menus.yml " + path + ".Material is not a usable material");
+        int slot = yaml.getInt(path + ".Slot", fallbackSlot);
+        Integer model = yaml.isInt(path + ".Custom-Model-Data")
+                ? yaml.getInt(path + ".Custom-Model-Data") : null;
+        List<String> lore = yaml.contains(path + ".Lore")
+                ? yaml.getStringList(path + ".Lore") : fallbackLore;
+        return new MenuOpener(id, true, material, slot,
+                yaml.getString(path + ".Name", fallbackName), lore, action,
+                yaml.getBoolean(path + ".Glow", false), true, true, model);
     }
 }

@@ -239,6 +239,12 @@ public final class AdvancedConfiguration
             configured.set(LOBBY_LINES, NATURAL_LOBBY);
             changed = true;
         }
+        if ("display.yml".equals(fileName) && bundled != null && version < 4
+                && configured.getStringList(LOBBY_LINES).equals(NATURAL_LOBBY))
+        {
+            configured.set(LOBBY_LINES, bundled.getStringList(LOBBY_LINES));
+            changed = true;
+        }
         if ("messages.yml".equals(fileName) && bundled != null && version < 3)
         {
             List<String> currentHelp = configured.getStringList(HELP_MENU);
@@ -271,7 +277,103 @@ public final class AdvancedConfiguration
             changed |= replaceIfExact(configured, bundled, "Menus.Kit-Editor-Selector.Item-Lore",
                     List.of("&7Kit key: &f<kit_key>", "&eClick to edit this layout."));
         }
+        if ("menus.yml".equals(fileName) && bundled != null && version < 3)
+        {
+            changed |= replaceIfExact(configured, bundled, "Openers.duel-menu.Name", "&b&lQueue Duels");
+            changed |= replaceIfExact(configured, bundled, "Openers.duel-menu.Lore", List.of(
+                    "&7Choose a duel mode and queue.", "&eRight-click to open."));
+            changed |= replaceIfExact(configured, bundled, "Menus.Mode.Title",
+                    "&9⚔ Queue Duels &7(<page>/<pages>)");
+            changed |= replaceIfExact(configured, bundled, "Menus.Mode.Item-Name", "&e<mode>");
+            changed |= replaceIfExact(configured, bundled, "Menus.Mode.Item-Lore", List.of(
+                    "&7Key: &f<mode_key>", "&7Default kit: &f<kit>",
+                    "&eClick to queue or choose a kit."));
+        }
+        if ("messages.yml".equals(fileName) && bundled != null && version < 5)
+        {
+            changed |= replaceIfExact(configured, bundled, "Messages.Kill", List.of(
+                    "&c<victim> &7was killed by &a<killer>&7.",
+                    "&7Killer health: &c<killer_health>❤&7/&c<killer_max_health>❤"));
+            changed |= replaceIfExact(configured, bundled, "Messages.Win", List.of(
+                    "&6&l<winner> wins!", "&7Remaining health: &c<health>❤"));
+        }
+        if ("menus.yml".equals(fileName) && bundled != null && version < 5)
+        {
+            changed |= replaceIfExact(configured, bundled, "Menus.Mode.Item-Name",
+                    "&a<mode> &7- &d1v1");
+        }
+        if ("menus.yml".equals(fileName) && bundled != null && version < 6)
+        {
+            changed |= replaceIfExact(configured, bundled, "Openers.duel-menu.Name",
+                    "&c&lSolo Duels");
+            changed |= replaceIfExact(configured, bundled, "Openers.duel-menu.Lore", List.of(
+                    "&7Click to play a &cSolo Duel &7against another player!",
+                    "",
+                    "&b&lDuel Types:",
+                    "&7• Bow Duel",
+                    "&7• Classic Duel",
+                    "&7• OP Duel",
+                    "&7• UHC Duel",
+                    "&7• NoDebuff Duel",
+                    "&7• Mega Walls Duel",
+                    "&7• Blitz Duel",
+                    "&7• SkyWars Duel",
+                    "&7• Combo Duel",
+                    "&7• Spleef Duel",
+                    "&7• Sumo Duel",
+                    "&7• Quakecraft Duel",
+                    "&7• Boxing Duel",
+                    "&7• Bridge Duel",
+                    "&7• Bed Wars Duel",
+                    "&7• Duel Arena",
+                    "&7• Parkour Duel",
+                    "",
+                "&eRight-click to play!"));
+        }
+        if ("menus.yml".equals(fileName) && bundled != null && version < 8
+                && hasFormerDisbandConfirmation(configured))
+        {
+            for (String child : List.of("Cancel.Slot", "Cancel.Material", "Cancel.Name",
+                    "Cancel.Lore", "Confirm.Slot", "Confirm.Material", "Confirm.Name",
+                    "Confirm.Lore"))
+            {
+                String path = "Menus.Party.Disband-Confirmation." + child;
+                configured.set(path, bundled.get(path));
+            }
+            changed = true;
+        }
+        if ("modes.yml".equals(fileName) && version < 2)
+        {
+            ConfigurationSection modes = configured.getConfigurationSection("Modes");
+            if (modes != null)
+            {
+                for (String mode : modes.getKeys(false))
+                {
+                    String path = "Modes." + mode + ".combat.natural-regeneration";
+                    if (!configured.isBoolean(path) || configured.getBoolean(path))
+                    {
+                        configured.set(path, false);
+                        changed = true;
+                    }
+                }
+            }
+        }
         return changed;
+    }
+
+    private static boolean hasFormerDisbandConfirmation(YamlConfiguration configured)
+    {
+        String base = "Menus.Party.Disband-Confirmation.";
+        return configured.getInt(base + "Cancel.Slot", -1) == 13
+                && Objects.equals(configured.getString(base + "Cancel.Material"), "CAKE")
+                && Objects.equals(configured.getString(base + "Cancel.Name"), "&aKeep Party")
+                && configured.getStringList(base + "Cancel.Lore")
+                        .equals(List.of("&7Return to party management."))
+                && configured.getInt(base + "Confirm.Slot", -1) == 31
+                && Objects.equals(configured.getString(base + "Confirm.Material"), "BARRIER")
+                && Objects.equals(configured.getString(base + "Confirm.Name"), "&c✖ Disband Party")
+                && configured.getStringList(base + "Confirm.Lore").equals(List.of(
+                        "&7This permanently disbands the party.", "&eClick to confirm."));
     }
 
     private static boolean replaceIfExact(YamlConfiguration configured, YamlConfiguration bundled,
@@ -294,7 +396,7 @@ public final class AdvancedConfiguration
     /** Future migrations list only explicitly retired plugin paths here; unknown admin keys survive. */
     private static boolean removeRetiredPaths(String fileName, YamlConfiguration configured)
     {
-        Map<String, List<String>> retired = Map.of("menus.yml", List.of("Version"));
+        Map<String, List<String>> retired = Map.of("menus.yml", List.of("Version", "Menus.Main"));
         boolean changed = false;
         for (String path : retired.getOrDefault(fileName, List.of()))
         {

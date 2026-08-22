@@ -1,5 +1,5 @@
 # HyXDuels sidebar, player-list, and leaderboard configuration.
-Config-Version: 2
+Config-Version: 4
 
 # ---------- Leaderboard cache ----------
 Leaderboard-Cache:
@@ -16,7 +16,9 @@ Display:
   Refresh-Ticks: 20
   # Native placeholders: <player>, <uuid>, <online>, <world>, <arena>, <arena_id>,
   # <state>, <opponent>, <mode>, <mode_key>, <kit>, <countdown>, <score>,
-  # <opponent_score>, <time>, <bed>, <checkpoint>, and <date>. PlaceholderAPI runs afterwards.
+  # <opponent_score>, <time>, <time_formatted>, <health>, <max_health>, <opponent_health>,
+  # <opponent_max_health>, <players>, <max_players>, <bed>, <checkpoint>, <version>, and <date>.
+  # PlaceholderAPI runs afterwards.
   Scoreboards:
     # Lines are written exactly as they appear in game: first line at the top.
     Lobby:
@@ -27,7 +29,7 @@ Display:
         - '&7<date>'
         - ''
         - '&bDuel other players with:'
-        - '&e/duel <player>'
+        - '&e/duel <target>'
         - ''
         - '&fTokens: &a0'
         - ''
@@ -40,7 +42,7 @@ Display:
         - '&ewww.hyxduels.net'
     Arena:
       Enabled: true
-      Title: '&c&l<arena>'
+      Title: '&e&lDUELS'
       Lines:
         - '&7State: &f<state>'
         - '&7Opponent: &f<opponent>'
@@ -51,6 +53,37 @@ Display:
         - '&7Kit: &f<kit>'
         - ''
         - '&eStarts in: &f<countdown>'
+    Arena-Countdown:
+      Enabled: true
+      Title: '&e&lDUELS'
+      Lines:
+        - '&7<date>'
+        - ''
+        - '&fMap: &a<arena>'
+        - '&fPlayers: &a<players>&7/&a<max_players>'
+        - ''
+        - '&fStarting in &a<countdown>s'
+        - ''
+        - '&fMode: &a<mode>'
+        - '&fVersion: &7v<version>'
+        - ''
+        - '&ewww.hyxduels.net'
+    Arena-Playing:
+      Enabled: true
+      Title: '&e&lDUELS'
+      Lines:
+        - '&7<date>'
+        - ''
+        - '&fTime Left: &a<time_formatted>'
+        - ''
+        - '&f&lOpponent:'
+        - '&b<opponent> &c<opponent_health>❤'
+        - ''
+        - '&fMode: &a<mode>'
+        - '&fScore: &a<score> &7- &a<opponent_score>'
+        - '&fWinstreak: &a%duels_your_winstreak%'
+        - ''
+        - '&ewww.hyxduels.net'
   Tab:
     Enabled: true
     Header:

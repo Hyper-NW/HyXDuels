@@ -9,7 +9,8 @@ import java.util.Optional;
 /** A complete immutable point-in-time view of every cached leaderboard. */
 public record LeaderboardSnapshot(List<LeaderboardEntry> overallWins,
                                   List<LeaderboardEntry> overallKills,
-                                  Map<String, List<LeaderboardEntry>> modes)
+                                  Map<String, List<LeaderboardEntry>> modes,
+                                  Map<String, List<LeaderboardEntry>> dailyModes)
 {
     public LeaderboardSnapshot
     {
@@ -19,11 +20,22 @@ public record LeaderboardSnapshot(List<LeaderboardEntry> overallWins,
         modes.forEach((key, rows) -> copiedModes.put(
                 key.toLowerCase(Locale.ROOT), List.copyOf(rows)));
         modes = Map.copyOf(copiedModes);
+        Map<String, List<LeaderboardEntry>> copiedDailyModes = new LinkedHashMap<>();
+        dailyModes.forEach((key, rows) -> copiedDailyModes.put(
+                key.toLowerCase(Locale.ROOT), List.copyOf(rows)));
+        dailyModes = Map.copyOf(copiedDailyModes);
+    }
+
+    public LeaderboardSnapshot(List<LeaderboardEntry> overallWins,
+                               List<LeaderboardEntry> overallKills,
+                               Map<String, List<LeaderboardEntry>> modes)
+    {
+        this(overallWins, overallKills, modes, Map.of());
     }
 
     public static LeaderboardSnapshot empty()
     {
-        return new LeaderboardSnapshot(List.of(), List.of(), Map.of());
+        return new LeaderboardSnapshot(List.of(), List.of(), Map.of(), Map.of());
     }
 
     public Optional<LeaderboardEntry> overallWins(int rank)
@@ -43,6 +55,12 @@ public record LeaderboardSnapshot(List<LeaderboardEntry> overallWins,
             return Optional.empty();
         }
         return ranked(modes.getOrDefault(key.toLowerCase(Locale.ROOT), List.of()), rank);
+    }
+
+    public Optional<LeaderboardEntry> dailyMode(String key, int rank)
+    {
+        if (key == null) return Optional.empty();
+        return ranked(dailyModes.getOrDefault(key.toLowerCase(Locale.ROOT), List.of()), rank);
     }
 
     private static Optional<LeaderboardEntry> ranked(List<LeaderboardEntry> rows, int rank)

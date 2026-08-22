@@ -3,6 +3,7 @@ package me.alphatct3209.duels.gui.layout;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,5 +40,18 @@ class PagedMenuLayoutTest
         assertEquals(1, last.slots().size());
         assertEquals(90, last.slots().get(0));
         assertFalse(last.hasNext());
+    }
+
+    @Test
+    void mapsEntriesIntoConfiguredVisualSlots()
+    {
+        List<Integer> slots = List.of(10, 12, 14);
+        PagedMenuLayout.Page<String> first = PagedMenuLayout.page(
+                List.of("a", "b", "c", "d"), 0, slots);
+        assertEquals(Map.of(10, "a", 12, "b", 14, "c"), first.slots());
+        assertTrue(first.hasNext());
+        PagedMenuLayout.Page<String> second = PagedMenuLayout.page(
+                List.of("a", "b", "c", "d"), 1, slots);
+        assertEquals(Map.of(10, "d"), second.slots());
     }
 }

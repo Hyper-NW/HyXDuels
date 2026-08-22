@@ -9,23 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MenuConfigurationTest
 {
     @Test
-    void acceptsValidMainLayoutAndOpener()
+    void acceptsValidSoloDuelsOpener()
     {
         MenuConfiguration configuration = new MenuConfiguration(valid());
         assertEquals(1, configuration.openers().size());
-        assertEquals(11, configuration.slot("Menus.Main.Mode-Slot", 0, 27));
-    }
-
-    @Test
-    void rejectsDuplicateOrOutOfRangeMainSlotsAtLoadTime()
-    {
-        YamlConfiguration duplicate = valid();
-        duplicate.set("Menus.Main.Map-Slot", 11);
-        assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(duplicate));
-
-        YamlConfiguration outOfRange = valid();
-        outOfRange.set("Menus.Main.Quick-Join-Slot", 27);
-        assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(outOfRange));
+        assertEquals(MenuAction.DUEL_MENU, configuration.opener("duel-menu").action());
     }
 
     @Test
@@ -37,6 +25,15 @@ class MenuConfigurationTest
         yaml.set("Openers.mode.Slot", 0);
         yaml.set("Openers.mode.Action", "MODE_SELECTOR");
         yaml.set("Openers.mode.Name", "Mode");
+        assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(yaml));
+    }
+
+    @Test
+    void rejectsOverlappingDuelTypeSlots()
+    {
+        YamlConfiguration yaml = valid();
+        yaml.set("Menus.Duel-Type.Team.Slot", 22);
+        yaml.set("Menus.Duel-Type.Other.Slot", 22);
         assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(yaml));
     }
 
@@ -72,6 +69,20 @@ class MenuConfigurationTest
     }
 
     @Test
+    void rejectsOverlappingPartyHotbarAndDisbandConfirmationSlots()
+    {
+        YamlConfiguration hotbar = valid();
+        hotbar.set("Party-Hotbar.Manage.Slot", 2);
+        hotbar.set("Party-Hotbar.Disband.Slot", 2);
+        assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(hotbar));
+
+        YamlConfiguration confirmation = valid();
+        confirmation.set("Menus.Party.Disband-Confirmation.Cancel.Slot", 13);
+        confirmation.set("Menus.Party.Disband-Confirmation.Confirm.Slot", 13);
+        assertThrows(IllegalArgumentException.class, () -> new MenuConfiguration(confirmation));
+    }
+
+    @Test
     void rejectsDuplicateOrOutOfRangeSettingsSlots()
     {
         YamlConfiguration duplicate = valid();
@@ -102,10 +113,6 @@ class MenuConfigurationTest
         yaml.set("Openers.duel-menu.Slot", 0);
         yaml.set("Openers.duel-menu.Action", "DUEL_MENU");
         yaml.set("Openers.duel-menu.Name", "Duels");
-        yaml.set("Menus.Main.Mode-Slot", 11);
-        yaml.set("Menus.Main.Map-Slot", 13);
-        yaml.set("Menus.Main.Opponent-Slot", 15);
-        yaml.set("Menus.Main.Quick-Join-Slot", 22);
         return yaml;
     }
 }

@@ -42,8 +42,17 @@ public final class DisplayTokenEngine
                 .replace("<score>", Integer.toString(values.score()))
                 .replace("<opponent_score>", Integer.toString(values.opponentScore()))
                 .replace("<time>", Long.toString(values.time()))
+                .replace("<time_formatted>", time(values.time()))
                 .replace("<bed>", values.bed())
                 .replace("<checkpoint>", Integer.toString(values.checkpoint()))
+                .replace("<health>", health(values.health()))
+                .replace("<max_health>", health(values.maxHealth()))
+                .replace("<opponent_health>", health(values.opponentHealth()))
+                .replace("<opponent_max_health>", health(values.opponentMaxHealth()))
+                .replace("<players>", Integer.toString(values.players()))
+                .replace("<max_players>", Integer.toString(values.maxPlayers()))
+                .replace("<winstreak>", Integer.toString(values.winStreak()))
+                .replace("<version>", values.version())
                 .replace("<countdown>", Integer.toString(values.countdown()));
 
         Matcher matcher = LEADERBOARD.matcher(expanded);
@@ -60,5 +69,16 @@ public final class DisplayTokenEngine
         }
         matcher.appendTail(result);
         return result.toString();
+    }
+
+    private static String time(long seconds)
+    {
+        return String.format(Locale.ROOT, "%02d:%02d", seconds / 60L, seconds % 60L);
+    }
+
+    private static String health(double value)
+    {
+        if (value == Math.rint(value)) return Long.toString(Math.round(value));
+        return String.format(Locale.ROOT, "%.1f", value);
     }
 }

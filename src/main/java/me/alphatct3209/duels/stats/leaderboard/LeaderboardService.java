@@ -1,8 +1,10 @@
 package me.alphatct3209.duels.stats.leaderboard;
 
 import me.alphatct3209.duels.stats.db.StatisticsDatabase;
+import me.alphatct3209.duels.stats.db.LeaderboardMetric;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -72,11 +74,14 @@ public final class LeaderboardService
             List<LeaderboardEntry> wins = rows(database.getTopTenWins(), false);
             List<LeaderboardEntry> kills = rows(database.getTopTenKills(), false);
             Map<String, List<LeaderboardEntry>> modeRows = new LinkedHashMap<>();
+            Map<String, List<LeaderboardEntry>> dailyModeRows = new LinkedHashMap<>();
             for (String mode : modes)
             {
                 modeRows.put(mode, rows(database.getTopTenGamemodeWins(mode), true));
+                dailyModeRows.put(mode, rows(database.getFilteredLeaderboard(
+                        LeaderboardMetric.WINS, mode, LocalDate.now(), null), false));
             }
-            snapshot.set(new LeaderboardSnapshot(wins, kills, modeRows));
+            snapshot.set(new LeaderboardSnapshot(wins, kills, modeRows, dailyModeRows));
             return true;
         }
         catch (RuntimeException exception)

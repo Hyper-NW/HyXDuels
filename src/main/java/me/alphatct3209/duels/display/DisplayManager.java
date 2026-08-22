@@ -36,6 +36,8 @@ public final class DisplayManager implements Listener
     private final long refreshTicks;
     private final SidebarConfig lobbySidebar;
     private final SidebarConfig arenaSidebar;
+    private final SidebarConfig countdownSidebar;
+    private final SidebarConfig playingSidebar;
     private final TabConfig tab;
     private final FakePlayerTabList fakeTab;
     private final Map<String, LeaderboardDefinition> leaderboardDefinitions;
@@ -55,6 +57,8 @@ public final class DisplayManager implements Listener
         }
         lobbySidebar = sidebar(config, "Display.Scoreboards.Lobby");
         arenaSidebar = sidebar(config, "Display.Scoreboards.Arena");
+        countdownSidebar = optionalSidebar(config, "Display.Scoreboards.Arena-Countdown", arenaSidebar);
+        playingSidebar = optionalSidebar(config, "Display.Scoreboards.Arena-Playing", arenaSidebar);
         tab = tab(config);
         fakeTab = tab.enabled() ? new FakePlayerTabList() : null;
         leaderboardDefinitions = leaderboardDefinitions(config);
@@ -157,10 +161,15 @@ public final class DisplayManager implements Listener
         if (arena == null)
         {
             return new DisplayTokenContext(player.getName(), player.getUniqueId().toString(),
-                    Bukkit.getOnlinePlayers().size(), world, "Lobby", "-", "LOBBY", "-", "-", 0);
+                    Bukkit.getOnlinePlayers().size(), world, "Lobby", "-", "LOBBY", "-", "-",
+                    "-", "-", 0, 0, 0, 0L, "-", 0,
+                    player.getHealth(), player.getMaxHealth(), 0D, 0D,
+                    1, 1, 0, plugin.getDescription().getVersion());
         }
 
         String opponent = "-";
+        double opponentHealth = 0D;
+        double opponentMaxHealth = 0D;
         UUID opponentId = null;
         for (UUID participant : arena.getPlayers())
         {
@@ -169,6 +178,8 @@ public final class DisplayManager implements Listener
                 opponentId = participant;
                 Player other = Bukkit.getPlayer(participant);
                 opponent = other == null ? "-" : other.getName();
+                opponentHealth = other == null ? 0D : other.getHealth();
+                opponentMaxHealth = other == null ? 0D : other.getMaxHealth();
                 break;
             }
         }
@@ -184,7 +195,9 @@ public final class DisplayManager implements Listener
                 mode == null ? "-" : mode.displayName(), mode == null ? "-" : mode.key().value(),
                 arena.getCountdownSecondsRemaining(), score, opponentScore, game.remainingSeconds(),
                 game.getRuntimeState().isPresent() ? (game.bedAlive(player.getUniqueId()) ? "Alive" : "Broken") : "-",
-                game.checkpoint(player.getUniqueId()));
+                game.checkpoint(player.getUniqueId()), player.getHealth(), player.getMaxHealth(),
+                opponentHealth, opponentMaxHealth, arena.getPlayers().size(), 2,
+                0, plugin.getDescription().getVersion());
     }
 
     private String expand(Player player, String input, DisplayTokenContext context)
@@ -228,7 +241,17 @@ public final class DisplayManager implements Listener
         {
             Arena arena = plugin.getArenaManager().getArena(player);
             DisplayTokenContext values = context(player, arena);
-            refreshSidebar(arena == null ? lobbySidebar : arenaSidebar, values);
+            SidebarConfig configured = lobbySidebar;
+            if (arena != null)
+            {
+                configured = switch (arena.getGameState())
+                {
+                    case COUNTDOWN -> countdownSidebar;
+                    case PLAYING -> playingSidebar;
+                    default -> arenaSidebar;
+                };
+            }
+            refreshSidebar(configured, values);
             refreshTab(values);
         }
 
@@ -379,6 +402,11 @@ public final class DisplayManager implements Listener
         }
         return new SidebarConfig(config.getBoolean(path + ".Enabled", true),
                 config.getString(path + ".Title", "&6&lHyXDuels"), List.copyOf(lines));
+    }
+
+    private SidebarConfig optionalSidebar(FileConfiguration config, String path, SidebarConfig fallback)
+    {
+        return config.getConfigurationSection(path) == null ? fallback : sidebar(config, path);
     }
 
     private TabConfig tab(FileConfiguration config)

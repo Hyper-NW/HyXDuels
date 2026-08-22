@@ -68,6 +68,33 @@ public final class PartyGui implements Listener
         leader.openInventory(inventory);
     }
 
+    public void openDisbandConfirmation(Player leader)
+    {
+        Party party = leaderParty(leader);
+        if (party == null) return;
+        int size = 36;
+        Map<Integer, String> choices = new LinkedHashMap<>();
+        UUID token = UUID.randomUUID();
+        PartyInventoryHolder holder = new PartyInventoryHolder(token, leader.getUniqueId(),
+                PartyInventoryHolder.View.DISBAND_CONFIRMATION, 0, 1, choices);
+        String path = "Menus.Party.Disband-Confirmation";
+        Inventory inventory = Bukkit.createInventory(holder, size, items.color(configuration.text(
+                path + ".Title", "&c✖ &d&lDisband Party?")));
+        holder.attach(inventory);
+        int cancelSlot = configuration.slot(path + ".Cancel.Slot", 31, size);
+        int confirmSlot = configuration.slot(path + ".Confirm.Slot", 13, size);
+        choices.put(cancelSlot, "cancel-disband");
+        choices.put(confirmSlot, "confirm-disband");
+        inventory.setItem(cancelSlot, configuredItem(path + ".Cancel", Material.BARRIER,
+                "&cGo Back", List.of("&7Return to party management."), Map.of(), false));
+        inventory.setItem(confirmSlot, configuredItem(path + ".Confirm", Material.CAKE,
+                "&c✖ Disband Party", List.of("&7This permanently disbands the party.",
+                        "&eClick to confirm."), Map.of(), false));
+        items.fillEmpty(inventory);
+        active.put(leader.getUniqueId(), token);
+        leader.openInventory(inventory);
+    }
+
     private void openInvites(Player leader, int requestedPage)
     {
         Party party = leaderParty(leader);
@@ -119,6 +146,13 @@ public final class PartyGui implements Listener
                 || !holder.viewer().equals(player.getUniqueId())
                 || !holder.token().equals(active.get(player.getUniqueId()))) return;
         int slot = event.getRawSlot();
+        if (holder.view() == PartyInventoryHolder.View.DISBAND_CONFIRMATION)
+        {
+            String action = holder.choices().get(slot);
+            if ("cancel-disband".equals(action)) open(player);
+            else if ("confirm-disband".equals(action)) confirmDisband(player);
+            return;
+        }
         if (holder.view() == PartyInventoryHolder.View.INVITE)
         {
             if (slot == PagedMenuLayout.PREVIOUS_SLOT && holder.page() > 0) openInvites(player, holder.page() - 1);
@@ -168,6 +202,14 @@ public final class PartyGui implements Listener
         try { target = Bukkit.getPlayer(UUID.fromString(raw)); }
         catch (IllegalArgumentException exception) { target = null; }
         if (plugin.getPartyManager().invite(leader, target)) openInvites(leader, 0);
+    }
+
+    private void confirmDisband(Player leader)
+    {
+        if (!plugin.getPartyManager().disband(leader)) return;
+        active.remove(leader.getUniqueId());
+        leader.closeInventory();
+        plugin.getDuelMenuManager().giveOpeners(leader);
     }
 
     private void runAction(Player leader, String key, String display)

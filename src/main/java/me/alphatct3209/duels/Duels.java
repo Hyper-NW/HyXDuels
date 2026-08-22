@@ -30,6 +30,8 @@ import me.alphatct3209.duels.listeners.ModeMechanicsListener;
 import me.alphatct3209.duels.listeners.PlayerListener;
 import me.alphatct3209.duels.listeners.StatsListener;
 import me.alphatct3209.duels.party.PartyManager;
+import me.alphatct3209.duels.party.command.PartyCommand;
+import me.alphatct3209.duels.party.command.PartyTabCompleter;
 import me.alphatct3209.duels.party.gui.PartyGui;
 import me.alphatct3209.duels.queue.DuelQueueManager;
 import me.alphatct3209.duels.social.SocialManager;
@@ -181,6 +183,8 @@ public class Duels extends JavaPlugin
         DuelCmd duelsCommand = new DuelCmd(this);
         getCommand("duels").setExecutor(duelsCommand);
         getCommand("duels").setTabCompleter(new DuelTabCompleter(this));
+        getCommand("party").setExecutor(new PartyCommand(this));
+        getCommand("party").setTabCompleter(new PartyTabCompleter(this));
         KitEditorCommand kitEditorCommand = new KitEditorCommand(this);
         getCommand("kiteditor").setExecutor(kitEditorCommand);
         getCommand("kiteditor").setTabCompleter(kitEditorCommand);

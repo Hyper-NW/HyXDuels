@@ -14,6 +14,10 @@ commands:
     description: Structured HyXDuels commands
     usage: /<command> help [page]
     aliases: [hyxduels]
+  party:
+    description: Create, join, and manage duel parties
+    usage: /<command> [invite|kick|promote|demote|transfer|accept|deny|leave|disband|list|menu]
+    aliases: [p]
   kiteditor:
     description: Edit only your selected kit's personal layout
     usage: /<command>

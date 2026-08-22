@@ -1,7 +1,6 @@
 package me.alphatct3209.duels.utils;
 
 import me.alphatct3209.duels.Duels;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,8 +26,7 @@ public class ConfigUtils
         String worldName = Objects.requireNonNull(
                 getPlugin().getConfig().getString(path + ".World"),
                 "Missing arena world at " + path + ".World");
-        World world = Objects.requireNonNull(Bukkit.getWorld(worldName),
-                "AdvancedSlimePaper arena world '" + worldName + "' is not loaded");
+        World world = getPlugin().getSlimeWorldManager().requireManagedWorld(worldName);
         double x = getPlugin().getConfig().getDouble(path + ".X");
         double y = getPlugin().getConfig().getDouble(path + ".Y");
         double z = getPlugin().getConfig().getDouble(path + ".Z");

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public final class PartyInventoryHolder implements InventoryHolder
 {
-    public enum View { MAIN, INVITE }
+    public enum View { MAIN, INVITE, DISBAND_CONFIRMATION }
 
     private final UUID token;
     private final UUID viewer;

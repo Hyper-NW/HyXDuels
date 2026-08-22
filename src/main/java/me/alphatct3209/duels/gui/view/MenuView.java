@@ -2,7 +2,7 @@ package me.alphatct3209.duels.gui.view;
 
 public enum MenuView
 {
-    MAIN,
+    DUEL_TYPE,
     MODE,
     KIT,
     MAP,

@@ -33,6 +33,7 @@ class ModeArchitectureTest
                 modes.get(ModeKey.parse("duel_arena")).allowedKitKeys());
         modes.forEach((key, mode) -> {
             if (!key.value().equals("duel_arena")) assertEquals(key.value(), mode.defaultKitKey());
+            assertFalse(mode.combat().naturalRegeneration());
         });
     }
 

@@ -80,14 +80,19 @@ public class GameListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onNaturalRegeneration(EntityRegainHealthEvent event)
+    public void onDuelHealing(EntityRegainHealthEvent event)
     {
-        if (!(event.getEntity() instanceof Player player)
-                || event.getRegainReason() != EntityRegainHealthEvent.RegainReason.SATIATED) return;
+        if (!(event.getEntity() instanceof Player player)) return;
         Arena arena = plugin.getArenaManager().getArena(player);
         if (arena != null && arena.getGameState() == GameState.PLAYING
-                && arena.getGame().getMode().map(mode -> !mode.combat().naturalRegeneration()).orElse(false))
+                && !isAllowedDuelHealing(event.getRegainReason()))
             event.setCancelled(true);
+    }
+
+    static boolean isAllowedDuelHealing(EntityRegainHealthEvent.RegainReason reason)
+    {
+        return reason == EntityRegainHealthEvent.RegainReason.MAGIC
+                || reason == EntityRegainHealthEvent.RegainReason.MAGIC_REGEN;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

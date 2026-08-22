@@ -1,6 +1,6 @@
 # HyXDuels lobby hotbar and inventory menus.
 # Names and lore support '&' color codes. Slots are zero-based.
-Config-Version: 2
+Config-Version: 8
 Enabled: true
 Give-On-Join: true
 Give-Delay-Ticks: 2
@@ -28,8 +28,8 @@ Openers:
     Glow: true
     Name: '&b&lQueue Duels'
     Lore:
-      - '&7Choose a duel mode and queue.'
-      - '&eRight-click to open.'
+      - '&7Choose Solo, Team, or special duel modes.'
+      - '&eRight-click to open!'
     Action: DUEL_MENU
   party:
     Enabled: true
@@ -91,34 +91,119 @@ Openers:
     Lore: ['&7Choose your preferred arena.']
     Action: MAP_SELECTOR
 
+# Replaces Queue Duels and Create / Manage Party while the player leads a party.
+# Kit Editor, Player Settings, and any other retained lobby items stay in place.
+Party-Hotbar:
+  Manage:
+    Material: LECTERN
+    Slot: 0
+    Glow: false
+    Name: '&6&lManage Party'
+    Lore: ['&7Open party management.', '&eRight-click to open.']
+  Disband:
+    Material: BARRIER
+    Slot: 1
+    Glow: false
+    Name: '&c&l✖ Disband Party'
+    Lore: ['&7Permanently disband your party.', '&eRight-click to continue.']
+
 # ---------- Inventory menus ----------
 Menus:
-  # Retained for /duels queue open navigation and optional map/opponent selection.
-  Main:
-    Title: '&8Duels'
-    Mode-Slot: 11
-    Mode-Name: '&eSelect Mode'
-    Mode-Lore: ['&7Current: &f<mode>', '&eClick to change.']
-    Map-Slot: 13
-    Map-Name: '&aSelect Map'
-    Map-Lore:
-      - '&7Current: &f<map>'
-      - '&7Block break: <block_break>'
-      - '&7Block place: <block_place>'
-      - '&eClick to change.'
-    Opponent-Slot: 15
-    Opponent-Name: '&cChallenge Player'
-    Opponent-Lore: ['&7Choose an online opponent.']
-    Quick-Join-Slot: 22
-    Quick-Join-Name: '&bQuick Queue'
-    Quick-Join-Lore: ['&7Mode: &f<mode>', '&7Map: &f<map>', '&eClick to enter matchmaking.']
-  Mode:
-    Title: '&9⚔ Queue Duels &7(<page>/<pages>)'
-    Item-Name: '&e<mode>'
+  Duel-Type:
+    Title: 'Play Duels'
+    Solo:
+      Slot: 20
+      Name: '&cSolo Duels'
+      Mode-Keys: [bow, classic, op, uhc, nodebuff, mega_walls, blitz, skywars, combo, spleef, sumo, quakecraft, boxing, bridge, bed_wars]
+      Lore:
+        - '&7Click to play a &cSolo Duel &7against another player!'
+        - ''
+        - '&bDuel Types:'
+        - '&7• Bow, Classic, OP, UHC, NoDebuff'
+        - '&7• Mega Walls, Blitz, SkyWars, Combo'
+        - '&7• Spleef, Sumo, Quakecraft, Boxing'
+        - '&7• Bridge and Bed Wars'
+        - ''
+        - '&eClick to play 1v1!'
+    Team:
+      Slot: 22
+      Name: '&9Team Duels'
+      Mode-Keys: [classic, uhc, skywars, op, bridge]
+      Lore:
+        - '&7Click to play a &9Team Duel &7against other players!'
+        - ''
+        - '&bDuel Types:'
+        - '&7• Classic Doubles'
+        - '&7• UHC Doubles'
+        - '&7• SkyWars Doubles'
+        - '&7• OP Doubles'
+        - '&7• Bridge Doubles'
+        - ''
+        - '&7Requires a party of exactly two players.'
+        - ''
+        - '&eClick to play 2v2!'
+      # The core arena runtime is 1v1. These console commands hand the selected mode to
+      # the server's team-arena implementation. Placeholders: <leader>, <party_size>,
+      # <mode>, <mode_key>, <kit>, and <kit_key>.
+      Commands: []
+    Other:
+      Slot: 24
+      Name: '&6Other Modes'
+      Mode-Keys: [parkour, duel_arena]
+      Lore:
+        - '&7Click to view the other special modes Duels has to offer!'
+        - ''
+        - '&bDuel Types:'
+        - '&7• Parkour Duels'
+        - '&7• Duel Arena'
+        - ''
+        - '&eClick to play!'
+  Team-Mode:
+    Title: 'Team Duels'
+  Other-Mode:
+    Title: 'Other Modes'
+  Kit-Mode:
+    Title: 'Edit Kit Layouts'
+    Item-Name: '&a<mode>'
     Item-Lore:
-      - '&7Key: &f<mode_key>'
-      - '&7Default kit: &f<kit>'
-      - '&eClick to queue or choose a kit.'
+      - '&7Choose a personal kit layout from this mode.'
+      - '&7Modes with multiple kits open a second selector.'
+      - ''
+      - '&eClick to choose a layout!'
+  Mode:
+    Title: 'Solo Duels'
+    # Visual order and slots mirror the compact three-row Solo Duels selector.
+    Order: [bow, classic, op, uhc, nodebuff, mega_walls, blitz, skywars, combo, spleef, sumo, quakecraft, boxing, bridge, bed_wars, duel_arena, parkour]
+    Content-Slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30]
+    Item-Name: '&a<mode> &7- &d<format>'
+    Item-Lore:
+      - '&f<description>'
+      - ''
+      - '&aDaily Top Wins:'
+      - '&e#1: &b<daily_1_player> &7- &a<daily_1_score>'
+      - '&e#2: &b<daily_2_player> &7- &a<daily_2_score>'
+      - '&e#3: &b<daily_3_player> &7- &a<daily_3_score>'
+      - ''
+      - '&eClick to join!'
+      - '&7<playing> currently playing!'
+    Descriptions:
+      bow: 'Bow-only 1v1 Duel!'
+      classic: 'Iron Gear 1v1 Duel!'
+      op: 'Fight with powerful enchanted gear!'
+      uhc: 'No natural regeneration; use Golden Heads!'
+      nodebuff: 'Potion PvP with no debuffs!'
+      mega_walls: 'Fight with a Mega Walls-style loadout!'
+      blitz: '1v1 Duel with a Blitz kit!'
+      skywars: 'Loot, bridge, and be the last standing!'
+      combo: 'Fast hit-delay combo combat!'
+      spleef: 'Break the floor beneath your opponent!'
+      sumo: 'Knock your opponent out of the arena!'
+      quakecraft: 'First player to land six railgun hits wins!'
+      boxing: 'First player to land 100 punches wins!'
+      bridge: 'Race across the bridge and score five goals!'
+      bed_wars: 'Protect your bed and eliminate your opponent!'
+      duel_arena: 'Fast one-minute arena combat!'
+      parkour: 'Race through checkpoints to the finish!'
     # Legacy 1.8 PvP is the only gameplay rule selectable by players.
     Legacy-PvP-Slot: 47
     Legacy-PvP-Name: '&bLegacy 1.8 PvP: <legacy_pvp>'
@@ -188,6 +273,18 @@ Menus:
         Material: PLAYER_HEAD
         Name: '&a<player>'
         Lore: ['&eClick to invite.']
+    Disband-Confirmation:
+      Title: '&c✖ &d&lDisband Party?'
+      Cancel:
+        Slot: 31
+        Material: BARRIER
+        Name: '&cGo Back'
+        Lore: ['&7Return to party management.']
+      Confirm:
+        Slot: 13
+        Material: CAKE
+        Name: '&c✖ Disband Party'
+        Lore: ['&7This permanently disbands the party.', '&eClick to confirm.']
   Settings:
     Title: '&8Player Settings'
     Items:
@@ -287,3 +384,8 @@ Messages:
   Joined: ['&aJoined arena &e<map> &awith mode &e<mode>&a.']
   Map-Incompatible: ['&cThat map does not support your selected mode.']
   Player-Unavailable: ['&cThat player is no longer available.']
+  Team-Requires-Party: ['&cCreate a party of exactly two players before joining Team Duels.']
+  Team-Leader-Only: ['&cOnly the party leader can start a Team Duel.']
+  Team-Party-Size: ['&cTeam Duels requires exactly two party members. Current size: &e<party_size>&c.']
+  Team-Member-Offline: ['&cBoth party members must be online for Team Duels.']
+  Team-Not-Configured: ['&cTeam Duels is not connected to a team-arena command yet. Configure Menus.Duel-Type.Team.Commands.']
